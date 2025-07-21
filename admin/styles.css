@@ -1,0 +1,185 @@
+/* --- General & Reset --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #F3F4F6; /* gray-100 */
+    color: #1F2937; /* gray-800 */
+}
+
+/* --- Main Layout --- */
+.admin-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #1F2937; /* gray-800 */
+    color: #E5E7EB; /* gray-200 */
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    flex: 1;
+    padding: 2rem;
+}
+
+/* --- Sidebar --- */
+.sidebar-header {
+    padding: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    border-bottom: 1px solid #374151; /* gray-700 */
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 1rem 0;
+}
+
+.sidebar-nav .nav-link {
+    display: block;
+    padding: 1rem 1.5rem;
+    color: #D1D5DB; /* gray-300 */
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar-nav .nav-link:hover {
+    background-color: #374151; /* gray-700 */
+    color: white;
+}
+
+.sidebar-nav .nav-link.active {
+    background-color: #2563EB; /* blue-600 */
+    color: white;
+}
+
+/* --- Main Content --- */
+.main-header {
+    margin-bottom: 2rem;
+}
+
+.main-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.content-section {
+    display: none; /* Hidden by default */
+}
+
+.content-section.active {
+    display: block; /* Shown when active */
+}
+
+.card {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #E5E7EB;
+    padding-bottom: 1rem;
+}
+
+/* --- Forms --- */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.5rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #2563EB;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* --- Buttons --- */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-primary {
+    background-color: #2563EB; /* blue-600 */
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #1D4ED8; /* blue-700 */
+}
+
+.btn-secondary {
+    background-color: #E5E7EB; /* gray-200 */
+    color: #1F2937;
+}
+
+.btn-secondary:hover {
+    background-color: #D1D5DB;
+}
+
+/* --- Data Table --- */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.data-table th,
+.data-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.data-table th {
+    font-weight: 600;
+    background-color: #F9FAFB; /* gray-50 */
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: none;
+}
