@@ -42,23 +42,40 @@
                 <h2>Manage Doctors</h2>
                 <div class="card">
                     <h3>Register a New Doctor</h3>
-                    <form class="form-grid">
+                    <form id="doctor-form" class="form-grid">
                         <div class="form-group">
                             <label for="doc-name">Full Name</label>
-                            <input type="text" id="doc-name" placeholder="e.g., Dr. Riya Narwal">
+                            <input type="text" id="doc-name" required placeholder="e.g., Dr. Riya Narwal">
                         </div>
                         <div class="form-group">
-                            <label for="doc-specialization">Specialization</label>
-                            <input type="text" id="doc-specialization" placeholder="e.g., Therapist">
+                            <label for="doc-speciality">Speciality</label>
+                            <input type="text" id="doc-speciality" required placeholder="e.g., Therapist">
                         </div>
                         <div class="form-group">
                             <label for="doc-email">Email Address</label>
-                            <input type="email" id="doc-email" placeholder="e.g., riyanarwal@healsync.com">
+                            <input type="email" id="doc-email" required placeholder="e.g., riyanarwal@healsync.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="doc-mobile">Mobile No</label>
+                            <input type="text" id="doc-mobile" required placeholder="e.g., 9876543210">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="doc-bio">Bio</label>
+                            <textarea id="doc-bio" rows="2" required placeholder="Short bio"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="doc-shift">Shift</label>
+                            <input type="text" id="doc-shift" required placeholder="e.g., Morning">
+                        </div>
+                        <div class="form-group">
+                            <label for="doc-password">Password</label>
+                            <input type="password" id="doc-password" required placeholder="Password">
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">Register Doctor</button>
                         </div>
                     </form>
+                    <div id="doctor-message" style="margin-top:1rem;"></div>
                 </div>
 
                 <div class="card">

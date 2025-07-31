@@ -40,4 +40,54 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // --- Doctor Registration Form Submission ---
+    const doctorForm = document.getElementById('doctor-form');
+    if (doctorForm) {
+        doctorForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('doc-name').value.trim();
+            const speciality = document.getElementById('doc-speciality').value.trim();
+            const email = document.getElementById('doc-email').value.trim();
+            const mobileNo = document.getElementById('doc-mobile').value.trim();
+            const bio = document.getElementById('doc-bio').value.trim();
+            const shift = document.getElementById('doc-shift').value.trim();
+            const password = document.getElementById('doc-password').value;
+
+            const messageDiv = document.getElementById('doctor-message');
+            messageDiv.textContent = 'Registering...';
+
+            try {
+                const response = await fetch('https://healsync-backend-d788.onrender.com/v1/healsync/doctor/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name,
+                        speciality,
+                        email,
+                        mobileNo,
+                        bio,
+                        shift,
+                        password
+                    })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    messageDiv.style.color = 'green';
+                    messageDiv.textContent = 'Doctor registered successfully!';
+                    doctorForm.reset();
+                } else {
+                    messageDiv.style.color = 'red';
+                    messageDiv.textContent = result.message || 'Registration failed.';
+                }
+            } catch (err) {
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = 'Network error. Please try again.';
+            }
+        });
+    }
+
 });
