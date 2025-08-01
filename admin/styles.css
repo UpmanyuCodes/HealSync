@@ -59,7 +59,7 @@ body {
 }
 
 .sidebar-nav .nav-link.active {
-    background-color: #2563EB; /* blue-600 */
+    background-color: #59A28F; /* blue-600 */
     color: white;
 }
 
@@ -130,7 +130,7 @@ body {
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #2563EB;
+    border-color: #59A28F;
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
@@ -145,12 +145,12 @@ body {
 }
 
 .btn-primary {
-    background-color: #2563EB; /* blue-600 */
+    background-color: #59A28F; /* teel */
     color: white;
 }
 
 .btn-primary:hover {
-    background-color: #1D4ED8; /* blue-700 */
+    background-color: #59A28F; /* teel */
 }
 
 .btn-secondary {
