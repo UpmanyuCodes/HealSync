@@ -90,4 +90,88 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // --- Disease Registration Form Submission ---
+    const diseaseForm = document.getElementById('disease-form');
+    if (diseaseForm) {
+        diseaseForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('disease-name').value.trim();
+            const description = document.getElementById('disease-desc').value.trim();
+            const symptoms = document.getElementById('disease-symptoms').value.trim();
+
+            const messageDiv = document.getElementById('disease-message');
+            messageDiv.textContent = 'Adding disease...';
+
+            try {
+                const response = await fetch('https://healsync-backend-d788.onrender.com/v1/healsync/disease/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name,
+                        description,
+                        symptoms
+                    })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    messageDiv.style.color = 'green';
+                    messageDiv.textContent = 'Disease added successfully!';
+                    diseaseForm.reset();
+                } else {
+                    messageDiv.style.color = 'red';
+                    messageDiv.textContent = result.message || 'Failed to add disease.';
+                }
+            } catch (err) {
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = 'Network error. Please try again.';
+            }
+        });
+    }
+
+    // --- Medicine Registration Form Submission ---
+    const medicineForm = document.getElementById('medicine-form');
+    if (medicineForm) {
+        medicineForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('med-name').value.trim();
+            const usage = document.getElementById('med-usage').value.trim();
+            const sideEffect = document.getElementById('med-sideeffect').value.trim();
+
+            const messageDiv = document.getElementById('medicine-message');
+            messageDiv.textContent = 'Adding medicine...';
+
+            try {
+                const response = await fetch('https://healsync-backend-d788.onrender.com/v1/healsync/medicine/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name,
+                        usage,
+                        sideEffect
+                    })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    messageDiv.style.color = 'green';
+                    messageDiv.textContent = 'Medicine added successfully!';
+                    medicineForm.reset();
+                } else {
+                    messageDiv.style.color = 'red';
+                    messageDiv.textContent = result.message || 'Failed to add medicine.';
+                }
+            } catch (err) {
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = 'Network error. Please try again.';
+            }
+        });
+    }
+
 });
