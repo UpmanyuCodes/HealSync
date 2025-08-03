@@ -1,0 +1,155 @@
+/* --- General & Reset for Form Pages --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #F9FAFB; /* gray-50 */
+    color: #1F2937; /* gray-800 */
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+}
+
+/* --- Form Container Layout --- */
+.form-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+.form-card {
+    width: 100%;
+    max-width: 450px;
+    background-color: white;
+    padding: 3rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border: 1px solid #E5E7EB;
+}
+
+/* --- Form Header --- */
+.form-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0F766E; /* teal-700 */
+    margin-bottom: 1.5rem;
+}
+
+.logo-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-right: 0.5rem;
+    color: #14B8A6; /* teal-500 */
+}
+
+.form-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.form-subtitle {
+    text-align: center;
+    color: #4B5563; /* gray-600 */
+    margin-bottom: 2rem;
+}
+
+/* --- Form Content --- */
+.form-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.85rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.5rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #14B8A6;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
+}
+
+/* --- Extra Form Links --- */
+.form-extra-link {
+    text-align: right;
+    font-size: 0.875rem;
+    margin-top: -0.5rem; /* Pulls the link up closer to the password field */
+    margin-bottom: 0.5rem;
+}
+
+.form-extra-link a {
+    color: #14B8A6;
+    font-weight: 500;
+}
+
+.form-extra-link a:hover {
+    text-decoration: underline;
+}
+
+
+/* --- Buttons --- */
+.btn {
+    padding: 0.85rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background-color: #14B8A6; /* teal-500 */
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0D9488; /* teal-600 */
+}
+
+/* --- Form Footer --- */
+.form-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: #4B5563;
+}
+
+.form-footer a {
+    color: #14B8A6;
+    font-weight: 600;
+}
+
+.form-footer a:hover {
+    text-decoration: underline;
+}
