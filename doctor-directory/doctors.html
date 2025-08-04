@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Doctors - HealSync</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- This links to your main styles for the header and footer -->
+    <link rel="stylesheet" href="/CSS/index.css"> 
+    
+    <!-- This links to the new styles for the doctor directory -->
+    <link rel="stylesheet" href="directory.css">
+</head>
+<body>
+
+    <!-- Main Site Header -->
+    <header class="site-header">
+        <nav class="container nav-container">
+            <a href="index.html" class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" class="logo-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg>
+                HealSync
+            </a>
+            <div class="desktop-menu">
+                <a href="index.html#features">Features</a>
+                <a href="doctors.html">Find a Doctor</a>
+                <a href="index.html#caregiver-view">Caregiver View</a>
+            </div>
+            <div class="desktop-menu-actions">
+                 <a href="login.html" class="btn btn-secondary">Patient Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="directory-main">
+        <section class="directory-header">
+            <div class="container">
+                <h1>Meet Our Doctors</h1>
+                <p>Find the right specialist to guide you on your recovery journey.</p>
+            </div>
+        </section>
+
+        <section class="directory-content">
+            <div class="container">
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <label for="specialty-filter">Filter by Specialty:</label>
+                    <select id="specialty-filter">
+                        <option value="all">All Specialties</option>
+                        <option value="therapist">Therapist</option>
+                        <option value="neurologist">Neurologist</option>
+                        <option value="cardiologist">Cardiologist</option>
+                    </select>
+                </div>
+
+                <!-- Doctor Grid -->
+                <div class="doctor-grid">
+                    <!-- Doctor Card 1 -->
+                    <div class="doctor-card" data-specialty="therapist">
+                        <img src="https://placehold.co/300x300/E0F2F1/0F766E?text=Dr.+Priya" alt="Dr. Priya Sharma">
+                        <div class="doctor-card-content">
+                            <h3>Dr. Priya Sharma</h3>
+                            <p>Therapist</p>
+                            <a href="doctor-profile.html" class="btn btn-primary">View Profile</a>
+                        </div>
+                    </div>
+                    <!-- Doctor Card 2 -->
+                    <div class="doctor-card" data-specialty="neurologist">
+                        <img src="https://placehold.co/300x300/E0F2F1/0F766E?text=Dr.+Rohan" alt="Dr. Rohan Verma">
+                        <div class="doctor-card-content">
+                            <h3>Dr. Rohan Verma</h3>
+                            <p>Neurologist</p>
+                            <a href="doctor-profile.html" class="btn btn-primary">View Profile</a>
+                        </div>
+                    </div>
+                    <!-- Doctor Card 3 -->
+                    <div class="doctor-card" data-specialty="cardiologist">
+                        <img src="https://placehold.co/300x300/E0F2F1/0F766E?text=Dr.+Anjali" alt="Dr. Anjali Desai">
+                        <div class="doctor-card-content">
+                            <h3>Dr. Anjali Desai</h3>
+                            <p>Cardiologist</p>
+                            <a href="doctor-profile.html" class="btn btn-primary">View Profile</a>
+                        </div>
+                    </div>
+                     <!-- Doctor Card 4 -->
+                    <div class="doctor-card" data-specialty="therapist">
+                        <img src="https://placehold.co/300x300/E0F2F1/0F766E?text=Dr.+Vikram" alt="Dr. Vikram Singh">
+                        <div class="doctor-card-content">
+                            <h3>Dr. Vikram Singh</h3>
+                            <p>Therapist</p>
+                            <a href="doctor-profile.html" class="btn btn-primary">View Profile</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>
