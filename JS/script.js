@@ -17,10 +17,35 @@ emojis.forEach((emoji) => {
   });
 });
 
-submitBtn.addEventListener("click", () => {
+submitBtn.addEventListener("click", async () => {
   if (!selectedMood) {
     alert("Please select your mood emoji before submitting.");
     return;
   }
-  alert(`Mood: ${selectedMood}\nPain Level: ${slider.value}`);
+
+  const moodData = {
+    mood: selectedMood,
+    painLevel: slider.value
+  };
+
+  try {
+    const response = await fetch("https://healsync-backend-d788.onrender.com/v1/healsync/emotion/track", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(moodData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`Server responded with status ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log("API Response:", result);
+    alert("Mood and pain level submitted successfully!");
+  } catch (error) {
+    console.error("Submission error:", error);
+    alert("Failed to submit. Please try again later.");
+  }
 });
