@@ -1,0 +1,282 @@
+HEALSYNC API ENDPOINTS SPREADSHEET
+=================================
+
+Base URL: https://healsync-backend-d788.onrender.com
+
+| # | Controller | HTTP Method | Endpoint | Full URL | Description | Request Body | Response |
+|---|------------|-------------|----------|----------|-------------|--------------|----------|
+| 1 | Patient Auth | POST | /v1/healsync/patient/login | https://healsync-backend-d788.onrender.com/v1/healsync/patient/login | Patient login authentication | PatientDto (email, password) | PatientDto or 401 error |
+| 2 | Patient | POST | /v1/healsync/patient/add | https://healsync-backend-d788.onrender.com/v1/healsync/patient/add | Add new patient registration | PatientDto | PatientDto |
+| 3 | Doctor | POST | /v1/healsync/doctor/add | https://healsync-backend-d788.onrender.com/v1/healsync/doctor/add | Add new doctor | DoctorDto | DoctorDto |
+| 4 | Doctor | GET | /v1/healsync/doctor/{doctorId} | https://healsync-backend-d788.onrender.com/v1/healsync/doctor/{doctorId} | Get doctor by ID | None | DoctorDto or 404 |
+| 5 | Doctor | PUT | /v1/healsync/doctor/{doctorId} | https://healsync-backend-d788.onrender.com/v1/healsync/doctor/{doctorId} | Update doctor details | DoctorDto | DoctorDto or 404 |
+| 6 | Doctor | DELETE | /v1/healsync/doctor/{doctorId} | https://healsync-backend-d788.onrender.com/v1/healsync/doctor/{doctorId} | Delete doctor | None | Success message or 404 |
+| 7 | Doctor | GET | /v1/healsync/doctor/public-profiles | https://healsync-backend-d788.onrender.com/v1/healsync/doctor/public-profiles | Get all doctors public profiles | None | List<DoctorDto> |
+| 8 | Appointment | POST | /v1/healsync/book/appointment | https://healsync-backend-d788.onrender.com/v1/healsync/book/appointment | Book appointment | Query params: speaciality, startDateTime, endDateTime, patientId | AppointmentResponseDto or 404 |
+| 9 | Appointment | POST | /v1/healsync/book/cancel | https://healsync-backend-d788.onrender.com/v1/healsync/book/cancel | Cancel appointment | Query params: appointmentId, doctorId | Success message or 404 |
+| 10 | Treatment Plan | POST | /api/patients/{patientId}/treatment-plans | https://healsync-backend-d788.onrender.com/api/patients/{patientId}/treatment-plans | Create treatment plan | TreatmentPlanRequestDto | TreatmentPlanResponseDto or error |
+| 11 | Emotion Tracker | POST | /v1/healsync/emotion/track | https://healsync-backend-d788.onrender.com/v1/healsync/emotion/track | Track patient emotion | EmotionTrackerDto | EmotionTrackerDto |
+| 12 | Emotion Tracker | GET | /v1/healsync/emotion/patient/{patientId} | https://healsync-backend-d788.onrender.com/v1/healsync/emotion/patient/{patientId} | Get emotions by patient ID | None | List<EmotionTrackerDto> |
+| 13 | Medicine | POST | /v1/healsync/medicine/add | https://healsync-backend-d788.onrender.com/v1/healsync/medicine/add | Add new medicine | MedicineDto | MedicineDto |
+| 14 | Medicine | GET | /v1/healsync/medicine/all | https://healsync-backend-d788.onrender.com/v1/healsync/medicine/all | Get all medicines | None | List<MedicineDto> |
+| 15 | Medicine | GET | /v1/healsync/medicine/{medicineId} | https://healsync-backend-d788.onrender.com/v1/healsync/medicine/{medicineId} | Get medicine by ID | None | MedicineDto or 404 |
+| 16 | Medicine | PUT | /v1/healsync/medicine/update/{medicineId} | https://healsync-backend-d788.onrender.com/v1/healsync/medicine/update/{medicineId} | Update medicine | MedicineDto | MedicineDto or 404 |
+| 17 | Medicine | DELETE | /v1/healsync/medicine/delete/{medicineId} | https://healsync-backend-d788.onrender.com/v1/healsync/medicine/delete/{medicineId} | Delete medicine | None | Success message or 404 |
+| 18 | Disease | GET | /v1/healsync/disease/details | https://healsync-backend-d788.onrender.com/v1/healsync/disease/details | Get disease details | Query params: id OR name | DiseaseDto or 404 |
+| 19 | Disease | GET | /v1/healsync/disease/all | https://healsync-backend-d788.onrender.com/v1/healsync/disease/all | Get all diseases | None | List<DiseaseDto> |
+| 20 | Disease | POST | /v1/healsync/disease/add | https://healsync-backend-d788.onrender.com/v1/healsync/disease/add | Add new disease | DiseaseDto | DiseaseDto |
+| 21 | Disease | PUT | /v1/healsync/disease/update/{diseaseId} | https://healsync-backend-d788.onrender.com/v1/healsync/disease/update/{diseaseId} | Update disease | DiseaseDto | DiseaseDto or 404 |
+| 22 | Disease | DELETE | /v1/healsync/disease/delete/{diseaseId} | https://healsync-backend-d788.onrender.com/v1/healsync/disease/delete/{diseaseId} | Delete disease | None | Success message or 404 |
+
+DETAILED API DOCUMENTATION
+==========================
+
+PATIENT AUTHENTICATION APIS
+============================
+
+1. Patient Login
+   - Method: POST
+   - URL: https://healsync-backend-d788.onrender.com/v1/healsync/patient/login
+   - Headers: Content-Type: application/json
+   - Request Body:
+     {
+       "email": "patient@example.com",
+       "password": "password123"
+     }
+   - Response (Success):
+     {
+       "patientId": 1,
+       "patientName": "John Doe",
+       "patientAge": 30,
+       "gender": "Male",
+       "mobileNo": "1234567890",
+       "email": "patient@example.com",
+       "treatmentPlanIds": [1, 2]
+     }
+   - Response (Error): 401 "Invalid email or password"
+
+PATIENT MANAGEMENT APIS
+=======================
+
+2. Add Patient (Registration)
+   - Method: POST
+   - URL: https://healsync-backend-d788.onrender.com/v1/healsync/patient/add
+   - Headers: Content-Type: application/json
+   - Request Body:
+     {
+       "patientName": "John Doe",
+       "patientAge": 30,
+       "gender": "Male",
+       "mobileNo": "1234567890",
+       "email": "patient@example.com",
+       "password": "password123"
+     }
+   - Response: PatientDto with generated patientId
+
+DOCTOR MANAGEMENT APIS
+======================
+
+3. Add Doctor
+   - Method: POST
+   - URL: https://healsync-backend-d788.onrender.com/v1/healsync/doctor/add
+   - Request Body:
+     {
+       "name": "Dr. Smith",
+       "speaciality": "Cardiology",
+       "email": "doctor@example.com",
+       "mobileNo": "9876543210",
+       "bio": "Experienced cardiologist",
+       "shift": "Morning",
+       "password": "doctorpass"
+     }
+
+4. Get Doctor by ID
+   - Method: GET
+   - URL: https://healsync-backend-d788.onrender.com/v1/healsync/doctor/{doctorId}
+   - Example: https://healsync-backend-d788.onrender.com/v1/healsync/doctor/1
+
+5. Update Doctor
+   - Method: PUT
+   - URL: https://healsync-backend-d788.onrender.com/v1/healsync/doctor/{doctorId}
+   - Request Body: DoctorDto
+
+6. Delete Doctor
+   - Method: DELETE
+   - URL: https://healsync-backend-d788.onrender.com/v1/healsync/doctor/{doctorId}
+
+7. Get All Doctors Public Profiles
+   - Method: GET
+   - URL: https://healsync-backend-d788.onrender.com/v1/healsync/doctor/public-profiles
+
+APPOINTMENT APIS
+================
+
+8. Book Appointment
+   - Method: POST
+   - URL: https://healsync-backend-d788.onrender.com/v1/healsync/book/appointment
+   - Query Parameters:
+     - speaciality: String (e.g., "Cardiology")
+     - startDateTime: String (ISO format: "2024-08-02T10:00:00")
+     - endDateTime: String (ISO format: "2024-08-02T11:00:00")
+     - patientId: Integer
+
+9. Cancel Appointment
+   - Method: POST
+   - URL: https://healsync-backend-d788.onrender.com/v1/healsync/book/cancel
+   - Query Parameters:
+     - appointmentId: Integer
+     - doctorId: Integer
+
+TREATMENT PLAN APIS
+===================
+
+10. Create Treatment Plan
+    - Method: POST
+    - URL: https://healsync-backend-d788.onrender.com/api/patients/{patientId}/treatment-plans
+    - Request Body:
+      {
+        "doctorId": 1,
+        "diseaseId": 1,
+        "status": "Active",
+        "notes": "Take medicine twice daily",
+        "medicines": [
+          {
+            "medicineId": 1,
+            "dosage": "500mg",
+            "timing": "Morning and Evening"
+          }
+        ]
+      }
+
+EMOTION TRACKING APIS
+=====================
+
+11. Track Emotion
+    - Method: POST
+    - URL: https://healsync-backend-d788.onrender.com/v1/healsync/emotion/track
+    - Request Body:
+      {
+        "patientId": 1,
+        "emotion": "Happy",
+        "intensity": 8,
+        "notes": "Feeling much better today",
+        "date": "2024-08-02"
+      }
+
+12. Get Patient Emotions
+    - Method: GET
+    - URL: https://healsync-backend-d788.onrender.com/v1/healsync/emotion/patient/{patientId}
+
+MEDICINE MANAGEMENT APIS
+========================
+
+13. Add Medicine
+    - Method: POST
+    - URL: https://healsync-backend-d788.onrender.com/v1/healsync/medicine/add
+    - Request Body:
+      {
+        "name": "Paracetamol",
+        "description": "Pain reliever",
+        "sideEffects": "Nausea, dizziness",
+        "dosage": "500mg",
+        "manufacturer": "ABC Pharma"
+      }
+
+14. Get All Medicines
+    - Method: GET
+    - URL: https://healsync-backend-d788.onrender.com/v1/healsync/medicine/all
+
+15. Get Medicine by ID
+    - Method: GET
+    - URL: https://healsync-backend-d788.onrender.com/v1/healsync/medicine/{medicineId}
+
+16. Update Medicine
+    - Method: PUT
+    - URL: https://healsync-backend-d788.onrender.com/v1/healsync/medicine/update/{medicineId}
+
+17. Delete Medicine
+    - Method: DELETE
+    - URL: https://healsync-backend-d788.onrender.com/v1/healsync/medicine/delete/{medicineId}
+
+DISEASE MANAGEMENT APIS
+=======================
+
+18. Get Disease Details
+    - Method: GET
+    - URL: https://healsync-backend-d788.onrender.com/v1/healsync/disease/details
+    - Query Parameters (either one):
+      - id: Integer
+      - name: String
+
+19. Get All Diseases
+    - Method: GET
+    - URL: https://healsync-backend-d788.onrender.com/v1/healsync/disease/all
+
+20. Add Disease
+    - Method: POST
+    - URL: https://healsync-backend-d788.onrender.com/v1/healsync/disease/add
+    - Request Body:
+      {
+        "name": "Hypertension",
+        "description": "High blood pressure",
+        "symptoms": "Headache, dizziness",
+        "category": "Cardiovascular"
+      }
+
+21. Update Disease
+    - Method: PUT
+    - URL: https://healsync-backend-d788.onrender.com/v1/healsync/disease/update/{diseaseId}
+
+22. Delete Disease
+    - Method: DELETE
+    - URL: https://healsync-backend-d788.onrender.com/v1/healsync/disease/delete/{diseaseId}
+
+POSTMAN COLLECTION FORMAT
+=========================
+
+You can import this into Postman by creating a new collection and adding these requests:
+
+{
+  "info": {
+    "name": "HealSync API Collection",
+    "description": "Complete API collection for HealSync Healthcare Management System"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://healsync-backend-d788.onrender.com"
+    }
+  ],
+  "item": [
+    {
+      "name": "Patient Login",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "url": "{{base_url}}/v1/healsync/patient/login",
+        "body": {
+          "raw": "{\"email\":\"test@example.com\",\"password\":\"password123\"}"
+        }
+      }
+    }
+    // ... (add all other endpoints)
+  ]
+}
+
+TESTING NOTES
+=============
+
+1. Most APIs require JSON content type header
+2. Path parameters should be replaced with actual IDs
+3. Query parameters are appended to URL with ? and &
+4. Date formats should be in ISO format (YYYY-MM-DDTHH:mm:ss)
+5. All APIs return JSON responses
+6. Error responses typically include HTTP status codes and error messages
+
+HTTP STATUS CODES USED
+======================
+- 200 OK: Successful operation
+- 400 Bad Request: Invalid request data
+- 401 Unauthorized: Authentication failed
+- 404 Not Found: Resource not found
+- 500 Internal Server Error: Server error

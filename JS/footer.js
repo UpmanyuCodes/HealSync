@@ -5,8 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileMenu = document.getElementById('mobile-menu');
     if (mobileMenuButton && mobileMenu) {
         mobileMenuButton.addEventListener('click', () => {
-            // Your existing mobile menu logic here
-            // For example: mobileMenu.classList.toggle('visible');
+            mobileMenu.classList.toggle('visible');
         });
     }
 
@@ -81,12 +80,33 @@ document.addEventListener('DOMContentLoaded', () => {
             addMessage(userInput, 'user');
             chatInput.value = '';
 
-            const loadingIndicator = addMessage('', 'ai loading');
-            const aiResponse = await getAiResponse(userInput);
+            // Add typing indicator
+            const loadingIndicator = addMessage('AI is thinking...', 'ai loading');
             
-            loadingIndicator.remove();
-            addMessage(aiResponse, 'ai');
-            speak(aiResponse); // Speak the AI's response
+            // Start timer to show if it's taking too long
+            const startTime = Date.now();
+            const slowWarning = setTimeout(() => {
+                if (loadingIndicator.parentNode) {
+                    loadingIndicator.textContent = 'Still processing... This may take a moment.';
+                }
+            }, 3000);
+            
+            try {
+                const aiResponse = await getAiResponse(userInput);
+                clearTimeout(slowWarning);
+                loadingIndicator.remove();
+                addMessage(aiResponse, 'ai');
+                
+                // Only speak if response is ready quickly (under 5 seconds)
+                const responseTime = Date.now() - startTime;
+                if (responseTime < 5000) {
+                    speak(aiResponse);
+                }
+            } catch (error) {
+                clearTimeout(slowWarning);
+                loadingIndicator.remove();
+                addMessage("Sorry, something went wrong. Please try again.", 'ai');
+            }
         });
     }
 
@@ -113,35 +133,65 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function getAiResponse(prompt) {
-        const apiKey = ""; // The environment handles the API key
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+        const apiKey = "API_KEY";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
-        const systemInstruction = {
-            role: "system",
-            parts: [{ text: "You are a helpful AI assistant for HealSync, a healthcare platform. Your role is to answer general questions about the platform's features. Do not provide medical advice. If asked for medical advice, politely decline and recommend the user consult a healthcare professional." }]
+        // Shorter, more focused prompt for faster responses
+        const enhancedPrompt = `You are HealSync AI Assistant for a healthcare platform. Be concise and helpful.
+
+For symptoms: Suggest common conditions but always say "Consult a doctor for proper diagnosis."
+For navigation: Guide users to Patient Dashboard, Doctor Dashboard, or relevant features.
+For emergencies: Recommend immediate medical care.
+
+User: ${prompt}`;
+
+        const payload = {
+            contents: [{
+                parts: [{
+                    text: enhancedPrompt
+                }]
+            }],
+            generationConfig: {
+                maxOutputTokens: 150,  // Limit response length for speed
+                temperature: 0.7,      // Balanced creativity/consistency
+                topP: 0.8,
+                topK: 40
+            }
         };
 
-        const userMessage = { role: "user", parts: [{ text: prompt }] };
-        const payload = { contents: [systemInstruction, userMessage] };
-
         try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+            
             const response = await fetch(apiUrl, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload),
+                signal: controller.signal
             });
+            
+            clearTimeout(timeoutId);
+            
             if (!response.ok) {
+                console.error('API Response Error:', response.status, response.statusText);
                 return "Sorry, I'm having trouble connecting. Please try again later.";
             }
+            
             const result = await response.json();
+            
             if (result.candidates && result.candidates[0]?.content?.parts[0]) {
                 return result.candidates[0].content.parts[0].text;
             } else {
-                return "I'm sorry, I couldn't generate a response.";
+                return "I'm sorry, I couldn't generate a response. Please try again.";
             }
         } catch (error) {
+            if (error.name === 'AbortError') {
+                return "Response timed out. Please try a shorter question.";
+            }
             console.error("AI API Error:", error);
-            return "Sorry, an error occurred.";
+            return "Sorry, an error occurred while processing your request.";
         }
     }
 });

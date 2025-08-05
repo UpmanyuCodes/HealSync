@@ -1,0 +1,976 @@
+HEALSYNC API DOCUMENTATION WITH EXAMPLES
+=========================================
+
+Base URL: https://healsync-backend-d788.onrender.com
+
+==========================================
+PATIENT AUTHENTICATION & MANAGEMENT APIs
+==========================================
+
+1. PATIENT LOGIN
+   Method: POST
+   URL: https://healsync-backend-d788.onrender.com/v1/healsync/patient/login
+   Headers: Content-Type: application/json
+   
+   REQUEST BODY:
+   {
+     "email": "john.doe@example.com",
+     "password": "securePassword123"
+   }
+   
+   SUCCESS RESPONSE (200):
+   {
+     "patientId": 1,
+     "patientName": "John Doe",
+     "patientAge": 30,
+     "gender": "Male",
+     "mobileNo": "9876543210",
+     "email": "john.doe@example.com",
+     "password": null,
+     "treatmentPlanIds": [1, 3, 5]
+   }
+   
+   ERROR RESPONSE (401):
+   "Invalid email or password"
+
+2. PATIENT REGISTRATION
+   Method: POST
+   URL: https://healsync-backend-d788.onrender.com/v1/healsync/patient/add
+   Headers: Content-Type: application/json
+   
+   REQUEST BODY:
+   {
+     "patientName": "Sarah Johnson",
+     "patientAge": 28,
+     "gender": "Female",
+     "mobileNo": "9876543210",
+     "email": "sarah.johnson@example.com",
+     "password": "mySecurePass456"
+   }
+   
+   SUCCESS RESPONSE (200):
+   {
+     "patientId": 2,
+     "patientName": "Sarah Johnson",
+     "patientAge": 28,
+     "gender": "Female",
+     "mobileNo": "9876543210",
+     "email": "sarah.johnson@example.com",
+     "password": null,
+     "treatmentPlanIds": []
+   }
+
+==========================================
+DOCTOR MANAGEMENT APIs
+==========================================
+
+3. ADD DOCTOR
+   Method: POST
+   URL: https://healsync-backend-d788.onrender.com/v1/healsync/doctor/add
+   Headers: Content-Type: application/json
+   
+   REQUEST BODY:
+   {
+     "name": "Dr. John Smith",
+     "speaciality": "Cardiology",
+     "email": "dr.johnsmith@hospital.com",
+     "mobileNo": "9123456789",
+     "bio": "Experienced cardiologist with 15 years of practice. Specialized in heart surgeries and cardiac care.",
+     "shift": "Morning",
+     "password": "doctorSecurePass789"
+   }
+   
+   SUCCESS RESPONSE (200):
+   {
+     "doctorId": 1,
+     "name": "Dr. John Smith",
+     "speaciality": "Cardiology",
+     "email": "dr.johnsmith@hospital.com",
+     "mobileNo": "9123456789",
+     "bio": "Experienced cardiologist with 15 years of practice. Specialized in heart surgeries and cardiac care.",
+     "shift": "Morning",
+     "password": null
+   }
+
+4. GET DOCTOR BY ID
+   Method: GET
+   URL: https://healsync-backend-d788.onrender.com/v1/healsync/doctor/1
+   Headers: None required
+   
+   SUCCESS RESPONSE (200):
+   {
+     "doctorId": 1,
+     "name": "Dr. John Smith",
+     "speaciality": "Cardiology",
+     "email": "dr.johnsmith@hospital.com",
+     "mobileNo": "9123456789",
+     "bio": "Experienced cardiologist with 15 years of practice. Specialized in heart surgeries and cardiac care.",
+     "shift": "Morning",
+     "password": null
+   }
+   
+   ERROR RESPONSE (404):
+   "Doctor not found"
+
+5. UPDATE DOCTOR
+   Method: PUT
+   URL: https://healsync-backend-d788.onrender.com/v1/healsync/doctor/1
+   Headers: Content-Type: application/json
+   
+   REQUEST BODY:
+   {
+     "name": "Dr. John Smith",
+     "speaciality": "Cardiology",
+     "email": "dr.johnsmith@hospital.com",
+     "mobileNo": "9123456789",
+     "bio": "Senior cardiologist with 20 years of practice. Head of Cardiac Department.",
+     "shift": "Evening",
+     "password": "newSecurePassword"
+   }
+   
+   SUCCESS RESPONSE (200):
+   {
+     "doctorId": 1,
+     "name": "Dr. John Smith",
+     "speaciality": "Cardiology",
+     "email": "dr.johnsmith@hospital.com",
+     "mobileNo": "9123456789",
+     "bio": "Senior cardiologist with 20 years of practice. Head of Cardiac Department.",
+     "shift": "Evening",
+     "password": null
+   }
+
+6. DELETE DOCTOR
+   Method: DELETE
+   URL: https://healsync-backend-d788.onrender.com/v1/healsync/doctor/1
+   Headers: None required
+   
+   SUCCESS RESPONSE (200):
+   "Doctor deleted successfully"
+   
+   ERROR RESPONSE (404):
+   "Doctor not found"
+
+7. GET ALL DOCTORS PUBLIC PROFILES
+   Method: GET
+   URL: https://healsync-backend-d788.onrender.com/v1/healsync/doctor/public-profiles
+   Headers: None required
+   
+   SUCCESS RESPONSE (200):
+   [
+     {
+       "doctorId": 1,
+       "name": "Dr. John Smith",
+       "speaciality": "Cardiology",
+       "email": "dr.johnsmith@hospital.com",
+       "mobileNo": "9123456789",
+       "bio": "Experienced cardiologist with 15 years of practice.",
+       "shift": "Morning",
+       "password": null
+     },
+     {
+       "doctorId": 2,
+       "name": "Dr. Emily Brown",
+       "speaciality": "Neurology",
+       "email": "dr.emilybrown@hospital.com",
+       "mobileNo": "9123456788",
+       "bio": "Neurologist specializing in brain disorders and treatments.",
+       "shift": "Evening",
+       "password": null
+     }
+   ]
+
+==========================================
+SCHEDULE & AVAILABILITY MANAGEMENT APIs
+==========================================
+
+8. SET DOCTOR SCHEDULE
+   Method: POST
+   URL: https://healsync-backend-d788.onrender.com/v1/healsync/doctor/1/schedule
+   Headers: Content-Type: application/json
+   
+   REQUEST BODY:
+   {
+     "shifts": [
+       {
+         "dayOfWeek": "MONDAY",
+         "shiftType": "DAY",
+         "startTime": "09:00:00",
+         "endTime": "17:00:00"
+       },
+       {
+         "dayOfWeek": "TUESDAY",
+         "shiftType": "DAY",
+         "startTime": "09:00:00",
+         "endTime": "17:00:00"
+       },
+       {
+         "dayOfWeek": "WEDNESDAY",
+         "shiftType": "NIGHT",
+         "startTime": "18:00:00",
+         "endTime": "06:00:00"
+       },
+       {
+         "dayOfWeek": "FRIDAY",
+         "shiftType": "ON_CALL",
+         "startTime": "00:00:00",
+         "endTime": "23:59:59"
+       }
+     ]
+   }
+   
+   SUCCESS RESPONSE (200):
+   [
+     {
+       "scheduleId": 1,
+       "doctorId": 1,
+       "doctorName": "Dr. John Smith",
+       "dayOfWeek": "MONDAY",
+       "shiftType": "DAY",
+       "startTime": "09:00:00",
+       "endTime": "17:00:00",
+       "isActive": true
+     },
+     {
+       "scheduleId": 2,
+       "doctorId": 1,
+       "doctorName": "Dr. John Smith",
+       "dayOfWeek": "TUESDAY",
+       "shiftType": "DAY",
+       "startTime": "09:00:00",
+       "endTime": "17:00:00",
+       "isActive": true
+     }
+   ]
+   
+   ERROR RESPONSE (404):
+   "Doctor not found"
+
+9. GET DOCTOR SCHEDULE
+   Method: GET
+   URL: https://healsync-backend-d788.onrender.com/v1/healsync/doctor/1/schedule
+   Headers: None required
+   
+   SUCCESS RESPONSE (200):
+   [
+     {
+       "scheduleId": 1,
+       "doctorId": 1,
+       "doctorName": "Dr. John Smith",
+       "dayOfWeek": "MONDAY",
+       "shiftType": "DAY",
+       "startTime": "09:00:00",
+       "endTime": "17:00:00",
+       "isActive": true
+     },
+     {
+       "scheduleId": 2,
+       "doctorId": 1,
+       "doctorName": "Dr. John Smith",
+       "dayOfWeek": "TUESDAY",
+       "shiftType": "DAY",
+       "startTime": "09:00:00",
+       "endTime": "17:00:00",
+       "isActive": true
+     }
+   ]
+
+10. CREATE AVAILABILITY BLOCK
+    Method: POST
+    URL: https://healsync-backend-d788.onrender.com/v1/healsync/doctor/1/blocks
+    Headers: Content-Type: application/json
+    
+    REQUEST BODY:
+    {
+      "startDateTime": "2024-08-15T12:00:00",
+      "endDateTime": "2024-08-15T13:00:00",
+      "reason": "break",
+      "description": "Lunch break"
+    }
+    
+    SUCCESS RESPONSE (200):
+    {
+      "blockId": 1,
+      "doctorId": 1,
+      "doctorName": "Dr. John Smith",
+      "startDateTime": "2024-08-15T12:00:00",
+      "endDateTime": "2024-08-15T13:00:00",
+      "reason": "break",
+      "description": "Lunch break",
+      "isActive": true
+    }
+    
+    ERROR RESPONSE (404):
+    "Doctor not found"
+
+11. GET DOCTOR BLOCKS
+    Method: GET
+    URL: https://healsync-backend-d788.onrender.com/v1/healsync/doctor/1/blocks
+    Headers: None required
+    
+    SUCCESS RESPONSE (200):
+    [
+      {
+        "blockId": 1,
+        "doctorId": 1,
+        "doctorName": "Dr. John Smith",
+        "startDateTime": "2024-08-15T12:00:00",
+        "endDateTime": "2024-08-15T13:00:00",
+        "reason": "break",
+        "description": "Lunch break",
+        "isActive": true
+      },
+      {
+        "blockId": 2,
+        "doctorId": 1,
+        "doctorName": "Dr. John Smith",
+        "startDateTime": "2024-08-16T14:00:00",
+        "endDateTime": "2024-08-16T16:00:00",
+        "reason": "out_of_office",
+        "description": "Medical conference",
+        "isActive": true
+      }
+    ]
+
+12. REMOVE AVAILABILITY BLOCK
+    Method: DELETE
+    URL: https://healsync-backend-d788.onrender.com/v1/healsync/doctor/1/blocks/1
+    Headers: None required
+    
+    SUCCESS RESPONSE (200):
+    "Block removed successfully"
+    
+    ERROR RESPONSE (404):
+    "Block not found"
+
+==========================================
+USER & DOCTOR DISCOVERY APIs
+==========================================
+
+14. REGISTER PATIENT (Alternative Endpoint)
+    Method: POST
+    URL: https://healsync-backend-d788.onrender.com/api/patients
+    Headers: Content-Type: application/json
+    
+    REQUEST BODY:
+    {
+      "patientName": "Sarah Wilson",
+      "patientAge": 32,
+      "gender": "Female",
+      "mobileNo": "9876543211",
+      "email": "sarah.wilson@example.com",
+      "password": "securePassword456"
+    }
+    
+    SUCCESS RESPONSE (200):
+    {
+      "patientId": 3,
+      "patientName": "Sarah Wilson",
+      "patientAge": 32,
+      "gender": "Female",
+      "mobileNo": "9876543211",
+      "email": "sarah.wilson@example.com",
+      "password": null,
+      "treatmentPlanIds": []
+    }
+
+15. GET ALL DOCTORS (Alternative Endpoint)
+    Method: GET
+    URL: https://healsync-backend-d788.onrender.com/api/doctors
+    Headers: None required
+    
+    SUCCESS RESPONSE (200):
+    [
+      {
+        "doctorId": 1,
+        "name": "Dr. John Smith",
+        "speaciality": "Cardiology",
+        "email": "dr.johnsmith@hospital.com",
+        "mobileNo": "9123456789",
+        "bio": "Experienced cardiologist with 15 years of practice",
+        "shift": "Morning",
+        "password": null
+      },
+      {
+        "doctorId": 2,
+        "name": "Dr. Emily Brown",
+        "speaciality": "Neurology",
+        "email": "dr.emilybrown@hospital.com",
+        "mobileNo": "9123456788",
+        "bio": "Neurologist specializing in brain disorders",
+        "shift": "Evening",
+        "password": null
+      }
+    ]
+
+16. GET DOCTOR BY ID (Alternative Endpoint)
+    Method: GET
+    URL: https://healsync-backend-d788.onrender.com/api/doctors/1
+    Headers: None required
+    
+    SUCCESS RESPONSE (200):
+    {
+      "doctorId": 1,
+      "name": "Dr. John Smith",
+      "speaciality": "Cardiology",
+      "email": "dr.johnsmith@hospital.com",
+      "mobileNo": "9123456789",
+      "bio": "Experienced cardiologist with 15 years of practice",
+      "shift": "Morning",
+      "password": null
+    }
+    
+    ERROR RESPONSE (404):
+    "Doctor not found"
+
+17. GET EMERGENCY SERVICES
+    Method: GET
+    URL: https://healsync-backend-d788.onrender.com/api/emergency-services
+    Headers: None required
+    
+    SUCCESS RESPONSE (200):
+    [
+      {
+        "doctorId": 1,
+        "doctorName": "Dr. John Smith",
+        "speaciality": "Cardiology",
+        "mobileNo": "9123456789",
+        "email": "dr.johnsmith@hospital.com",
+        "currentShift": "ON_CALL",
+        "onCall": true,
+        "availableUntil": "2025-08-04T14:30:00",
+        "location": "Hospital Main Campus",
+        "emergencyType": "General Emergency"
+      },
+      {
+        "doctorId": 3,
+        "doctorName": "Dr. Sarah Johnson",
+        "speaciality": "Emergency Medicine",
+        "mobileNo": "9123456790",
+        "email": "dr.sarahjohnson@hospital.com",
+        "currentShift": "ON_CALL",
+        "onCall": true,
+        "availableUntil": "2025-08-04T20:00:00",
+        "location": "Hospital Main Campus",
+        "emergencyType": "General Emergency"
+      }
+    ]
+
+18. GET EMERGENCY SERVICES BY SPECIALITY
+    Method: GET
+    URL: https://healsync-backend-d788.onrender.com/api/emergency-services/Cardiology
+    Headers: None required
+    
+    SUCCESS RESPONSE (200):
+    [
+      {
+        "doctorId": 1,
+        "doctorName": "Dr. John Smith",
+        "speaciality": "Cardiology",
+        "mobileNo": "9123456789",
+        "email": "dr.johnsmith@hospital.com",
+        "currentShift": "ON_CALL",
+        "onCall": true,
+        "availableUntil": "2025-08-04T14:30:00",
+        "location": "Hospital Main Campus",
+        "emergencyType": "General Emergency"
+      }
+    ]
+
+19. SEARCH DOCTORS BY SPECIALITY
+    Method: GET
+    URL: https://healsync-backend-d788.onrender.com/api/doctors/search?speciality=Cardiology
+    Headers: None required
+    
+    SUCCESS RESPONSE (200):
+    [
+      {
+        "doctorId": 1,
+        "name": "Dr. John Smith",
+        "speaciality": "Cardiology",
+        "email": "dr.johnsmith@hospital.com",
+        "mobileNo": "9123456789",
+        "bio": "Experienced cardiologist with 15 years of practice",
+        "shift": "Morning",
+        "password": null
+      }
+    ]
+
+20. GET AVAILABLE DOCTORS
+    Method: GET
+    URL: https://healsync-backend-d788.onrender.com/api/doctors/available
+    Headers: None required
+    
+    SUCCESS RESPONSE (200):
+    [
+      {
+        "doctorId": 1,
+        "name": "Dr. John Smith",
+        "speaciality": "Cardiology",
+        "email": "dr.johnsmith@hospital.com",
+        "mobileNo": "9123456789",
+        "bio": "Experienced cardiologist with 15 years of practice",
+        "shift": "Morning",
+        "password": null
+      }
+    ]
+
+==========================================
+APPOINTMENT MANAGEMENT APIs
+==========================================
+
+21. BOOK APPOINTMENT
+   Method: POST
+   URL: https://healsync-backend-d788.onrender.com/v1/healsync/book/appointment?speaciality=Cardiology&startDateTime=2024-08-15T10:00:00&endDateTime=2024-08-15T11:00:00&patientId=1
+   Headers: None required
+   
+   QUERY PARAMETERS:
+   - speaciality: "Cardiology"
+   - startDateTime: "2024-08-15T10:00:00"
+   - endDateTime: "2024-08-15T11:00:00"
+   - patientId: 1
+   
+   SUCCESS RESPONSE (200):
+   {
+     "appointmentId": 1,
+     "doctorId": 1,
+     "doctorName": "Dr. John Smith",
+     "patientId": 1,
+     "patientName": "John Doe",
+     "date": "2024-08-15",
+     "startTime": "10:00:00",
+     "endTime": "11:00:00",
+     "status": "SCHEDULED"
+   }
+   
+   ERROR RESPONSE (404):
+   "No doctor available for the given speaciality and time range."
+
+22. CANCEL APPOINTMENT
+   Method: POST
+   URL: https://healsync-backend-d788.onrender.com/v1/healsync/book/cancel?appointmentId=1&doctorId=1
+   Headers: None required
+   
+   QUERY PARAMETERS:
+   - appointmentId: 1
+   - doctorId: 1
+   
+   SUCCESS RESPONSE (200):
+   "Appointment cancelled successfully."
+   
+   ERROR RESPONSE (404):
+   "Appointment not found or doctor not authorized."
+
+==========================================
+TREATMENT PLAN APIs
+==========================================
+
+23. CREATE TREATMENT PLAN
+    Method: POST
+    URL: https://healsync-backend-d788.onrender.com/api/patients/1/treatment-plans
+    Headers: Content-Type: application/json
+    
+    REQUEST BODY:
+    {
+      "doctorId": 1,
+      "diseaseId": 1,
+      "status": "Active",
+      "notes": "Patient should take prescribed medications regularly. Follow up after 2 weeks. Avoid heavy physical activities.",
+      "medicines": [
+        {
+          "medicineId": 1,
+          "dosage": "500mg",
+          "timing": "Morning and Evening after meals"
+        },
+        {
+          "medicineId": 2,
+          "dosage": "250mg",
+          "timing": "Once daily before breakfast"
+        }
+      ]
+    }
+    
+    SUCCESS RESPONSE (200):
+    {
+      "treatmentId": 1,
+      "patientId": 1,
+      "doctorId": 1,
+      "diseaseId": 1,
+      "status": "Active",
+      "startDate": "2024-08-02",
+      "notes": "Patient should take prescribed medications regularly. Follow up after 2 weeks. Avoid heavy physical activities.",
+      "medicines": [
+        {
+          "treatmentMedID": 1,
+          "medicineName": "Paracetamol",
+          "dosage": "500mg",
+          "timing": "Morning and Evening after meals"
+        },
+        {
+          "treatmentMedID": 2,
+          "medicineName": "Aspirin",
+          "dosage": "250mg",
+          "timing": "Once daily before breakfast"
+        }
+      ]
+    }
+
+==========================================
+EMOTION TRACKING APIs
+==========================================
+
+24. TRACK EMOTION
+    Method: POST
+    URL: https://healsync-backend-d788.onrender.com/v1/healsync/emotion/track
+    Headers: Content-Type: application/json
+    
+    REQUEST BODY:
+    {
+      "patientId": 1,
+      "emotion": "Happy",
+      "painLevel": 3
+    }
+    
+    SUCCESS RESPONSE (200):
+    {
+      "id": 1,
+      "patientId": 1,
+      "emotion": "Happy",
+      "painLevel": 3,
+      "createdAt": "2024-08-02T14:30:00"
+    }
+
+25. GET PATIENT EMOTIONS
+    Method: GET
+    URL: https://healsync-backend-d788.onrender.com/v1/healsync/emotion/patient/1
+    Headers: None required
+    
+    SUCCESS RESPONSE (200):
+    [
+      {
+        "id": 1,
+        "patientId": 1,
+        "emotion": "Happy",
+        "painLevel": 3,
+        "createdAt": "2024-08-02T14:30:00"
+      },
+      {
+        "id": 2,
+        "patientId": 1,
+        "emotion": "Anxious",
+        "painLevel": 6,
+        "createdAt": "2024-08-01T09:15:00"
+      }
+    ]
+
+==========================================
+MEDICINE MANAGEMENT APIs
+==========================================
+
+26. ADD MEDICINE
+    Method: POST
+    URL: https://healsync-backend-d788.onrender.com/v1/healsync/medicine/add
+    Headers: Content-Type: application/json
+    
+    REQUEST BODY:
+    {
+      "name": "Paracetamol",
+      "usage": "Pain relief and fever reduction. Take with food to avoid stomach upset.",
+      "sideEffect": "Nausea, dizziness, skin rash in rare cases. Overdose can cause liver damage."
+    }
+    
+    SUCCESS RESPONSE (200):
+    {
+      "medicineId": 1,
+      "name": "Paracetamol",
+      "usage": "Pain relief and fever reduction. Take with food to avoid stomach upset.",
+      "sideEffect": "Nausea, dizziness, skin rash in rare cases. Overdose can cause liver damage."
+    }
+
+27. GET ALL MEDICINES
+    Method: GET
+    URL: https://healsync-backend-d788.onrender.com/v1/healsync/medicine/all
+    Headers: None required
+    
+    SUCCESS RESPONSE (200):
+    [
+      {
+        "medicineId": 1,
+        "name": "Paracetamol",
+        "usage": "Pain relief and fever reduction. Take with food to avoid stomach upset.",
+        "sideEffect": "Nausea, dizziness, skin rash in rare cases. Overdose can cause liver damage."
+      },
+      {
+        "medicineId": 2,
+        "name": "Aspirin",
+        "usage": "Blood thinner and pain relief. Helps prevent heart attacks.",
+        "sideEffect": "Stomach bleeding, allergic reactions, ringing in ears."
+      }
+    ]
+
+28. GET MEDICINE BY ID
+    Method: GET
+    URL: https://healsync-backend-d788.onrender.com/v1/healsync/medicine/1
+    Headers: None required
+    
+    SUCCESS RESPONSE (200):
+    {
+      "medicineId": 1,
+      "name": "Paracetamol",
+      "usage": "Pain relief and fever reduction. Take with food to avoid stomach upset.",
+      "sideEffect": "Nausea, dizziness, skin rash in rare cases. Overdose can cause liver damage."
+    }
+
+29. UPDATE MEDICINE
+    Method: PUT
+    URL: https://healsync-backend-d788.onrender.com/v1/healsync/medicine/update/1
+    Headers: Content-Type: application/json
+    
+    REQUEST BODY:
+    {
+      "name": "Paracetamol",
+      "usage": "Pain relief and fever reduction. Safe for children and adults. Take with food.",
+      "sideEffect": "Rare side effects include nausea, dizziness, skin rash. Overdose can cause serious liver damage."
+    }
+    
+    SUCCESS RESPONSE (200):
+    {
+      "medicineId": 1,
+      "name": "Paracetamol",
+      "usage": "Pain relief and fever reduction. Safe for children and adults. Take with food.",
+      "sideEffect": "Rare side effects include nausea, dizziness, skin rash. Overdose can cause serious liver damage."
+    }
+
+30. DELETE MEDICINE
+    Method: DELETE
+    URL: https://healsync-backend-d788.onrender.com/v1/healsync/medicine/delete/1
+    Headers: None required
+    
+    SUCCESS RESPONSE (200):
+    "Medicine deleted successfully"
+    
+    ERROR RESPONSE (404):
+    "Medicine not found"
+
+==========================================
+DISEASE MANAGEMENT APIs
+==========================================
+
+31. GET DISEASE DETAILS (by ID)
+    Method: GET
+    URL: https://healsync-backend-d788.onrender.com/v1/healsync/disease/details?id=1
+    Headers: None required
+    
+    SUCCESS RESPONSE (200):
+    {
+      "diseaseId": 1,
+      "name": "Hypertension",
+      "description": "High blood pressure condition that increases risk of heart disease and stroke.",
+      "precaution": "Regular exercise, low sodium diet, stress management, regular blood pressure monitoring."
+    }
+
+32. GET DISEASE DETAILS (by Name)
+    Method: GET
+    URL: https://healsync-backend-d788.onrender.com/v1/healsync/disease/details?name=Diabetes
+    Headers: None required
+    
+    SUCCESS RESPONSE (200):
+    {
+      "diseaseId": 2,
+      "name": "Diabetes",
+      "description": "A metabolic disorder characterized by high blood sugar levels.",
+      "precaution": "Regular blood sugar monitoring, balanced diet, regular exercise, medication compliance."
+    }
+
+33. GET ALL DISEASES
+    Method: GET
+    URL: https://healsync-backend-d788.onrender.com/v1/healsync/disease/all
+    Headers: None required
+    
+    SUCCESS RESPONSE (200):
+    [
+      {
+        "diseaseId": 1,
+        "name": "Hypertension",
+        "description": "High blood pressure condition that increases risk of heart disease and stroke.",
+        "precaution": "Regular exercise, low sodium diet, stress management, regular blood pressure monitoring."
+      },
+      {
+        "diseaseId": 2,
+        "name": "Diabetes",
+        "description": "A metabolic disorder characterized by high blood sugar levels.",
+        "precaution": "Regular blood sugar monitoring, balanced diet, regular exercise, medication compliance."
+      }
+    ]
+
+34. ADD DISEASE
+    Method: POST
+    URL: https://healsync-backend-d788.onrender.com/v1/healsync/disease/add
+    Headers: Content-Type: application/json
+    
+    REQUEST BODY:
+    {
+      "name": "Asthma",
+      "description": "A respiratory condition marked by attacks of spasm in the bronchi, causing difficulty in breathing.",
+      "precaution": "Avoid triggers like smoke and allergens, use prescribed inhalers, regular medical check-ups."
+    }
+    
+    SUCCESS RESPONSE (200):
+    {
+      "diseaseId": 3,
+      "name": "Asthma",
+      "description": "A respiratory condition marked by attacks of spasm in the bronchi, causing difficulty in breathing.",
+      "precaution": "Avoid triggers like smoke and allergens, use prescribed inhalers, regular medical check-ups."
+    }
+
+35. UPDATE DISEASE
+    Method: PUT
+    URL: https://healsync-backend-d788.onrender.com/v1/healsync/disease/update/1
+    Headers: Content-Type: application/json
+    
+    REQUEST BODY:
+    {
+      "name": "Hypertension",
+      "description": "High blood pressure condition that significantly increases risk of heart disease, stroke, and kidney problems.",
+      "precaution": "Daily exercise, low sodium diet, stress management, regular blood pressure monitoring, medication compliance."
+    }
+    
+    SUCCESS RESPONSE (200):
+    {
+      "diseaseId": 1,
+      "name": "Hypertension",
+      "description": "High blood pressure condition that significantly increases risk of heart disease, stroke, and kidney problems.",
+      "precaution": "Daily exercise, low sodium diet, stress management, regular blood pressure monitoring, medication compliance."
+    }
+
+36. DELETE DISEASE
+    Method: DELETE
+    URL: https://healsync-backend-d788.onrender.com/v1/healsync/disease/delete/1
+    Headers: None required
+    
+    SUCCESS RESPONSE (200):
+    "Disease deleted successfully"
+    
+    ERROR RESPONSE (404):
+    "Disease not found"
+
+==========================================
+COMMON ERROR RESPONSES
+==========================================
+
+400 Bad Request:
+{
+  "error": "Invalid request format",
+  "message": "Required fields are missing"
+}
+
+401 Unauthorized:
+"Invalid email or password"
+
+404 Not Found:
+"Resource not found"
+
+500 Internal Server Error:
+{
+  "error": "Internal server error",
+  "message": "Something went wrong on our end"
+}
+
+==========================================
+TESTING TIPS
+==========================================
+
+1. Use tools like Postman, Insomnia, or curl for testing
+2. Always include Content-Type: application/json header for POST/PUT requests
+3. Replace {id} in URLs with actual numeric IDs
+4. Date format should be ISO 8601: "YYYY-MM-DDTHH:mm:ss"
+5. All responses are in JSON format
+6. Phone numbers should be 10 digits
+7. Email addresses must be valid format
+8. Passwords should be strong and secure
+
+==========================================
+SAMPLE CURL COMMANDS
+==========================================
+
+# Patient Login
+curl -X POST https://healsync-backend-d788.onrender.com/v1/healsync/patient/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"john.doe@example.com","password":"securePassword123"}'
+
+# Get All Doctors
+curl -X GET https://healsync-backend-d788.onrender.com/v1/healsync/doctor/public-profiles
+
+# Book Appointment
+curl -X POST "https://healsync-backend-d788.onrender.com/v1/healsync/book/appointment?speaciality=Cardiology&startDateTime=2024-08-15T10:00:00&endDateTime=2024-08-15T11:00:00&patientId=1"
+
+# Add Medicine
+curl -X POST https://healsync-backend-d788.onrender.com/v1/healsync/medicine/add \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Paracetamol","usage":"Pain relief","sideEffect":"Nausea"}'
+
+# Set Doctor Schedule
+curl -X POST https://healsync-backend-d788.onrender.com/v1/healsync/doctor/1/schedule \
+  -H "Content-Type: application/json" \
+  -d '{
+    "shifts": [
+      {
+        "dayOfWeek": "MONDAY",
+        "shiftType": "DAY",
+        "startTime": "09:00:00",
+        "endTime": "17:00:00"
+      },
+      {
+        "dayOfWeek": "TUESDAY",
+        "shiftType": "DAY",
+        "startTime": "09:00:00",
+        "endTime": "17:00:00"
+      }
+    ]
+  }'
+
+# Get Doctor Schedule
+curl -X GET https://healsync-backend-d788.onrender.com/v1/healsync/doctor/1/schedule
+
+# Create Availability Block
+curl -X POST https://healsync-backend-d788.onrender.com/v1/healsync/doctor/1/blocks \
+  -H "Content-Type: application/json" \
+  -d '{
+    "startDateTime": "2024-08-15T12:00:00",
+    "endDateTime": "2024-08-15T13:00:00",
+    "reason": "break",
+    "description": "Lunch break"
+  }'
+
+# Remove Availability Block
+curl -X DELETE https://healsync-backend-d788.onrender.com/v1/healsync/doctor/1/blocks/1
+
+# Register Patient (Alternative Endpoint)
+curl -X POST https://healsync-backend-d788.onrender.com/api/patients \
+  -H "Content-Type: application/json" \
+  -d '{
+    "patientName": "Sarah Wilson",
+    "patientAge": 32,
+    "gender": "Female",
+    "mobileNo": "9876543211",
+    "email": "sarah.wilson@example.com",
+    "password": "securePassword456"
+  }'
+
+# Get All Doctors (Alternative Endpoint)
+curl -X GET https://healsync-backend-d788.onrender.com/api/doctors
+
+# Get Doctor by ID (Alternative Endpoint)
+curl -X GET https://healsync-backend-d788.onrender.com/api/doctors/1
+
+# Get Emergency Services
+curl -X GET https://healsync-backend-d788.onrender.com/api/emergency-services
+
+# Get Emergency Services by Speciality
+curl -X GET https://healsync-backend-d788.onrender.com/api/emergency-services/Cardiology
+
+# Search Doctors by Speciality
+curl -X GET "https://healsync-backend-d788.onrender.com/api/doctors/search?speciality=Cardiology"
+
+# Get Available Doctors
+curl -X GET https://healsync-backend-d788.onrender.com/api/doctors/available
