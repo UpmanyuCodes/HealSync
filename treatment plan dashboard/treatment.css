@@ -1,0 +1,95 @@
+/* --- Table Header --- */
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.table-header h3 {
+    margin-bottom: 0;
+}
+
+/* --- Status Badge --- */
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.status-badge.active {
+    background-color: #D1FAE5; /* green-100 */
+    color: #065F46; /* green-800 */
+}
+
+.status-badge.completed {
+    background-color: #E5E7EB; /* gray-200 */
+    color: #4B5563; /* gray-600 */
+}
+
+/* --- Details Page Grid --- */
+.details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+/* --- Progress Tracking --- */
+.progress-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #F3F4F6;
+}
+.progress-item:last-child {
+    border-bottom: none;
+}
+
+.progress-item label {
+    font-weight: 500;
+}
+
+.progress-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #14B8A6;
+}
+
+/* --- Doctor Notes --- */
+.doctor-notes {
+    background-color: #F9FAFB;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid #14B8A6;
+}
+
+.doctor-notes p {
+    margin-bottom: 1rem;
+    font-style: italic;
+    color: #374151;
+}
+
+.notes-author {
+    font-weight: 600;
+    color: #0F766E;
+}
+
+/* --- Create Form --- */
+.form-section {
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #E5E7EB;
+}
+.form-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.form-section h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    color: #0F766E;
+}

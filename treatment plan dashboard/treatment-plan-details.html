@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan Details - HealSync</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/patient dashboard/dashboard.css">
+    <link rel="stylesheet" href="/treatment plan dashboard/treatment.css">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>HealSync</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="patient-dashboard.html" class="nav-link">Dashboard</a></li>
+                    <li><a href="patient-profile.html" class="nav-link">My Profile</a></li>
+                    <li><a href="treatment-plans.html" class="nav-link active">My Treatment Plan</a></li>
+                    <li><a href="#" class="nav-link">Appointments</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="index.html" class="btn btn-secondary">Logout</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Treatment Plan Details</h1>
+            </header>
+
+            <div class="details-grid">
+                <!-- Plan Information -->
+                <div class="card">
+                    <h3>Plan Information</h3>
+                    <div class="detail-item">
+                        <span class="detail-label">Patient</span>
+                        <span class="detail-value">Ritika</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Condition</span>
+                        <span class="detail-value">Post-Operative Knee Recovery</span>
+                    </div>
+                     <div class="detail-item">
+                        <span class="detail-label">Status</span>
+                        <span class="detail-value"><span class="status-badge active">Active</span></span>
+                    </div>
+                </div>
+              
+                <div class="card">
+                    <h3>Progress Tracking</h3>
+                    <div class="progress-item">
+                        <label for="progress-check1">Week 1: Gentle Motion Exercises</label>
+                        <input type="checkbox" id="progress-check1" checked>
+                    </div>
+                    <div class="progress-item">
+                        <label for="progress-check2">Week 2: Strength Building</label>
+                        <input type="checkbox" id="progress-check2">
+                    </div>
+                </div>
+
+                <div class="card full-width">
+                    <h3>Prescribed Medication</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Medicine</th>
+                                <th>Dosage</th>
+                                <th>Timings</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Ibuprofen</td>
+                                <td>400mg</td>
+                                <td>Twice a day (After meals)</td>
+                            </tr>
+                             <tr>
+                                <td>Calcium+D3</td>
+                                <td>1 tablet</td>
+                                <td>Once a day (Morning)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card full-width">
+                    <h3>Notes from Doctor</h3>
+                    <div class="doctor-notes">
+                        <p>Patient is responding well to the initial phase of treatment. It's important to avoid high-impact activities for the next two weeks. Focus on consistent, gentle exercises. Please report any unusual swelling immediately.</p>
+                        <span class="notes-author">- Dr. Priya Sharma</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

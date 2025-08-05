@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treatment Plans - HealSync</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Reusing dashboard styles for consistency -->
+    <link rel="stylesheet" href="/patient dashboard/dashboard.css">
+    <!-- New styles for treatment plan pages -->
+    <link rel="stylesheet" href="/treatment plan dashboard/treatment.css">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>HealSync</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="patient-dashboard.html" class="nav-link">Dashboard</a></li>
+                    <li><a href="patient-profile.html" class="nav-link">My Profile</a></li>
+                    <li><a href="treatment-plans.html" class="nav-link active">My Treatment Plan</a></li>
+                    <li><a href="#" class="nav-link">Appointments</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="index.html" class="btn btn-secondary">Logout</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Treatment Plans</h1>
+                <p>An overview of your current and past treatment plans.</p>
+            </header>
+
+            <div class="card">
+                <div class="table-header">
+                    <h3>All Plans</h3>
+                    <a href="create-treatment-plan.html" class="btn btn-primary">Create New Plan</a>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Patient Name</th>
+                            <th>Condition</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Ritka</td>
+                            <td>Post-Operative Knee Recovery</td>
+                            <td><span class="status-badge active">Active</span></td>
+                            <td><a href="treatment-plan-details.html" class="btn btn-secondary">View Details</a></td>
+                        </tr>
+                        <tr>
+                            <td>Rohan Verma</td>
+                            <td>Migraine Management</td>
+                            <td><span class="status-badge active">Active</span></td>
+                            <td><a href="treatment-plan-details.html" class="btn btn-secondary">View Details</a></td>
+                        </tr>
+                        <tr>
+                            <td>Anjali Desai</td>
+                            <td>Cardiac Rehabilitation</td>
+                            <td><span class="status-badge completed">Completed</span></td>
+                            <td><a href="treatment-plan-details.html" class="btn btn-secondary">View Details</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
