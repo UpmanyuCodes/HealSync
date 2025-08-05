@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealSync - My Treatment Plans</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="/CSS/index.css">
+    <link rel="stylesheet" href="/CSS/treatment.css">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="container nav-container">
+            <a href="/HTML/index.html" class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" class="logo-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                </svg> 
+                HealSync
+            </a>
+
+            <div class="desktop-menu">
+                <a href="#dashboard">Dashboard</a>
+                <a href="#treatments">My Treatments</a>
+                <a href="#reminders">Reminders</a>
+                <a href="#progress">Progress</a>
+            </div>
+
+            <div class="desktop-menu-actions">
+                 <a href="/HTML/doctor-treatment-dashboard.html" class="btn btn-secondary">Doctor View</a>
+                 <a href="/HTML/index.html" class="btn btn-primary">Logout</a>
+            </div>
+
+            <button id="mobile-menu-button" class="mobile-menu-toggle">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="mobile-menu">
+            <a href="#dashboard">Dashboard</a>
+            <a href="#treatments">My Treatments</a>
+            <a href="#reminders">Reminders</a>
+            <a href="#progress">Progress</a>
+            <hr>
+            <a href="/HTML/doctor-dashboard.html">Doctor View</a>
+            <a href="/HTML/index.html" class="btn btn-primary">Logout</a>
+        </div>
+    </header>
+
+    <main class="treatment-dashboard">
+        <div class="container">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header text-center">
+                <div class="user-type-badge user-type-patient">Patient Dashboard</div>
+                <h1 class="dashboard-title">My Treatment Plans</h1>
+                <p class="dashboard-subtitle">Track your treatment progress and manage your medications</p>
+            </div>
+
+            <!-- Patient Summary Stats -->
+            <div class="treatment-grid stats-grid">
+                <div class="treatment-plan-card stats-card">
+                    <div class="stats-number active" id="active-count">0</div>
+                    <div class="stats-label">Active Treatments</div>
+                </div>
+                <div class="treatment-plan-card stats-card">
+                    <div class="stats-number medicines" id="total-medicines">0</div>
+                    <div class="stats-label">Total Medicines</div>
+                </div>
+                <div class="treatment-plan-card stats-card">
+                    <div class="stats-number completed" id="completed-count">0</div>
+                    <div class="stats-label">Completed Plans</div>
+                </div>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-container">
+                <div class="filter-tabs-wrapper">
+                    <button class="filter-tab active" data-filter="all">All Treatments</button>
+                    <button class="filter-tab" data-filter="active">Active</button>
+                    <button class="filter-tab" data-filter="completed">Completed</button>
+                    <button class="filter-tab" data-filter="paused">Paused</button>
+                </div>
+            </div>
+
+            <!-- Treatment Plans Grid -->
+            <div id="treatments-container">
+                <div id="treatments-grid" class="treatment-grid">
+                    <!-- Treatment plans will be loaded here -->
+                </div>
+
+                <!-- Loading State -->
+                <div id="loading-state" class="loading-state">
+                    <div class="treatment-grid">
+                        <div class="treatment-card-skeleton loading-skeleton"></div>
+                        <div class="treatment-card-skeleton loading-skeleton"></div>
+                        <div class="treatment-card-skeleton loading-skeleton"></div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="empty-state">
+                    <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <h3 class="empty-state-title">No Treatment Plans Found</h3>
+                    <p class="empty-state-description">You don't have any treatment plans yet. When your doctor creates a treatment plan for you, it will appear here.</p>
+                    <a href="/HTML/index.html" class="btn btn-primary">Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Treatment Details Modal -->
+    <div id="treatment-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modal-title" class="modal-title">Treatment Plan Details</h3>
+                <button id="close-modal-btn" class="modal-close-btn">&times;</button>
+            </div>
+            <div id="modal-body" class="modal-body">
+                <div id="modal-loader" class="modal-loader">
+                    <div class="spinner"></div>
+                </div>
+                <div id="modal-content"></div>
+            </div>
+            <div class="modal-footer">
+                <p><strong>Important:</strong> Always follow your doctor's instructions. Contact your healthcare provider if you have any questions or concerns.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medicine Reminder Modal -->
+    <div id="reminder-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Set Medicine Reminders</h3>
+                <button class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="reminder-content">
+                    <p class="reminder-description">Set up reminders for your medications to help you stay on track with your treatment.</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Reminder Times</label>
+                        <div class="reminder-times">
+                            <input type="time" class="form-input reminder-time-input" value="08:00">
+                            <input type="time" class="form-input reminder-time-input" value="14:00">
+                            <input type="time" class="form-input reminder-time-input" value="20:00">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <input type="checkbox" class="reminder-checkbox-label"> Enable notifications
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="reminder-modal-footer">
+                <button class="btn btn-secondary reminder-close">Cancel</button>
+                <button class="btn btn-primary">Save Reminders</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+    
+    <script src="/JS/footer.js"></script>
+    <script src="/JS/patient-dashboard.js"></script>
+</body>
+</html>
