@@ -1,53 +1,97 @@
-// Doctor Dashboard JavaScript
+// Doctor Dashboard JavaScript - Main Functionality
+// Handles treatment plan creation, medicine management, and UI interactions
+
+const API_BASE = 'https://healsync-backend-d788.onrender.com';
+
 class DoctorDashboard {
     constructor() {
-        this.patientId = 1; // Default patient ID for demo
-        this.doctorId = 1; // Default doctor ID for demo
         this.medicines = [];
         this.patients = [];
         this.diseases = [];
         this.medicineCounter = 0;
+        this.currentDoctorId = null;
         this.init();
     }
 
     async init() {
+        // Get current doctor info
+        this.getCurrentDoctorInfo();
+        
+        // Setup event listeners
         this.setupEventListeners();
+        
+        // Load data
         await this.loadDropdownData();
+        
+        // Add initial medicine row
         this.addInitialMedicineRow();
+        
+        // Load recent treatments
         this.loadRecentTreatments();
+    }
+
+    getCurrentDoctorInfo() {
+        try {
+            const userData = localStorage.getItem('healSync_userData');
+            if (userData) {
+                const doctor = JSON.parse(userData);
+                this.currentDoctorId = doctor.doctorId || localStorage.getItem('currentDoctorId');
+                console.log('Current doctor ID:', this.currentDoctorId);
+            }
+        } catch (error) {
+            console.error('Error getting doctor info:', error);
+        }
     }
 
     setupEventListeners() {
         // Form submission
-        document.getElementById('treatment-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.handleFormSubmit();
-        });
+        const treatmentForm = document.getElementById('treatment-form');
+        if (treatmentForm) {
+            treatmentForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleFormSubmit();
+            });
+        }
 
         // Add medicine button
-        document.getElementById('add-medicine').addEventListener('click', () => {
-            this.addMedicineRow();
-        });
+        const addMedicineBtn = document.getElementById('add-medicine');
+        if (addMedicineBtn) {
+            addMedicineBtn.addEventListener('click', () => {
+                this.addMedicineRow();
+            });
+        }
 
         // Reset form button
-        document.getElementById('reset-form').addEventListener('click', () => {
-            this.resetForm();
-        });
+        const resetFormBtn = document.getElementById('reset-form');
+        if (resetFormBtn) {
+            resetFormBtn.addEventListener('click', () => {
+                this.resetForm();
+            });
+        }
 
         // Modal close buttons
-        document.getElementById('close-modal-btn').addEventListener('click', () => {
-            this.closeModal();
-        });
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', () => {
+                this.closeModal();
+            });
+        }
 
         // Modal overlay click
-        document.getElementById('treatment-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'treatment-modal') {
-                this.closeModal();
-            }
-        });
+        const treatmentModal = document.getElementById('treatment-modal');
+        if (treatmentModal) {
+            treatmentModal.addEventListener('click', (e) => {
+                if (e.target.id === 'treatment-modal') {
+                    this.closeModal();
+                }
+            });
+        }
 
         // Set today's date as default
-        document.getElementById('start-date').value = new Date().toISOString().split('T')[0];
+        const startDateInput = document.getElementById('start-date');
+        if (startDateInput) {
+            startDateInput.value = new Date().toISOString().split('T')[0];
+        }
     }
 
     async loadDropdownData() {
@@ -565,7 +609,12 @@ class DoctorDashboard {
 // Initialize doctor dashboard when page loads
 let doctorDashboard;
 document.addEventListener('DOMContentLoaded', () => {
-    doctorDashboard = new DoctorDashboard();
+    // Wait for authentication check to complete before initializing dashboard
+    setTimeout(() => {
+        if (window.DoctorAuth && window.DoctorAuth.checkDoctorAuthentication()) {
+            doctorDashboard = new DoctorDashboard();
+        }
+    }, 100);
 });
 
 // Mobile menu functionality

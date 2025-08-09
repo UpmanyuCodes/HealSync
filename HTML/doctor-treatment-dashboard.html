@@ -11,6 +11,7 @@
     
     <link rel="stylesheet" href="/CSS/index.css">
     <link rel="stylesheet" href="/CSS/treatment.css">
+    <link rel="stylesheet" href="/CSS/doctor-treatment-dashboard.css">
 </head>
 <body>
     <header class="site-header">
@@ -25,8 +26,8 @@
             <div class="desktop-menu">
                 <a href="#dashboard">Dashboard</a>
                 <a href="#patients">My Patients</a>
-                <a href="#treatments">Treatment Plans</a>
-                <a href="#profile">Profile</a>
+                <a href="/HTML/create-treatment-plan.html">Create Treatment</a>
+                <a href="/HTML/doctor-profile.html">My Profile</a>
             </div>
 
             <div class="desktop-menu-actions">
@@ -41,10 +42,10 @@
         <div id="mobile-menu" class="mobile-menu">
             <a href="#dashboard">Dashboard</a>
             <a href="#patients">My Patients</a>
-            <a href="#treatments">Treatment Plans</a>
-            <a href="#profile">Profile</a>
+            <a href="/HTML/create-treatment-plan.html">Create Treatment</a>
+            <a href="/HTML/doctor-profile.html">My Profile</a>
             <hr>
-            <a href="/HTML/patient-dashboard.html">Patient View</a>
+            <a href="/HTML/patient-treatment-dashboard.html">Patient View</a>
             <a href="/HTML/index.html" class="btn btn-primary">Logout</a>
         </div>
     </header>
@@ -166,7 +167,9 @@
 
     <div id="footer-placeholder"></div>
     
+    <!-- JavaScript Files -->
     <script src="/JS/footer.js"></script>
+    <script src="/JS/doctor-treatment-dashboard-auth.js"></script>
     <script src="/JS/doctor-treatment-dashboard.js"></script>
 </body>
 </html>

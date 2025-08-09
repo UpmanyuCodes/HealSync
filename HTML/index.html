@@ -18,7 +18,7 @@
 
     <header class="site-header">
         <nav class="container nav-container">
-            <a href="#" class="logo">
+            <a href="/HTML/index.html" class="logo">
                 <svg xmlns="http://www.w3.org/2000/svg" class="logo-icon" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
                 </svg> 
@@ -27,15 +27,13 @@
 
             <div class="desktop-menu">
                 <a href="#features">Features</a>
-                <a href="#ai-insights">AI Insights</a>
-                <a href="#caregiver">For Caregivers</a>
-                <a href="/HTML/doctor-dashboard.html">Doctor Dashboard</a>
-                <a href="/HTML/patient-dashboard.html">Patient Dashboard</a>
+                <a href="/HTML/doctor-treatment-dashboard.html">Doctor Dashboard</a>
+                <a href="/HTML/patient-treatment-dashboard.html">Patient Dashboard</a>
             </div>
 
             <div class="desktop-menu-actions">
-                 <a href="/HTML/patient-dashboard.html" class="btn btn-secondary">Login</a>
-                 <a href="/HTML/doctor-dashboard.html" class="btn btn-primary">Doctor Portal</a>
+                 <a href="/HTML/login.html" class="btn btn-secondary">Login</a>
+                 <a href="/HTML/doctor-treatment-dashboard.html" class="btn btn-primary">Doctor Portal</a>
             </div>
 
             <button id="mobile-menu-button" class="mobile-menu-toggle">
@@ -44,13 +42,11 @@
         </nav>
         <div id="mobile-menu" class="mobile-menu">
             <a href="#features">Features</a>
-            <a href="#ai-insights">AI Insights</a>
-            <a href="#caregiver">For Caregivers</a>
-            <a href="/HTML/doctor-dashboard.html">Doctor Dashboard</a>
-            <a href="/HTML/patient-dashboard.html">Patient Dashboard</a>
+            <a href="/HTML/doctor-treatment-dashboard.html">Doctor Dashboard</a>
+            <a href="/HTML/patient-treatment-dashboard.html">Patient Dashboard</a>
             <hr>
-            <a href="/HTML/patient-dashboard.html">Login</a>
-            <a href="/HTML/doctor-dashboard.html" class="btn btn-primary">Doctor Portal</a>
+            <a href="/HTML/login.html">Login</a>
+            <a href="/HTML/doctor-treatment-dashboard.html" class="btn btn-primary">Doctor Portal</a>
         </div>
     </header>
 
@@ -61,8 +57,8 @@
                 <h1 class="hero-title">Intelligent Care for a <span class="text-highlight">Healthier You.</span></h1>
                 <p class="hero-subtitle">Seamlessly track your progress, monitor your well-being, and stay connected with your loved ones, all with your AI-powered partner in health.</p>
                 <div class="hero-actions">
-                    <a href="/HTML/patient-dashboard.html" class="btn btn-primary btn-lg">Get Started for Free</a>
-                    <a href="/HTML/doctor-dashboard.html" class="btn btn-secondary btn-lg">Doctor Portal</a>
+                    <a href="/HTML/login.html" class="btn btn-primary btn-lg">Get Started for Free</a>
+                    <a href="/HTML/doctor-treatment-dashboard.html" class="btn btn-secondary btn-lg">Doctor Portal</a>
                 </div>
             </div>
         </section>
@@ -75,81 +71,33 @@
                     <p class="section-subtitle">Everything you need to manage your health with confidence.</p>
                 </div>
                 <div class="features-grid">
-                    <div class="feature-card">
+                    <div class="feature-card" data-link="/HTML/patient-treatment-dashboard.html" tabindex="0">
                         <div class="feature-icon-wrapper" style="--icon-bg: #E0F2F1; --icon-color: #0D9488;">
                             <svg xmlns="http://www.w3.org/2000/svg" class="feature-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         </div>
                         <h3 class="feature-title">Daily Progress Tracker</h3>
                         <p>Log activities, medications, and metrics. Visualize your progress with easy-to-read charts.</p>
                     </div>
-                    <div class="feature-card">
+                    <div class="feature-card" data-link="/HTML/tracker.html" tabindex="0">
                         <div class="feature-icon-wrapper" style="--icon-bg: #FCE7F3; --icon-color: #DB2777;">
                            <svg xmlns="http://www.w3.org/2000/svg" class="feature-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         </div>
                         <h3 class="feature-title">Mood Tracker</h3>
                         <p>Stay in tune with your emotional well-being. Identify patterns and understand your feelings.</p>
                     </div>
-                    <div class="feature-card">
+                    <div class="feature-card" data-link="/HTML/doctor-treatment-dashboard.html" tabindex="0">
                         <div class="feature-icon-wrapper" style="--icon-bg: #DBEAFE; --icon-color: #2563EB;">
                             <svg xmlns="http://www.w3.org/2000/svg" class="feature-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21a6 6 0 00-9-5.197m0 0A10.99 10.99 0 0112 5.197m0 0A10.99 10.99 0 0115 15.803" /></svg>
                         </div>
-                        <h3 class="feature-title">Caregiver View</h3>
-                        <p>Invite family to your 'Care Circle' to share updates and receive support, with full privacy control.</p>
+                        <h3 class="feature-title">Doctor Dashboard</h3>
+                        <p>Manage appointments, treatment plans, and patient updates in one powerful workspace.</p>
                     </div>
-                    <div class="feature-card">
+                    <div class="feature-card" data-open-chat="true" tabindex="0">
                         <div class="feature-icon-wrapper" style="--icon-bg: #F3E8FF; --icon-color: #9333EA;">
                            <svg xmlns="http://www.w3.org/2000/svg" class="feature-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
                         </div>
-                        <h3 class="feature-title">AI Voice Assistant</h3>
-                        <p>Get instant, hands-free help. Just speak your request to log symptoms or ask questions.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- AI Insights Section -->
-        <section id="ai-insights" class="ai-section">
-            <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title">Get Instant <span class="text-highlight">AI-Powered Insights</span></h2>
-                    <p class="section-subtitle">Use our AI tools to get preliminary information and wellness ideas. <span class="disclaimer-text">Not a substitute for professional medical advice.</span></p>
-                </div>
-                <div class="ai-grid">
-                    <div class="ai-card">
-                        <h3 class="ai-card-title">AI Symptom Checker</h3>
-                        <p>Describe your symptoms to get informational insights on related health topics.</p>
-                        <div class="ai-card-actions">
-                            <textarea id="symptom-input" rows="4" placeholder="e.g., 'I have a headache and a sore throat...'"></textarea>
-                            <button id="check-symptoms-btn" class="btn btn-primary">Get AI Insights</button>
-                        </div>
-                    </div>
-                    <div class="ai-card">
-                        <h3 class="ai-card-title">Wellness Plan Generator</h3>
-                        <p>Tell us your wellness goal, and our AI will create a sample one-week plan to get you started.</p>
-                        <div class="ai-card-actions">
-                            <input type="text" id="wellness-goal-input" placeholder="e.g., 'Improve my sleep quality'">
-                            <button id="generate-plan-btn" class="btn btn-secondary-alt">Generate My Plan</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Caregiver View Section -->
-        <section id="caregiver" class="content-section">
-            <div class="container content-layout">
-                <div class="content-text">
-                    <h2 class="section-title">Stay Connected, Stay Supported.</h2>
-                    <p class="section-subtitle">HealSync makes it easy to keep your loved ones in the loop, giving everyone peace of mind.</p>
-                    <div class="content-points">
-                        <div>
-                            <h3 class="point-title-teal">For Users</h3>
-                            <p>Share your journey with the people who matter most. You control what they see, ensuring your privacy is always protected.</p>
-                        </div>
-                        <div>
-                            <h3 class="point-title-blue">For Caregivers</h3>
-                            <p>Get real-time updates and meaningful insights. Provide support from anywhere, knowing you're always informed.</p>
-                        </div>
+                        <h3 class="feature-title">AI Assistant</h3>
+                        <p>Ask questions, get guidance, and navigate HealSync with your smart assistant.</p>
                     </div>
                 </div>
             </div>
@@ -161,7 +109,7 @@
                 <h2 class="cta-title">Ready to Take Control of Your Health?</h2>
                 <p class="cta-subtitle">Join the HealSync community today and experience a new standard of personalized, AI-powered care.</p>
                 <div class="cta-action">
-                    <a href="/HTML/patient-dashboard.html" class="btn btn-light">Sign Up Now</a>
+                    <a href="/HTML/register.html" class="btn btn-light">Sign Up Now</a>
                 </div>
             </div>
         </section>
@@ -169,25 +117,6 @@
 
     <div id="footer-placeholder"></div>
     
-    <!-- Modal for AI Response -->
-    <div id="ai-modal" class="modal-overlay">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h3 id="modal-title" class="modal-title">AI-Generated Insights</h3>
-                <button id="close-modal-btn" class="modal-close-btn">&times;</button>
-            </div>
-            <div id="modal-body" class="modal-body">
-                <div id="modal-loader" class="modal-loader">
-                    <div class="spinner"></div>
-                </div>
-                <div id="modal-content"></div>
-            </div>
-            <div class="modal-footer">
-                <p><strong>Disclaimer:</strong> The information provided by the AI is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment.</p>
-            </div>
-        </div>
-    </div>
-
     <!-- AI Chat Assistant Elements -->
     <div id="chat-widget" class="chat-widget">
         <div class="chat-header">
@@ -206,11 +135,15 @@
         </form>
     </div>
 
-    <button id="chat-toggle-btn" class="chat-toggle-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M4.804 21.644A6.707 6.707 0 006 21.75a6.721 6.721 0 003.583-1.029c.444.257.92.464 1.417.621a6.72 6.72 0 003.583 1.029c.444-.257.92-.464 1.417-.621a6.72 6.72 0 003.583-1.029c1.031-1.87.656-4.243-.923-5.417a6.702 6.702 0 00-2.088-1.18c.338-.52.59-1.084.756-1.688a6.724 6.724 0 00-3.583-1.029c-.444.257-.92.464-1.417.621a6.72 6.72 0 00-3.583 1.029c-.444-.257-.92-.464-1.417-.621a6.72 6.72 0 00-3.583-1.029c-1.031 1.87-.656 4.243.923 5.417.529.359 1.144.57 1.796.685a6.702 6.702 0 00-2.088 1.18c-1.579 1.174-1.954 3.546-.923 5.417zM12 8.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd" /><path d="M12.75 10.5a.75.75 0 00-1.5 0v4.5a.75.75 0 001.5 0v-4.5z" /></svg>
+    <button id="chat-toggle-btn" class="chat-toggle-btn" aria-label="Open AI Assistant">
+        <!-- Updated bot icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2a1 1 0 011 1v1.25a7.75 7.75 0 015.75 7.48V14a4 4 0 01-4 4h-1.2l-.9 1.2a1.5 1.5 0 01-2.4 0L9.4 18H8a4 4 0 01-4-4v-2.27A7.75 7.75 0 0111 4.25V3a1 1 0 011-1zm-4 9a1.25 1.25 0 100-2.5A1.25 1.25 0 008 11zm8 0a1.25 1.25 0 100-2.5A1.25 1.25 0 0016 11z"/>
+        </svg>
     </button>
 
-   <script src="/JS/footer.js"></script>
-   <script src="/JS/disease.js"></script>
+    <!-- Scripts -->
+    <script src="/JS/footer.js"></script>
+    <script src="/JS/index.js"></script>
 </body>
 </html>

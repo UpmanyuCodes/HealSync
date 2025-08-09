@@ -1,36 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mood & Pain Tracker – HealSync</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/CSS/tracker.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood & Pain Tracker - HealSync</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Shared Form Styles -->
+    <link rel="stylesheet" href="/CSS/forms.css">
+    
+    <!-- Tracker Page Specific Styles -->
+    <link rel="stylesheet" href="/CSS/tracker.css">
 </head>
 <body>
 
-  <div class="container">
-    <h1>How are you feeling today?</h1>
+    <div class="form-container">
+        <div class="form-card">
+            <a href="/HTML/index.html" class="form-logo">
+                <svg xmlns="http://www.w3.org/2000/svg" class="logo-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                </svg>
+                HealSync
+            </a>
+            
+            <h1 class="form-title">How are you feeling today?</h1>
+            <p class="form-subtitle">Track your mood and pain level to help your healthcare team better understand your condition.</p>
+            
+            <!-- Alert Container -->
+            <div id="alert-container"></div>
+            
+            <form class="form-content" id="tracker-form">
+                <!-- Mood Selection -->
+                <div class="form-group">
+                    <label class="mood-label">Select Your Mood</label>
+                    <div class="mood-emojis">
+                        <div class="emoji-option" data-mood="Very Sad" data-intensity="2">
+                            <div class="emoji">😢</div>
+                            <span class="emoji-label">Very Sad</span>
+                        </div>
+                        <div class="emoji-option" data-mood="Sad" data-intensity="4">
+                            <div class="emoji">😟</div>
+                            <span class="emoji-label">Sad</span>
+                        </div>
+                        <div class="emoji-option" data-mood="Neutral" data-intensity="5">
+                            <div class="emoji">😐</div>
+                            <span class="emoji-label">Neutral</span>
+                        </div>
+                        <div class="emoji-option" data-mood="Happy" data-intensity="7">
+                            <div class="emoji">😊</div>
+                            <span class="emoji-label">Happy</span>
+                        </div>
+                        <div class="emoji-option" data-mood="Very Happy" data-intensity="9">
+                            <div class="emoji">😁</div>
+                            <span class="emoji-label">Very Happy</span>
+                        </div>
+                    </div>
+                </div>
 
-    <div class="emojis">
-      <div class="emoji">😢</div>
-      <div class="emoji">😟</div>
-      <div class="emoji">😐</div>
-      <div class="emoji">😊</div>
-      <div class="emoji">😁</div>
+                <!-- Pain Level Slider -->
+                <div class="form-group">
+                    <label for="pain-slider">Pain Level (0 = No Pain, 10 = Severe Pain)</label>
+                    <div class="slider-container">
+                        <input type="range" id="pain-slider" name="painLevel" min="0" max="10" value="0" class="pain-slider">
+                        <div class="slider-labels">
+                            <span>0</span>
+                            <span>5</span>
+                            <span>10</span>
+                        </div>
+                        <div class="pain-display">
+                            <span class="pain-value">0</span>
+                            <span class="pain-description">No Pain</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Optional Notes -->
+                <div class="form-group">
+                    <label for="notes">Additional Notes (Optional)</label>
+                    <textarea id="notes" name="notes" placeholder="How are you feeling today? Any specific symptoms or observations..." rows="3"></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary" id="submit-btn">
+                    <span id="btn-text">Track My Mood</span>
+                </button>
+            </form>
+            
+            <div class="form-footer">
+                <p>Need help? <a href="/HTML/index.html">Return to Dashboard</a></p>
+            </div>
+        </div>
     </div>
 
-    <div class="slider-container">
-      <label for="pain">Pain Level</label>
-      <input type="range" id="pain" name="pain" min="0" max="10" value="5" />
-      <div class="pain-level">Selected pain level: <span id="painValue">5</span></div>
-    </div>
-
-    <button id="submitBtn">Submit</button>
-  </div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js"></script>
-  <script src="/JS/tracker.js"></script>
-
+    <!-- JavaScript -->
+    <script src="/JS/tracker.js"></script>
 </body>
 </html>
