@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HealSync - Appointments (Doctor)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/CSS/index.css" />
+  <link rel="stylesheet" href="/CSS/appointments.css" />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="container nav-container">
+      <a href="/HTML/index.html" class="logo">
+        <svg xmlns="http://www.w3.org/2000/svg" class="logo-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/></svg>
+        HealSync
+      </a>
+      <div class="desktop-menu">
+        <a href="/HTML/doctor-treatment-dashboard.html">Treatments</a>
+        <a href="#my">My Appointments</a>
+      </div>
+      <div class="desktop-menu-actions">
+        <a href="/HTML/patient-treatment-dashboard.html" class="btn btn-secondary">Patient View</a>
+        <a href="/HTML/index.html" class="btn btn-primary">Logout</a>
+      </div>
+      <button id="mobile-menu-button" class="mobile-menu-toggle">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+      </button>
+    </nav>
+    <div id="mobile-menu" class="mobile-menu">
+      <a href="/HTML/doctor-treatment-dashboard.html">Treatments</a>
+      <a href="#my">My Appointments</a>
+      <hr />
+      <a href="/HTML/patient-treatment-dashboard.html">Patient View</a>
+      <a href="/HTML/index.html" class="btn btn-primary">Logout</a>
+    </div>
+  </header>
+
+  <main class="appointments-page">
+    <div class="container">
+      <div class="page-header text-center">
+        <div class="user-type-badge user-type-doctor">Doctor</div>
+        <h1 class="page-title">My Schedule</h1>
+        <p class="page-subtitle">View, reschedule, cancel, and add notes to your appointments</p>
+      </div>
+
+      <div id="alert" class="alert alert-info" style="display:none"></div>
+
+      <section id="my" class="card">
+        <h2 class="section-title">Appointments</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Doctor ID</label>
+            <input type="number" id="doctorIdList" placeholder="e.g., 10" />
+          </div>
+          <div class="form-group" style="align-self:end">
+            <button id="loadDoctorAppts" class="btn btn-secondary">Load</button>
+          </div>
+        </div>
+        <div id="doctorApptList" class="grid-responsive" style="margin-top:0.75rem"></div>
+      </section>
+    </div>
+  </main>
+
+  <div id="footer-placeholder"></div>
+
+  <script src="/JS/footer.js"></script>
+  <script src="/JS/appointments-shared.js"></script>
+  <script src="/JS/appointments-doctor.js"></script>
+</body>
+</html>

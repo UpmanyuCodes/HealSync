@@ -1,0 +1,104 @@
+/* Appointments UI - aligns with treatment and index styles */
+.appointments-page {
+    min-height: 100vh;
+    background-color: #F9FAFB;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1F2937;
+}
+
+.page-subtitle {
+    color: #6B7280;
+    margin-top: 0.5rem;
+}
+
+.card {
+    background-color: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    padding: 1.25rem;
+}
+
+.card + .card { margin-top: 1rem; }
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.grid-responsive {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.form-group label { font-weight: 600; color: #374151; font-size: 0.9rem; margin-bottom: 0.25rem; }
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: #14B8A6;
+    box-shadow: 0 0 0 3px rgba(20,184,166,0.12);
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 1rem;
+}
+
+.actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+.status-booked { background: #D1FAE5; color: #065F46; }
+.status-rescheduled { background: #E0E7FF; color: #3730A3; }
+.status-cancelled, .status-cancelled_by_patient { background: #FEE2E2; color: #991B1B; }
+
+.appt-card { position: relative; }
+.appt-meta { color: #6B7280; font-size: 0.9rem; }
+.appt-title { font-weight: 700; color: #111827; margin-bottom: 0.35rem; }
+.appt-sub { color: #374151; margin-bottom: 0.5rem; }
+.appt-footer { display:flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+
+.inline-reschedule { margin-top: 0.75rem; display: none; }
+.inline-reschedule.visible { display: grid; grid-template-columns: 1fr 1fr auto; gap: 0.5rem; }
+
+.alert { border-radius: 0.5rem; padding: 0.75rem 1rem; margin: 0.75rem 0; border: 1px solid transparent; }
+.alert-success { background: #ECFDF5; color: #065F46; border-color: #D1FAE5; }
+.alert-error { background: #FEF2F2; color: #7F1D1D; border-color: #FECACA; }
+.alert-info { background: #EFF6FF; color: #1E3A8A; border-color: #BFDBFE; }
+
+.muted { color: #9CA3AF; font-size: 0.85rem; }
+
+@media (max-width: 640px) {
+    .grid-2 { grid-template-columns: 1fr; }
+}

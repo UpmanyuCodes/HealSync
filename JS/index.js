@@ -31,11 +31,25 @@
     });
   });
 
-  // Chat toggle handlers
-  chatToggleBtn?.addEventListener('click', () => {
-    chatWidget?.classList.toggle('visible');
-    if (chatWidget?.classList.contains('visible')) {
+  // Chat toggle handlers (robust: also delegate in case inner SVG is clicked)
+  function toggleChat() {
+    if (!chatWidget) return;
+    chatWidget.classList.toggle('visible');
+    if (chatWidget.classList.contains('visible')) {
       document.getElementById('chat-input')?.focus();
+    }
+  }
+
+  chatToggleBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    toggleChat();
+  });
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target?.closest('#chat-toggle-btn');
+    if (btn) {
+      e.preventDefault();
+      toggleChat();
     }
   });
 
@@ -47,6 +61,6 @@
   const mobileBtn = document.getElementById('mobile-menu-button');
   const mobileMenu = document.getElementById('mobile-menu');
   mobileBtn?.addEventListener('click', () => {
-    mobileMenu?.classList.toggle('open');
+    mobileMenu?.classList.toggle('visible');
   });
 })();

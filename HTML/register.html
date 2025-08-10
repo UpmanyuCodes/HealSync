@@ -24,17 +24,17 @@
             <h1 class="form-title">Create Your Account</h1>
             <p class="form-subtitle">Join HealSync to take control of your recovery.</p>
             
-            <form class="form-content">
+            <form id="register-form" class="form-content" novalidate>
                 <div class="form-group">
                     <label for="fullname">Full Name</label>
                     <input type="text" id="fullname" placeholder="Enter your full name" required>
                 </div>
                 <div class="form-group">
-                    <label for="age">Age</label>
+                    <label for="Age">Age</label>
                     <input type="text" id="Age" placeholder="Enter your age" required>
                 </div>
                 <div class="form-group">
-                    <label for="gender">Gender</label>
+                    <label for="Gender">Gender</label>
                     <input type="text" id="Gender" placeholder="Enter your Gender" required>
                 </div>
                 <div class="form-group">
@@ -50,7 +50,8 @@
                     <input type="password" id="password" placeholder="Create a strong password" required>
                 </div>
                 
-                <button type="submit" class="btn btn-primary">Create Account</button>
+                <button id="register-submit" type="submit" class="btn btn-primary">Create Account</button>
+                <div id="register-message" aria-live="polite" style="margin-top: 0.75rem; font-size: 0.95rem;"></div>
             </form>
             
             <div class="form-footer">
@@ -59,5 +60,6 @@
         </div>
     </div>
 
+    <script src="/JS/register.js"></script>
 </body>
 </html>
