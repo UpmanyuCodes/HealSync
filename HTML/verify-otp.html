@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP - HealSync</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/CSS/forms.css">
+    <link rel="stylesheet" href="/CSS/login.css">
+    <link rel="stylesheet" href="/CSS/snackbar.css">
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-card">
+            <a href="/HTML/index.html" class="form-logo">
+                <svg xmlns="http://www.w3.org/2000/svg" class="logo-icon" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                </svg>
+                HealSync
+            </a>
+            <h1 class="form-title">Verify your email</h1>
+            <p class="form-subtitle">Enter the 6-digit code we sent to your email.</p>
+
+            <div id="alert-container"></div>
+
+            <form id="verify-form" class="form-content" novalidate>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="otp">Verification Code</label>
+                    <input type="text" id="otp" maxlength="6" pattern="\d{6}" placeholder="123456" autocomplete="one-time-code" inputmode="numeric" required>
+                </div>
+
+                <div class="form-actions" style="justify-content:space-between;">
+                    <button type="button" class="btn btn-secondary" id="resend-btn">Resend</button>
+                    <span id="countdown" style="color:#6B7280;"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="verify-btn">Verify</button>
+                <div class="form-extra-link" style="margin-top:1rem;">
+                    <a href="/HTML/forgot-password.html">Back</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/JS/verify-otp.js"></script>
+</body>
+</html>

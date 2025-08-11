@@ -19,6 +19,12 @@ const formCard = document.querySelector('.form-card');
 document.addEventListener('DOMContentLoaded', function() {
     initializeLoginPage();
     attachEventListeners();
+    // Show post-reset toast if coming from password reset
+    const flag = sessionStorage.getItem('healSync_reset_success');
+    if(flag){
+        showSnack('Password updated. Please log in.', 'success');
+        sessionStorage.removeItem('healSync_reset_success');
+    }
 });
 
 // Initialize login page
@@ -374,6 +380,21 @@ function clearAlerts() {
 function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+}
+
+// Snackbar helper
+function showSnack(message, type='info'){
+    let el = document.getElementById('snackbar');
+    if(!el){
+        el = document.createElement('div');
+        el.id = 'snackbar';
+        el.className = 'snackbar';
+        document.body.appendChild(el);
+    }
+    el.className = `snackbar ${type}`;
+    el.textContent = message;
+    el.classList.add('show');
+    setTimeout(()=>{ el.classList.remove('show'); }, 2200);
 }
 
 // Handle logout (can be called from other pages)

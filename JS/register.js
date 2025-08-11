@@ -8,27 +8,47 @@ const OTP_RESEND_API = 'https://healsync-backend-d788.onrender.com/v1/healsync/o
 const OTP_VERIFY_API = 'https://healsync-backend-d788.onrender.com/v1/healsync/otp/verify'; // POST ?email=&otp=
 
 function setMsg(text, type = 'info') {
+  const container = document.getElementById('alert-container');
+  if (container) {
+    container.innerHTML = '';
+    if (!text) { container.style.display = 'none'; return; }
+    const alert = document.createElement('div');
+    alert.className = `alert ${type}`;
+    alert.style.display = 'block';
+    alert.textContent = text;
+    container.appendChild(alert);
+    container.style.display = 'block';
+    return;
+  }
+  // Fallback for legacy container
   const el = document.getElementById('register-message');
   if (!el) return;
-  const colors = {
-    info: '#1E3A8A',       // blue-800
-    success: '#065F46',    // emerald-800
-    error: '#7F1D1D'       // red-800
-  };
-  const bgs = {
-    info: '#DBEAFE',       // blue-100
-    success: '#D1FAE5',    // emerald-100
-    error: '#FECACA'       // red-200
-  };
-  el.style.color = colors[type] || colors.info;
-  el.style.background = bgs[type] || bgs.info;
-  el.style.border = '1px solid rgba(0,0,0,0.05)';
-  el.style.padding = '10px 12px';
-  el.style.borderRadius = '8px';
   el.textContent = text;
 }
 
-function clearMsg(){ const el = document.getElementById('register-message'); if(el){ el.textContent=''; el.style.background='transparent'; el.style.border='none'; } }
+function clearMsg(){
+  const container = document.getElementById('alert-container');
+  if (container) { container.innerHTML = ''; container.style.display = 'none'; }
+  const el = document.getElementById('register-message');
+  if (el) { el.textContent = ''; }
+}
+
+function setLoading(btn, isLoading, loadingText){
+  if(!btn) return;
+  if(isLoading){
+    btn.dataset.originalText = btn.textContent;
+    if(loadingText) btn.textContent = loadingText;
+    btn.classList.add('btn-loading');
+    btn.disabled = true;
+  } else {
+    btn.classList.remove('btn-loading');
+    btn.disabled = false;
+    if(btn.dataset.originalText){
+      btn.textContent = btn.dataset.originalText;
+      delete btn.dataset.originalText;
+    }
+  }
+}
 
 function getTrimmedValue(id){ const v = document.getElementById(id)?.value || ''; return v.trim(); }
 
@@ -59,7 +79,7 @@ async function handleRegister(e){
   const err = validateForm(payload);
   if(err){ setMsg(err, 'error'); return; }
 
-  btn.disabled = true; btn.textContent = 'Creating...';
+  setLoading(btn, true, 'Creating...');
   setMsg('Creating your account...', 'info');
 
   try{
@@ -87,7 +107,7 @@ async function handleRegister(e){
   }catch(error){
     setMsg(error.message || 'Registration failed. Please try again.', 'error');
   }finally{
-    btn.disabled = false; btn.textContent = 'Create Account';
+    setLoading(btn, false);
   }
 }
 
@@ -152,8 +172,7 @@ async function sendOtp(isResend=false){
   isVerified = false; verifiedBadge.style.display = 'none'; updateSubmitState();
 
   try{
-    btn.disabled = true;
-    btn.textContent = isResend ? 'Resending...' : 'Sending...';
+    setLoading(btn, true, isResend ? 'Resending...' : 'Sending...');
     const url = isResend ? `${OTP_RESEND_API}?email=${encodeURIComponent(email)}`
                          : `${OTP_SEND_API}?email=${encodeURIComponent(email)}`;
     const method = isResend ? 'GET' : 'POST';
@@ -162,9 +181,11 @@ async function sendOtp(isResend=false){
     if(!res.ok) throw new Error(txt || 'Failed to send OTP');
     showSnack(isResend ? 'OTP resent to your email.' : 'OTP sent to your email.', 'success');
     otpSection.style.display = 'block';
+    setLoading(btn, false);
     startCountdown(30);
   }catch(err){
-    btn.disabled = false; btn.textContent = isResend ? 'Resend' : 'Send OTP';
+    setLoading(btn, false);
+    btn.textContent = isResend ? 'Resend' : 'Send OTP';
     setMsg(err.message || 'Failed to send OTP', 'error');
   }
 }
@@ -176,7 +197,7 @@ async function verifyOtp(){
   const btn = document.getElementById('verify-otp-btn');
   const verifiedBadge = document.getElementById('email-verified-badge');
   try{
-    btn.disabled = true; btn.textContent = 'Verifying...';
+    setLoading(btn, true, 'Verifying...');
     const url = `${OTP_VERIFY_API}?email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}`;
     const res = await fetch(url, { method: 'POST' });
     const txt = await res.text();
@@ -189,7 +210,8 @@ async function verifyOtp(){
   }catch(err){
     setMsg(err.message || 'OTP verification failed', 'error');
   }finally{
-    btn.disabled = false; btn.textContent = 'Verify OTP';
+    setLoading(btn, false);
+    btn.textContent = 'Verify OTP';
   }
 }
 
