@@ -193,7 +193,7 @@ async function sendOtp(isResend=false){
 async function verifyOtp(){
   const email = getTrimmedValue('email');
   const otp = getTrimmedValue('otp-input');
-  if(!otp || otp.length < 4){ setMsg('Enter the OTP you received.', 'error'); return; }
+  if(!otp || otp.length !== 6){ setMsg('Enter the 6-digit OTP you received.', 'error'); return; }
   const btn = document.getElementById('verify-otp-btn');
   const verifiedBadge = document.getElementById('email-verified-badge');
   try{
