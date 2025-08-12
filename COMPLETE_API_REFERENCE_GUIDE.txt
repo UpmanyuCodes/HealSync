@@ -1,0 +1,554 @@
+HEALSYNC BACKEND - COMPLETE API REFERENCE GUIDE
+=====================================================
+
+🏥 **HealSync Backend API System** 
+📅 **Last Updated:** December 2024
+🔧 **Framework:** Spring Boot 3.x with PostgreSQL
+🌐 **Base URL:** https://healsync-backend-d788.onrender.com
+
+================================================================
+TABLE OF CONTENTS
+================================================================
+1. ADMIN AUTHENTICATION APIS
+2. APPOINTMENT MANAGEMENT APIS (18 endpoints)
+3. DOCTOR MANAGEMENT APIS (13 endpoints)
+4. TREATMENT PLAN APIS (4 endpoints)
+5. PATIENT MANAGEMENT APIS
+6. MEDICINE MANAGEMENT APIS
+7. DISEASE MANAGEMENT APIS
+8. USER DISCOVERY APIS
+9. EMOTION TRACKER APIS
+10. EMAIL OTP APIS
+11. PASSWORD RESET APIS
+
+================================================================
+1. ADMIN AUTHENTICATION APIS
+================================================================
+Base Path: /v1/healsync/admin
+
+🔐 POST /v1/healsync/admin/login
+   Purpose: Admin login authentication
+   Request Body: { "username": "admin", "password": "admin123" }
+   Response: { "message": "Admin login successful", "admin": {...} }
+   Use Case: Administrative access to system
+
+================================================================
+2. APPOINTMENT MANAGEMENT APIS (18 ENDPOINTS)
+================================================================
+Base Path: /v1/healsync/book
+
+🎯 **BOOKING & CANCELLATION**
+────────────────────────────
+
+📅 POST /v1/healsync/book/appointment
+   Purpose: Book a new appointment with auto-doctor assignment
+   Parameters: speaciality, specialty, startDateTime, endDateTime, patientId
+   Response: Complete appointment details with assigned doctor
+   Example: ?specialty=Cardiology&startDateTime=2024-12-15T10:00:00&endDateTime=2024-12-15T11:00:00&patientId=123
+
+❌ POST /v1/healsync/book/cancel
+   Purpose: Cancel appointment (doctor-initiated)
+   Parameters: appointmentId, doctorId
+   Response: "Appointment cancelled successfully"
+
+❌ POST /v1/healsync/book/cancel/patient
+   Purpose: Cancel appointment (patient-initiated)
+   Parameters: appointmentId, patientId
+   Response: "Appointment cancelled by patient"
+
+🔄 POST /v1/healsync/book/reschedule
+   Purpose: Reschedule existing appointment
+   Parameters: appointmentId, requesterId, requesterRole (DOCTOR/PATIENT), newStartDateTime, newEndDateTime
+   Response: Updated appointment details
+
+🎯 **APPOINTMENT RETRIEVAL**
+──────────────────────────
+
+📋 GET /v1/healsync/book/patient/appointments
+   Purpose: List all appointments for a patient
+   Parameters: patientId
+   Response: Array of appointment objects
+
+📋 GET /v1/healsync/book/doctor/appointments
+   Purpose: List all appointments for a doctor
+   Parameters: doctorId
+   Response: Array of appointment objects
+
+🔍 GET /v1/healsync/book/appointment
+   Purpose: Get single appointment details
+   Parameters: appointmentId
+   Response: Complete appointment information
+
+🎯 **APPOINTMENT MANAGEMENT**
+───────────────────────────
+
+📝 POST /v1/healsync/book/notes
+   Purpose: Add or update doctor notes for appointment
+   Parameters: appointmentId, doctorId, notes
+   Response: "Notes updated"
+
+✅ POST /v1/healsync/book/confirm
+   Purpose: Doctor confirms the appointment
+   Parameters: appointmentId, doctorId
+   Response: "Appointment confirmed successfully"
+
+✅ POST /v1/healsync/book/complete
+   Purpose: Mark appointment as completed with notes/prescription
+   Parameters: appointmentId, doctorId, notes (optional), prescription (optional)
+   Response: "Appointment completed successfully"
+
+🎯 **FILTERING & SEARCH**
+────────────────────────
+
+🔍 GET /v1/healsync/book/filter
+   Purpose: Filter appointments with multiple criteria
+   Parameters: patientId, doctorId, status, startDate, endDate, page (default=0), size (default=10)
+   Response: Paginated filtered appointment list
+
+🔍 GET /v1/healsync/book/search
+   Purpose: Search appointments by patient/doctor name or details
+   Parameters: searchTerm, type (optional)
+   Response: Matching appointments
+
+🎯 **AVAILABILITY & SCHEDULING**
+──────────────────────────────
+
+✅ GET /v1/healsync/book/check-availability
+   Purpose: Check doctor availability for specific time slot
+   Parameters: doctorId, startDateTime, endDateTime
+   Response: { "available": true/false, "conflicts": [...] }
+
+📅 GET /v1/healsync/book/available-slots
+   Purpose: Get available time slots for a specialty on specific date
+   Parameters: specialty, date, durationMinutes (default=60)
+   Response: Array of available slots with doctor information
+
+📈 GET /v1/healsync/book/upcoming
+   Purpose: Get upcoming appointments for next N days
+   Parameters: patientId (optional), doctorId (optional), daysAhead (default=7)
+   Response: Array of upcoming appointments
+
+🎯 **BULK OPERATIONS & ANALYTICS**
+────────────────────────────────
+
+📊 GET /v1/healsync/book/statistics
+   Purpose: Get appointment statistics and analytics
+   Parameters: doctorId (optional), startDate (optional), endDate (optional)
+   Response: Statistical data including counts, trends
+
+🗑️ POST /v1/healsync/book/bulk-cancel
+   Purpose: Cancel multiple appointments at once
+   Request Body: Array of appointment IDs
+   Parameters: requesterId, requesterRole, reason (optional)
+   Response: { "cancelled": count, "failed": count, "details": [...] }
+
+================================================================
+3. DOCTOR MANAGEMENT APIS (13 ENDPOINTS)
+================================================================
+Base Path: /v1/healsync/doctor
+
+🎯 **DOCTOR CRUD OPERATIONS**
+───────────────────────────
+
+👨‍⚕️ POST /v1/healsync/doctor/add
+   Purpose: Add new doctor to system
+   Request Body: Complete doctor information
+   Response: Created doctor object with ID
+
+👨‍⚕️ GET /v1/healsync/doctor/{doctorId}
+   Purpose: Get doctor details by ID
+   Response: Complete doctor information
+
+👨‍⚕️ PUT /v1/healsync/doctor/{doctorId}
+   Purpose: Update doctor information
+   Request Body: Updated doctor data
+   Response: Updated doctor object
+
+❌ DELETE /v1/healsync/doctor/{doctorId}
+   Purpose: Delete doctor from system
+   Response: "Doctor deleted successfully"
+
+👥 GET /v1/healsync/doctor/public-profiles
+   Purpose: Get all doctor public profiles
+   Response: Array of doctor public information
+
+🎯 **SCHEDULE & AVAILABILITY MANAGEMENT**
+───────────────────────────────────────
+
+📅 POST /v1/healsync/doctor/{doctorId}/schedule
+   Purpose: Set doctor's weekly schedule
+   Request Body: Schedule configuration
+   Response: Created schedule objects
+
+📅 GET /v1/healsync/doctor/{doctorId}/schedule
+   Purpose: Get doctor's current schedule
+   Response: Array of schedule entries
+
+🚫 POST /v1/healsync/doctor/{doctorId}/blocks
+   Purpose: Create time blocks (unavailable periods)
+   Request Body: Block information (start, end, reason)
+   Response: Created block object
+
+🚫 GET /v1/healsync/doctor/{doctorId}/blocks
+   Purpose: Get doctor's time blocks
+   Response: Array of blocked time periods
+
+🗑️ DELETE /v1/healsync/doctor/{doctorId}/blocks/{blockId}
+   Purpose: Remove a time block
+   Response: "Block removed successfully"
+
+🎯 **PATIENT RELATIONSHIP MANAGEMENT**
+────────────────────────────────────
+
+👥 GET /v1/healsync/doctor/{doctorId}/patients
+   Purpose: Get all patients related to a doctor
+   Response: Array of patient objects who have appointments with the doctor
+
+👥 GET /v1/healsync/doctor/{doctorId}/patients/active
+   Purpose: Get active patients of a doctor
+   Response: Array of patients with active/upcoming appointments
+
+================================================================
+4. TREATMENT PLAN APIS (4 ENDPOINTS)
+================================================================
+
+🎯 **NEW TREATMENT PLAN API SYSTEM**
+──────────────────────────────────
+Base Path: /v1/healsync/treatment-plan
+
+📋 GET /v1/healsync/treatment-plan/all
+   Purpose: Get all treatment plans (for doctor dashboard)
+   Response: Array of all treatment plans with patient and medicine details
+
+🔍 GET /v1/healsync/treatment-plan/{id}
+   Purpose: Get specific treatment plan by ID
+   Response: Complete treatment plan with patient info and medicines
+
+➕ POST /v1/healsync/treatment-plan/create
+   Purpose: Create new treatment plan
+   Request Body: {
+     "patientId": 123,
+     "diagnosis": "...",
+     "treatmentGoals": "...",
+     "notes": "...",
+     "startDate": "2024-01-15",
+     "endDate": "2024-03-15",
+     "status": "ACTIVE",
+     "medicines": [...]
+   }
+   Response: Created treatment plan with full details
+
+🎯 **LEGACY TREATMENT PLAN API**
+──────────────────────────────
+Base Path: /api/patients/{patientId}/treatment-plans
+
+➕ POST /api/patients/{patientId}/treatment-plans
+   Purpose: Create treatment plan for specific patient (legacy endpoint)
+   Response: Created treatment plan
+
+================================================================
+5. PATIENT MANAGEMENT APIS
+================================================================
+
+🎯 **PATIENT AUTHENTICATION**
+──────────────────────────
+Base Path: /v1/healsync/patient
+
+🔐 POST /v1/healsync/patient/login
+   Purpose: Patient login authentication
+   Request Body: { "email": "...", "password": "..." }
+   Response: Patient object if successful, 401 if invalid
+
+🎯 **PATIENT MANAGEMENT**
+───────────────────────
+Base Path: /v1/healsync/patient
+
+👤 POST /v1/healsync/patient/add
+   Purpose: Add new patient to system
+   Request Body: Complete patient information
+   Response: Created patient object
+
+================================================================
+6. MEDICINE MANAGEMENT APIS
+================================================================
+Base Path: /v1/healsync/medicine
+
+💊 POST /v1/healsync/medicine/add
+   Purpose: Add new medicine to database
+   Request Body: Medicine information
+   Response: Created medicine object
+
+📋 GET /v1/healsync/medicine/all
+   Purpose: Get all available medicines
+   Response: Array of all medicines
+
+🔍 GET /v1/healsync/medicine/{medicineId}
+   Purpose: Get specific medicine details
+   Response: Medicine object or 404 if not found
+
+✏️ PUT /v1/healsync/medicine/update/{medicineId}
+   Purpose: Update medicine information
+   Request Body: Updated medicine data
+   Response: Updated medicine object
+
+❌ DELETE /v1/healsync/medicine/delete/{medicineId}
+   Purpose: Delete medicine from system
+   Response: Success message
+
+================================================================
+7. DISEASE MANAGEMENT APIS
+================================================================
+Base Path: /v1/healsync/disease
+
+🔍 GET /v1/healsync/disease/details
+   Purpose: Get disease details by symptoms
+   Parameters: symptoms (array)
+   Response: Matching disease information
+
+📋 GET /v1/healsync/disease/all
+   Purpose: Get all diseases in database
+   Response: Array of all disease objects
+
+➕ POST /v1/healsync/disease/add
+   Purpose: Add new disease to database
+   Request Body: Disease information
+   Response: Created disease object
+
+✏️ PUT /v1/healsync/disease/update/{diseaseId}
+   Purpose: Update disease information
+   Request Body: Updated disease data
+   Response: Updated disease object
+
+❌ DELETE /v1/healsync/disease/delete/{diseaseId}
+   Purpose: Delete disease from system
+   Response: Success message
+
+================================================================
+8. USER DISCOVERY APIS
+================================================================
+Base Path: /api
+
+👤 POST /api/patients
+   Purpose: Register new patient (public endpoint)
+   Request Body: Patient registration data
+   Response: Created patient object
+
+👨‍⚕️ GET /api/doctors
+   Purpose: Get all doctors (public endpoint)
+   Response: Array of doctor public profiles
+
+👨‍⚕️ GET /api/doctors/{id}
+   Purpose: Get specific doctor by ID (public endpoint)
+   Response: Doctor public profile
+
+🚨 GET /api/emergency-services
+   Purpose: Get all emergency services
+   Response: Array of emergency service providers
+
+🚨 GET /api/emergency-services/{speciality}
+   Purpose: Get emergency services by specialty
+   Response: Emergency services for specific specialty
+
+🔍 GET /api/doctors/search
+   Purpose: Search doctors by criteria
+   Parameters: Various search filters
+   Response: Matching doctors
+
+📅 GET /api/doctors/available
+   Purpose: Get currently available doctors
+   Response: Array of available doctors
+
+================================================================
+9. EMOTION TRACKER APIS
+================================================================
+Base Path: /v1/healsync/emotion
+
+📊 POST /v1/healsync/emotion/track
+   Purpose: Track patient emotional state
+   Request Body: Emotion tracking data
+   Response: Saved emotion record
+
+📈 GET /v1/healsync/emotion/patient/{patientId}
+   Purpose: Get emotion tracking history for patient
+   Response: Array of emotion records
+
+================================================================
+10. EMAIL OTP APIS
+================================================================
+Base Path: /v1/healsync/email
+
+📧 POST /v1/healsync/email/send
+   Purpose: Send OTP to email address
+   Request Body: { "email": "user@example.com" }
+   Response: Success message
+
+✅ POST /v1/healsync/email/verify
+   Purpose: Verify OTP code
+   Request Body: { "email": "...", "otp": "123456" }
+   Response: Verification result
+
+================================================================
+11. PASSWORD RESET APIS
+================================================================
+Base Path: /v1/healsync/password
+
+🔄 POST /v1/healsync/password/forgot
+   Purpose: Initiate password reset process
+   Request Body: { "email": "user@example.com" }
+   Response: Reset instructions sent
+
+📧 POST /v1/healsync/password/resend
+   Purpose: Resend password reset OTP
+   Request Body: { "email": "user@example.com" }
+   Response: OTP resent
+
+✅ POST /v1/healsync/password/verify
+   Purpose: Verify password reset OTP
+   Request Body: { "email": "...", "otp": "..." }
+   Response: Verification status
+
+🔄 POST /v1/healsync/password/reset
+   Purpose: Reset password with verified OTP
+   Request Body: { "email": "...", "newPassword": "...", "otp": "..." }
+   Response: Password reset confirmation
+
+================================================================
+HOW TO USE THE APIS - PRACTICAL EXAMPLES
+================================================================
+
+🎯 **COMPLETE APPOINTMENT BOOKING FLOW**
+──────────────────────────────────────
+
+1. Check Available Slots:
+   GET https://healsync-backend-d788.onrender.com/v1/healsync/book/available-slots?specialty=Cardiology&date=2024-12-15&durationMinutes=60
+
+2. Book Appointment:
+   POST https://healsync-backend-d788.onrender.com/v1/healsync/book/appointment
+   Body: ?specialty=Cardiology&startDateTime=2024-12-15T10:00:00&endDateTime=2024-12-15T11:00:00&patientId=123
+
+3. Doctor Confirms:
+   POST https://healsync-backend-d788.onrender.com/v1/healsync/book/confirm?appointmentId=456&doctorId=789
+
+4. Add Doctor Notes:
+   POST https://healsync-backend-d788.onrender.com/v1/healsync/book/notes?appointmentId=456&doctorId=789&notes=Patient%20examination%20complete
+
+5. Complete Appointment:
+   POST https://healsync-backend-d788.onrender.com/v1/healsync/book/complete?appointmentId=456&doctorId=789&prescription=Prescribed%20medication
+
+🎯 **DOCTOR MANAGEMENT FLOW**
+──────────────────────────
+
+1. Add Doctor:
+   POST https://healsync-backend-d788.onrender.com/v1/healsync/doctor/add
+   Body: { "name": "Dr. Smith", "specialty": "Cardiology", "email": "...", ... }
+
+2. Set Schedule:
+   POST https://healsync-backend-d788.onrender.com/v1/healsync/doctor/123/schedule
+   Body: { "schedules": [{"dayOfWeek": "MONDAY", "startTime": "09:00", "endTime": "17:00"}] }
+
+3. Create Time Block:
+   POST https://healsync-backend-d788.onrender.com/v1/healsync/doctor/123/blocks
+   Body: { "startDateTime": "2024-12-15T12:00:00", "endDateTime": "2024-12-15T13:00:00", "reason": "Lunch break" }
+
+4. Get Doctor's Patients:
+   GET https://healsync-backend-d788.onrender.com/v1/healsync/doctor/123/patients
+
+🎯 **TREATMENT PLAN MANAGEMENT FLOW**
+───────────────────────────────────
+
+1. Get All Treatment Plans:
+   GET https://healsync-backend-d788.onrender.com/v1/healsync/treatment-plan/all
+
+2. Create New Treatment Plan:
+   POST https://healsync-backend-d788.onrender.com/v1/healsync/treatment-plan/create
+   Body: {
+     "patientId": 123,
+     "diagnosis": "Hypertension",
+     "treatmentGoals": "Control blood pressure",
+     "medicines": [{"medicineId": 1, "dosage": "10mg", "timing": "Once daily"}]
+   }
+
+3. Get Specific Plan:
+   GET https://healsync-backend-d788.onrender.com/v1/healsync/treatment-plan/456
+
+🎯 **AUTHENTICATION FLOWS**
+─────────────────────────
+
+1. Admin Login:
+   POST https://healsync-backend-d788.onrender.com/v1/healsync/admin/login
+   Body: { "username": "admin", "password": "admin123" }
+
+2. Patient Login:
+   POST https://healsync-backend-d788.onrender.com/v1/healsync/patient/login
+   Body: { "email": "patient@example.com", "password": "password123" }
+
+3. Password Reset:
+   POST https://healsync-backend-d788.onrender.com/v1/healsync/password/forgot → POST https://healsync-backend-d788.onrender.com/v1/healsync/password/verify → POST https://healsync-backend-d788.onrender.com/v1/healsync/password/reset
+
+================================================================
+API TESTING GUIDELINES
+================================================================
+
+🔧 **TESTING TOOLS**
+- Use Postman, curl, or Thunder Client (VS Code)
+- Set Content-Type: application/json for POST/PUT requests
+- Include proper request parameters and body data
+
+📊 **RESPONSE FORMATS**
+All APIs return consistent JSON responses:
+- Success: { "status": "success", "message": "...", "data": {...} }
+- Error: { "status": "error", "message": "...", "data": null }
+
+🔐 **AUTHENTICATION**
+- Admin APIs require admin credentials
+- Patient APIs require patient authentication
+- Some APIs are public (user discovery, emergency services)
+
+⚠️ **ERROR HANDLING**
+- 400: Bad Request (invalid parameters)
+- 401: Unauthorized (authentication failed)
+- 404: Not Found (resource doesn't exist)
+- 500: Internal Server Error (server-side issues)
+
+================================================================
+SYSTEM ARCHITECTURE OVERVIEW
+================================================================
+
+🏗️ **TECHNOLOGY STACK**
+- Backend: Spring Boot 3.x with Java
+- Database: PostgreSQL
+- Email: SMTP integration (Gmail)
+- Build Tool: Gradle
+
+📦 **KEY FEATURES**
+- RESTful API design
+- Comprehensive appointment management
+- Doctor-patient relationship tracking
+- Treatment plan management
+- Email notifications and OTP verification
+- Medicine and disease management
+- Emergency services integration
+- Emotion tracking capabilities
+
+🔄 **INTEGRATION POINTS**
+- Frontend can be React, Angular, or any web framework
+- Mobile apps can consume these APIs
+- Third-party integrations possible
+- Email service integration for notifications
+
+================================================================
+TOTAL API COUNT: 61+ ENDPOINTS
+================================================================
+✅ 18 Appointment Management APIs
+✅ 13 Doctor Management APIs  
+✅ 4 Treatment Plan APIs
+✅ 5 Medicine Management APIs
+✅ 5 Disease Management APIs
+✅ 7 User Discovery APIs
+✅ 2 Emotion Tracker APIs
+✅ 2 Email OTP APIs
+✅ 4 Password Reset APIs
+✅ 1 Admin Authentication API
+✅ 2 Patient Management APIs
+
+This comprehensive API system provides complete healthcare management functionality for the HealSync platform.

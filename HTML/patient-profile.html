@@ -6,55 +6,204 @@
     <title>My Profile - HealSync</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/CSS/dashboard.css">
+    <link rel="stylesheet" href="/CSS/snackbar.css">
 </head>
 <body>
     <div class="dashboard-wrapper">
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>HealSync</h2>
+                <div class="logo">
+                    <i class="fas fa-heartbeat"></i>
+                    <h2>HealSync</h2>
+                </div>
             </div>
             <nav class="sidebar-nav">
                 <ul>
-                    <li><a href="/HTML/patient-treatment-dashboard.html" class="nav-link">Dashboard</a></li>
-                    <li><a href="/HTML/patient-profile.html" class="nav-link active">My Profile</a></li>
-                    <li><a href="/HTML/patient-treatment-dashboard.html" class="nav-link">My Treatments</a></li>
-                    <li><a href="/HTML/patient-profile-edit.html" class="nav-link">Edit Profile</a></li>
+                    <li><a href="/HTML/index.html" class="nav-link">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a></li>
+                    <li><a href="/HTML/patient-profile.html" class="nav-link active">
+                        <i class="fas fa-user"></i>
+                        <span>My Profile</span>
+                    </a></li>
+                    <li><a href="/HTML/patient-treatment-dashboard.html" class="nav-link">
+                        <i class="fas fa-pills"></i>
+                        <span>My Treatments</span>
+                    </a></li>
                 </ul>
             </nav>
             <div class="sidebar-footer">
-                <a href="/HTML/index.html" class="btn btn-secondary">Logout</a>
+                <button class="logout-btn" onclick="handlePatientLogout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
             </div>
         </aside>
 
         <main class="main-content">
             <header class="main-header">
-                <h1>My Profile</h1>
+                <div class="header-content">
+                    <h1><i class="fas fa-user-circle"></i> My Profile</h1>
+                    <p class="header-subtitle">Manage your personal information and account settings</p>
+                </div>
             </header>
 
-            <div class="card">
-                <div class="profile-header">
-                    <h3>Personal Information</h3>
-                    <a href="patient-profile-edit.html" class="btn btn-primary">Edit Profile</a>
+            <!-- Profile Summary Card -->
+            <div class="profile-summary-card">
+                <div class="profile-avatar">
+                    <div class="avatar-circle">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="profile-status">
+                        <span class="status-badge active">Active Patient</span>
+                    </div>
                 </div>
-                <div class="profile-details">
-                    <div class="detail-item">
-                        <span class="detail-label">Full Name</span>
-                        <span class="detail-value">Ritika</span>
+                <div class="profile-summary-info">
+                    <h2 class="patient-name">Loading...</h2>
+                    <p class="patient-details">
+                        <span class="patient-age">-- years</span> •
+                        <span class="patient-gender">--</span> •
+                        <span class="patient-id">ID: --</span>
+                    </p>
+                    <p class="join-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        Member since <span class="member-since">--</span>
+                    </p>
+                </div>
+                <div class="profile-actions">
+                    <a href="/HTML/patient-profile-edit.html" class="btn btn-primary">
+                        <i class="fas fa-edit"></i>
+                        Edit Profile
+                    </a>
+                </div>
+            </div>
+
+            <!-- Profile Details Grid -->
+            <div class="profile-grid">
+                <!-- Personal Information Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-user-circle"></i> Personal Information</h3>
                     </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Email Address</span>
-                        <span class="detail-value">ritika@gmail.com</span>
+                    <div class="card-body">
+                        <div class="profile-details">
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-user"></i>
+                                    Full Name
+                                </div>
+                                <div class="detail-value patient-name-detail">Loading...</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-birthday-cake"></i>
+                                    Age
+                                </div>
+                                <div class="detail-value patient-age-detail">-- years</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-venus-mars"></i>
+                                    Gender
+                                </div>
+                                <div class="detail-value patient-gender-detail">--</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Contact Number</span>
-                        <span class="detail-value">1234567890</span>
+                </div>
+
+                <!-- Contact Information Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-address-book"></i> Contact Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="profile-details">
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-envelope"></i>
+                                    Email Address
+                                </div>
+                                <div class="detail-value patient-email-detail">Loading...</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-phone"></i>
+                                    Mobile Number
+                                </div>
+                                <div class="detail-value patient-mobile-detail">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Security Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-shield-alt"></i> Account Security</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="security-item">
+                            <div class="security-info">
+                                <i class="fas fa-lock"></i>
+                                <div>
+                                    <h4>Password</h4>
+                                    <p>Last updated: <span class="password-updated">--</span></p>
+                                </div>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" onclick="changePassword()">
+                                <i class="fas fa-key"></i>
+                                Change Password
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Statistics Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> Account Overview</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-pills"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h4 class="stat-number" id="treatment-count">--</h4>
+                                    <p class="stat-label">Active Treatments</p>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-icon">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h4 class="stat-number" id="appointment-count">--</h4>
+                                    <p class="stat-label">Appointments</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Loading Overlay -->
+            <div id="loading-overlay" class="loading-overlay">
+                <div class="loading-spinner"></div>
+                <p>Loading your profile...</p>
+            </div>
         </main>
     </div>
+
+    <!-- Scripts -->
+    <script src="/JS/patient-treatment-dashboard-auth.js"></script>
+    <script src="/JS/patient-profile.js"></script>
 </body>
 </html>
 

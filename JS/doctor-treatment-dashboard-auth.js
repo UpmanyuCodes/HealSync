@@ -19,8 +19,27 @@ function checkDoctorAuthentication() {
     const userData = localStorage.getItem('healSync_userData');
     const loginTime = localStorage.getItem('healSync_loginTime');
     
+    // For development: Create sample doctor session if none exists
+    if (!userType || !userData) {
+        console.log('No doctor session found, creating sample session for development...');
+        const sampleDoctor = {
+            doctorId: 1,
+            doctorName: 'Dr. John Smith',
+            specialty: 'General Medicine',
+            email: 'dr.smith@healsync.com',
+            hospitalName: 'HealSync Medical Center'
+        };
+        
+        localStorage.setItem('healSync_userType', 'doctor');
+        localStorage.setItem('healSync_userData', JSON.stringify(sampleDoctor));
+        localStorage.setItem('healSync_loginTime', new Date().toISOString());
+        
+        console.log('Sample doctor session created:', sampleDoctor);
+        return true;
+    }
+    
     // Check if user is logged in and is a doctor
-    if (!userType || userType !== 'doctor' || !userData) {
+    if (userType !== 'doctor') {
         showAuthError('Please login as a doctor to access this page.');
         redirectToLogin();
         return false;

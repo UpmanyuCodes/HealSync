@@ -7,90 +7,261 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- This links to your main styles for the header and footer -->
+    <!-- Unified Theme System -->
+    <link rel="stylesheet" href="/CSS/healsync-theme.css">
     <link rel="stylesheet" href="/CSS/index.css"> 
-    
-    <!-- This links to the new styles for the doctor directory -->
     <link rel="stylesheet" href="/CSS/directory.css">
+    <link rel="stylesheet" href="/CSS/doctors.css">
+    <link rel="stylesheet" href="/CSS/snackbar.css">
+    <link rel="stylesheet" href="/CSS/health-indicator.css">
 </head>
 <body>
 
     <!-- Main Site Header -->
     <header class="site-header">
         <nav class="container nav-container">
-            <a href="index.html" class="logo">
-                <svg xmlns="http://www.w3.org/2000/svg" class="logo-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" /></svg>
+            <a href="/HTML/index.html" class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" class="logo-icon" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                </svg>
                 HealSync
             </a>
             <div class="desktop-menu">
-                <a href="index.html#features">Features</a>
-                <a href="doctors.html">Find a Doctor</a>
-                <a href="index.html#caregiver-view">Caregiver View</a>
+                <a href="/HTML/index.html#features">Features</a>
+                <a href="/HTML/doctors.html" class="active">Find Doctors</a>
+                <a href="/HTML/tracker.html">Health Tracker</a>
+                <a href="/HTML/index.html#about">About</a>
             </div>
             <div class="desktop-menu-actions">
-                 <a href="login.html" class="btn btn-secondary">Patient Login</a>
+                <a href="/HTML/login.html" class="btn btn-secondary">Login</a>
+                <a href="/HTML/register.html" class="btn btn-primary">Get Started</a>
             </div>
+            <button id="mobile-menu-button" class="mobile-menu-toggle">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+            </button>
+        </nav>
+        <nav class="mobile-nav" id="mobile-menu">
+            <a href="/HTML/index.html#features" class="mobile-nav-link">Features</a>
+            <a href="/HTML/doctors.html" class="mobile-nav-link">Find Doctors</a>
+            <a href="/HTML/tracker.html" class="mobile-nav-link">Health Tracker</a>
+            <a href="/HTML/index.html#about" class="mobile-nav-link">About</a>
+            <a href="/HTML/login.html" class="mobile-nav-link">Login</a>
+            <a href="/HTML/register.html" class="mobile-nav-link">Get Started</a>
         </nav>
     </header>
 
     <main class="directory-main">
         <section class="directory-header">
             <div class="container">
-                <h1>Meet Our Doctors</h1>
-                <p>Find the right specialist to guide you on your recovery journey.</p>
+                <h1>Meet Our Medical Experts</h1>
+                <p>Connect with qualified healthcare professionals who are ready to guide you on your recovery journey.</p>
             </div>
         </section>
 
         <section class="directory-content">
             <div class="container">
-                <!-- Filter Bar -->
-                <div class="filter-bar">
-                    <label for="specialty-filter">Filter by Specialty:</label>
-                    <select id="specialty-filter">
-                        <option value="all">All Specialties</option>
-                        <option value="therapist">Therapist</option>
-                        <option value="neurologist">Neurologist</option>
-                        <option value="cardiologist">Cardiologist</option>
-                    </select>
+                <!-- Search and Filter Bar -->
+                <div class="search-filter-bar">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="doctor-search" placeholder="Search doctors by name or specialty...">
+                        <button type="button" id="clear-search" class="clear-btn" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="filter-controls">
+                        <div class="filter-group">
+                            <label for="specialty-filter">
+                                <i class="fas fa-stethoscope"></i>
+                                Specialty
+                            </label>
+                            <select id="specialty-filter">
+                                <option value="all">All Specialties</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="shift-filter">
+                                <i class="fas fa-clock"></i>
+                                Availability
+                            </label>
+                            <select id="shift-filter">
+                                <option value="all">All Times</option>
+                                <option value="Day">Day Shift</option>
+                                <option value="Night">Night Shift</option>
+                            </select>
+                        </div>
+                        
+                        <button type="button" id="reset-filters" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-undo"></i>
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loading-container" class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p>Loading medical professionals...</p>
+                </div>
+
+                <!-- Error State -->
+                <div id="error-container" class="error-container" style="display: none;">
+                    <div class="error-content">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Unable to Load Doctors</h3>
+                        <p>We're having trouble loading our doctor directory. Please try again.</p>
+                        <button class="btn btn-primary" onclick="loadDoctors()">
+                            <i class="fas fa-refresh"></i>
+                            Retry
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Summary -->
+                <div id="results-summary" class="results-summary" style="display: none;">
+                    <p>Showing <span id="results-count">0</span> doctors</p>
                 </div>
 
                 <!-- Doctor Grid -->
-                <div class="doctor-grid">
-                    <!-- Doctor Card 1 -->
-                    <div class="doctor-card" data-specialty="therapist">
-                        <img src="https://placehold.co/300x300/E0F2F1/0F766E?text=Dr.+Priya" alt="Dr. Priya Sharma">
-                        <div class="doctor-card-content">
-                            <h3>Dr. Priya Sharma</h3>
-                            <p>Therapist</p>
-                            <a href="doctor-profile.html" class="btn btn-primary">View Profile</a>
-                        </div>
+                <div id="doctor-grid" class="doctor-grid">
+                    <!-- Doctors will be loaded dynamically -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <div class="empty-content">
+                        <i class="fas fa-user-md"></i>
+                        <h3>No Doctors Found</h3>
+                        <p>We couldn't find any doctors matching your search criteria.</p>
+                        <button class="btn btn-secondary" onclick="resetAllFilters()">
+                            <i class="fas fa-undo"></i>
+                            Clear Filters
+                        </button>
                     </div>
-                    <!-- Doctor Card 2 -->
-                    <div class="doctor-card" data-specialty="neurologist">
-                        <img src="https://placehold.co/300x300/E0F2F1/0F766E?text=Dr.+Rohan" alt="Dr. Rohan Verma">
-                        <div class="doctor-card-content">
-                            <h3>Dr. Rohan Verma</h3>
-                            <p>Neurologist</p>
-                            <a href="doctor-profile.html" class="btn btn-primary">View Profile</a>
+                </div>
+
+                <!-- Appointment Booking Modal -->
+                <div id="booking-modal" class="booking-modal" style="display: none;">
+                    <div class="booking-modal-content">
+                        <div class="booking-modal-header">
+                            <h3><i class="fas fa-calendar-plus"></i> Book Appointment</h3>
+                            <button class="close-modal" onclick="closeBookingModal()">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
-                    </div>
-                    <!-- Doctor Card 3 -->
-                    <div class="doctor-card" data-specialty="cardiologist">
-                        <img src="https://placehold.co/300x300/E0F2F1/0F766E?text=Dr.+Anjali" alt="Dr. Anjali Desai">
-                        <div class="doctor-card-content">
-                            <h3>Dr. Anjali Desai</h3>
-                            <p>Cardiologist</p>
-                            <a href="doctor-profile.html" class="btn btn-primary">View Profile</a>
-                        </div>
-                    </div>
-                     <!-- Doctor Card 4 -->
-                    <div class="doctor-card" data-specialty="therapist">
-                        <img src="https://placehold.co/300x300/E0F2F1/0F766E?text=Dr.+Vikram" alt="Dr. Vikram Singh">
-                        <div class="doctor-card-content">
-                            <h3>Dr. Vikram Singh</h3>
-                            <p>Therapist</p>
-                            <a href="doctor-profile.html" class="btn btn-primary">View Profile</a>
+                        <div class="booking-modal-body">
+                            <form id="booking-form" class="booking-form">
+                                <input type="hidden" id="selected-doctor-id">
+                                
+                                <div id="selected-doctor-info">
+                                    <!-- Doctor info will be populated -->
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="appointment-date">
+                                            <i class="fas fa-calendar"></i>
+                                            Preferred Date
+                                        </label>
+                                        <input type="date" id="appointment-date" required>
+                                        <div class="form-validation-message" id="date-validation"></div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="appointment-time">
+                                            <i class="fas fa-clock"></i>
+                                            Start Time
+                                        </label>
+                                        <input type="time" id="appointment-time" required min="08:00" max="20:00" step="300">
+                                        <div class="form-validation-message" id="time-validation"></div>
+                                        <small class="form-help-text">Available: 8:00 AM - 8:00 PM (5-minute intervals)</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="appointment-duration">
+                                            <i class="fas fa-hourglass-half"></i>
+                                            Duration
+                                        </label>
+                                        <select id="appointment-duration" required>
+                                            <option value="">Select Duration</option>
+                                            <option value="15">15 minutes - Quick Consultation</option>
+                                            <option value="30">30 minutes - Standard Consultation</option>
+                                            <option value="45">45 minutes - Detailed Consultation</option>
+                                            <option value="60">1 hour - Comprehensive Consultation</option>
+                                            <option value="90">1.5 hours - Extended Consultation</option>
+                                            <option value="120">2 hours - Complete Assessment</option>
+                                        </select>
+                                        <div class="form-validation-message" id="duration-validation"></div>
+                                        <small class="form-help-text">Choose based on your consultation needs</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="appointment-type">
+                                            <i class="fas fa-stethoscope"></i>
+                                            Consultation Type
+                                        </label>
+                                        <select id="appointment-type" required>
+                                            <option value="">Select Type</option>
+                                            <option value="general">General Consultation</option>
+                                            <option value="followup">Follow-up Visit</option>
+                                            <option value="emergency">Urgent Care</option>
+                                            <option value="preventive">Preventive Care</option>
+                                            <option value="specialist">Specialist Consultation</option>
+                                        </select>
+                                        <div class="form-validation-message" id="type-validation"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Appointment Summary -->
+                                <div id="appointment-summary" class="appointment-summary" style="display: none;">
+                                    <h4><i class="fas fa-info-circle"></i> Appointment Summary</h4>
+                                    <div class="summary-details">
+                                        <div class="summary-item">
+                                            <span class="summary-label">Start Time:</span>
+                                            <span class="summary-value" id="summary-start-time">--</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">End Time:</span>
+                                            <span class="summary-value" id="summary-end-time">--</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">Total Duration:</span>
+                                            <span class="summary-value" id="summary-duration">--</span>
+                                        </div>
+                                        <div class="summary-item">
+                                            <span class="summary-label">Consultation Type:</span>
+                                            <span class="summary-value" id="summary-type">--</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group single-column">
+                                    <label for="appointment-reason">
+                                        <i class="fas fa-comment-medical"></i>
+                                        Reason for Visit
+                                    </label>
+                                    <textarea id="appointment-reason" rows="3" placeholder="Brief description of your concern or reason for consultation..." required minlength="10"></textarea>
+                                    <div class="form-validation-message" id="reason-validation"></div>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-secondary" onclick="closeBookingModal()">
+                                        Cancel
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-calendar-plus"></i>
+                                        Book Appointment
+                                    </button>
+                                </div>
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -98,5 +269,25 @@
         </section>
     </main>
 
+    <!-- Footer Placeholder -->
+    <div id="footer-placeholder"></div>
+
+    <!-- API Health Indicator -->
+    <div id="api-health-indicator" class="health-indicator">
+        <div class="health-dot"></div>
+        <span>Checking API...</span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/JS/api-health.js"></script>
+    <script src="/JS/navigation.js"></script>
+    <script src="/JS/footer.js"></script>
+    <script src="/JS/doctors.js"></script>
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button')?.addEventListener('click', () => {
+            document.getElementById('mobile-menu')?.classList.toggle('visible');
+        });
+    </script>
 </body>
 </html>

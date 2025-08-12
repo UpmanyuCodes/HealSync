@@ -190,7 +190,7 @@ async function handleDoctorSubmit(e) {
     
     const formData = {
         name: document.getElementById('doc-name').value.trim(),
-        speaciality: document.getElementById('doc-speciality').value.trim(),
+        speciality: document.getElementById('doc-speciality').value.trim(),
         email: document.getElementById('doc-email').value.trim(),
         mobileNo: document.getElementById('doc-mobile').value.trim(),
         bio: document.getElementById('doc-bio').value.trim(),
@@ -251,15 +251,14 @@ async function loadDoctors() {
     setLoading('#doctors', true);
     try {
         const response = await fetch(`${API_BASE}/v1/healsync/doctor/public-profiles`);
-        if (response.ok) {
-            const doctors = await response.json();
-            renderDoctorsTable(doctors);
-        } else {
+        if (!response.ok) {
             throw new Error('Failed to load doctors');
         }
+        const doctors = await response.json();
+        renderDoctorsTable(doctors);
     } catch (error) {
         console.error('Error loading doctors:', error);
-        showSnackbar('Failed to load doctors. Please try again.', 'error');
+        showSnackbar('Failed to load doctors. Please check your connection and try again.', 'error');
         const tbody = document.querySelector('#doctors .data-table tbody');
         if (tbody) {
             tbody.innerHTML = `
@@ -271,6 +270,8 @@ async function loadDoctors() {
                 </tr>
             `;
         }
+    } finally {
+        setLoading('#doctors', false);
     }
 }
 
@@ -297,7 +298,7 @@ function renderDoctorsTable(doctors) {
                 <div class="entity-name">${doctor.name}</div>
                 <div class="entity-subtitle">Shift: ${doctor.shift}</div>
             </td>
-            <td>${doctor.speaciality}</td>
+            <td>${doctor.speciality || doctor.speaciality}</td>
             <td class="email-column">${doctor.email}</td>
             <td class="mobile-column">${doctor.mobileNo}</td>
             <td class="actions-column">
@@ -326,7 +327,7 @@ async function editDoctor(doctorId) {
 
 function populateDoctorForm(doctor) {
     document.getElementById('doc-name').value = doctor.name;
-    document.getElementById('doc-speciality').value = doctor.speaciality;
+    document.getElementById('doc-speciality').value = doctor.speciality || doctor.speaciality;
     document.getElementById('doc-email').value = doctor.email;
     document.getElementById('doc-mobile').value = doctor.mobileNo;
     document.getElementById('doc-bio').value = doctor.bio;
@@ -435,14 +436,39 @@ function resetDiseaseForm() {
 }
 
 async function loadDiseases() {
+    setLoading('#diseases', true);
     try {
-        const response = await fetch(`${API_BASE}/v1/healsync/disease/all`);
-        if (response.ok) {
-            const diseases = await response.json();
-            renderDiseasesTable(diseases);
+        // Try API first, fallback to offline mode if needed
+        let diseases;
+        if (window.offlineFallback && window.offlineFallback.isOffline()) {
+            diseases = await window.offlineFallback.getDiseases();
+        } else {
+            const response = await fetch(`${API_BASE}/v1/healsync/disease/all`);
+            if (response.ok) {
+                diseases = await response.json();
+            } else {
+                throw new Error('Failed to load diseases');
+            }
         }
-    } catch (err) {
-        console.error('Failed to load diseases:', err);
+        renderDiseasesTable(diseases);
+    } catch (error) {
+        console.error('Failed to load diseases:', error);
+        
+        // Try offline fallback
+        if (window.offlineFallback) {
+            try {
+                window.offlineFallback.enableOfflineMode();
+                const diseases = await window.offlineFallback.getDiseases();
+                renderDiseasesTable(diseases);
+                return;
+            } catch (offlineError) {
+                console.error('Offline fallback also failed:', offlineError);
+            }
+        }
+        
+        showSnackbar('Failed to load diseases. Please try again.', 'error');
+    } finally {
+        setLoading('#diseases', false);
     }
 }
 
@@ -598,14 +624,39 @@ function resetMedicineForm() {
 }
 
 async function loadMedicines() {
+    setLoading('#medicines', true);
     try {
-        const response = await fetch(`${API_BASE}/v1/healsync/medicine/all`);
-        if (response.ok) {
-            const medicines = await response.json();
-            renderMedicinesTable(medicines);
+        // Try API first, fallback to offline mode if needed
+        let medicines;
+        if (window.offlineFallback && window.offlineFallback.isOffline()) {
+            medicines = await window.offlineFallback.getMedicines();
+        } else {
+            const response = await fetch(`${API_BASE}/v1/healsync/medicine/all`);
+            if (response.ok) {
+                medicines = await response.json();
+            } else {
+                throw new Error('Failed to load medicines');
+            }
         }
-    } catch (err) {
-        console.error('Failed to load medicines:', err);
+        renderMedicinesTable(medicines);
+    } catch (error) {
+        console.error('Failed to load medicines:', error);
+        
+        // Try offline fallback
+        if (window.offlineFallback) {
+            try {
+                window.offlineFallback.enableOfflineMode();
+                const medicines = await window.offlineFallback.getMedicines();
+                renderMedicinesTable(medicines);
+                return;
+            } catch (offlineError) {
+                console.error('Offline fallback also failed:', offlineError);
+            }
+        }
+        
+        showSnackbar('Failed to load medicines. Please try again.', 'error');
+    } finally {
+        setLoading('#medicines', false);
     }
 }
 

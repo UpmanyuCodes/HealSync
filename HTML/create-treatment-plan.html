@@ -7,8 +7,93 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/CSS/index.css">
-    <link rel="stylesheet" href="/CSS/treatment.css">
+    <link rel="stylesheet" href="/CSS/healsync-theme.css">
+    <link rel="stylesheet" href="/CSS/dashboard.css">
+    <link rel="stylesheet" href="/CSS/doctor-treatment-dashboard.css">
+    <link rel="stylesheet" href="/CSS/forms.css">
+    <link rel="stylesheet" href="/CSS/snackbar.css">
+    
+    <style>
+        /* Mobile menu toggle button */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #374151;
+            cursor: pointer;
+            padding: 0.5rem;
+            margin-right: 1rem;
+        }
+        
+        .mobile-menu-toggle svg {
+            width: 24px;
+            height: 24px;
+        }
+        
+        /* Mobile responsive styles */
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                top: 0;
+                z-index: 1000;
+                height: 100vh;
+                transition: left 0.3s ease;
+            }
+            
+            .sidebar.sidebar-open {
+                left: 0;
+            }
+            
+            .main-content {
+                width: 100%;
+            }
+            
+            .main-header {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+            }
+        }
+        
+        /* Form improvements */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .form-group select,
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #D1D5DB;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+        
+        .form-group select:focus,
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard-wrapper">
@@ -31,6 +116,11 @@
 
         <main class="main-content">
             <header class="main-header">
+                <button id="mobile-menu-button" class="mobile-menu-toggle">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                    </svg>
+                </button>
                 <h1>Create a New Treatment Plan</h1>
             </header>
 
@@ -121,18 +211,37 @@
         </main>
     </div>
 
+    <!-- Snackbar for notifications -->
+    <div id="snackbar" class="snackbar"></div>
+
+    <!-- API Health Indicator -->
+    <div id="api-health-indicator" class="api-health-indicator">
+        <div class="health-dot"></div>
+        <span>Checking API...</span>
+    </div>
+
     <!-- JavaScript -->
-    <script src="../JS/doctor-treatment-dashboard.js"></script>
+    <script src="/JS/api-health.js"></script>
+    <script src="/JS/doctor-treatment-dashboard-auth.js"></script>
+    <script src="/JS/navigation.js"></script>
+    <script src="/JS/doctor-patient-api.js"></script>
     <script>
         // Create Treatment Plan JavaScript
-        const API_BASE = 'https://healsync-backend-d788.onrender.com/api';
+        const API_BASE = 'https://healsync-backend-d788.onrender.com';
         let medicineRows = [];
         let rowCounter = 0;
 
         // Initialize page when DOM loads
         document.addEventListener('DOMContentLoaded', function() {
-            // Check authentication first
-            checkDoctorAuthentication();
+            // Mobile menu functionality
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const sidebar = document.querySelector('.sidebar');
+            
+            if (mobileMenuButton && sidebar) {
+                mobileMenuButton.addEventListener('click', function() {
+                    sidebar.classList.toggle('sidebar-open');
+                });
+            }
             
             loadPatients();
             loadDiseases();
@@ -141,42 +250,31 @@
             addFirstMedicineRow();
         });
         
-        // Check if doctor is authenticated
-        function checkDoctorAuthentication() {
-            const userType = localStorage.getItem('healSync_userType');
-            const userData = localStorage.getItem('healSync_userData');
-            
-            if (!userType || userType !== 'doctor' || !userData) {
-                alert('Please login as a doctor to access this page.');
-                window.location.href = '/HTML/login.html';
-                return;
-            }
-            
+        // Get current doctor info
+        function getCurrentDoctorInfo() {
             try {
-                const user = JSON.parse(userData);
-                // Store doctor ID for treatment plan creation
-                localStorage.setItem('currentDoctorId', user.doctorId);
+                const userData = localStorage.getItem('healSync_userData');
+                if (userData) {
+                    const user = JSON.parse(userData);
+                    return user.doctorId || localStorage.getItem('currentDoctorId');
+                }
             } catch (error) {
-                console.error('Error parsing user data:', error);
+                console.error('Error getting doctor info:', error);
             }
+            return null;
         }
 
-        // Load patients from API
+        // Load patients from API - doctor-specific patients
         async function loadPatients() {
             try {
-                const response = await fetch(`${API_BASE}/patients`);
-                if (response.ok) {
-                    const patients = await response.json();
-                    const select = document.getElementById('patient-select');
-                    patients.forEach(patient => {
-                        const option = document.createElement('option');
-                        option.value = patient._id;
-                        option.textContent = `${patient.firstName} ${patient.lastName}`;
-                        select.appendChild(option);
-                    });
-                } else {
-                    showAlert('Failed to load patients', 'error');
+                const doctorId = getCurrentDoctorInfo();
+                if (!doctorId) {
+                    showAlert('Doctor ID not found. Please login again.', 'error');
+                    return;
                 }
+
+                // Use the utility function to populate patient select
+                await DoctorPatientUI.populatePatientSelect('patient-select', doctorId, true, 'Select a patient...');
             } catch (error) {
                 showAlert('Error loading patients: ' + error.message, 'error');
             }
@@ -185,13 +283,13 @@
         // Load diseases from API
         async function loadDiseases() {
             try {
-                const response = await fetch(`${API_BASE}/diseases`);
+                const response = await fetch(`${API_BASE}/v1/healsync/disease/all`);
                 if (response.ok) {
                     const diseases = await response.json();
                     const select = document.getElementById('disease-select');
                     diseases.forEach(disease => {
                         const option = document.createElement('option');
-                        option.value = disease._id;
+                        option.value = disease.diseaseId || disease.id;
                         option.textContent = disease.name;
                         select.appendChild(option);
                     });
@@ -206,7 +304,7 @@
         // Load medicines from API
         async function loadMedicines() {
             try {
-                const response = await fetch(`${API_BASE}/medicines`);
+                const response = await fetch(`${API_BASE}/v1/healsync/medicine/all`);
                 if (response.ok) {
                     window.medicinesData = await response.json();
                 } else {
@@ -407,6 +505,19 @@
                     alert.remove();
                 }
             }, 5000);
+        }
+
+        // Show snackbar notification
+        function showSnackbar(message, type = 'info') {
+            const snackbar = document.getElementById('snackbar');
+            if (snackbar) {
+                snackbar.textContent = message;
+                snackbar.className = `snackbar snackbar-${type} show`;
+                
+                setTimeout(() => {
+                    snackbar.classList.remove('show');
+                }, 3000);
+            }
         }
     </script>
 </body>

@@ -81,9 +81,9 @@ function setLoginType(type) {
         registerLink.href = 'register.html';
     } else {
         formTitle.textContent = 'Doctor Login';
-        formSubtitle.textContent = 'Access your doctor dashboard.';
+        formSubtitle.textContent = 'Access your doctor dashboard and manage appointments.';
         btnText.textContent = 'Sign In as Doctor';
-        registerLink.href = 'register.html'; // Could be doctor-register.html if exists
+        registerLink.href = 'register.html';
     }
     
     // Clear form
@@ -115,9 +115,7 @@ async function handleLogin(event) {
         if (currentLoginType === 'patient') {
             loginResult = await loginPatient(email, password);
         } else {
-            const doctorId = formData.get('doctorId');
-            const speciality = formData.get('speciality');
-            loginResult = await loginDoctor(email, password, doctorId, speciality);
+            loginResult = await loginDoctor(email, password);
         }
         
         // Handle successful login
@@ -202,67 +200,34 @@ async function loginPatient(email, password) {
     }
 }
 
-// Doctor login API call (Note: You may need to implement doctor login endpoint)
-async function loginDoctor(email, password, doctorId, speciality) {
+// Doctor login API call
+async function loginDoctor(email, password) {
     try {
-        // First, try to get doctor by ID to verify credentials
-        // Since there's no direct doctor login endpoint, we'll use the get doctor endpoint
-        // and verify the email/password match
+        // Try to find doctor by email from the public profiles
+        const response = await fetch(`${API_BASE}/v1/healsync/doctor/public-profiles`);
         
-        if (doctorId) {
-            const response = await fetch(`${API_BASE}/v1/healsync/doctor/${doctorId}`);
+        if (response.ok) {
+            const doctors = await response.json();
+            const doctor = doctors.find(d => d.email === email);
             
-            if (response.ok) {
-                const doctorData = await response.json();
-                
-                // Verify email matches
-                if (doctorData.email === email) {
-                    // In a real scenario, password verification would be done on the backend
-                    // For now, we'll simulate successful login
-                    return {
-                        success: true,
-                        data: doctorData
-                    };
-                } else {
-                    return {
-                        success: false,
-                        error: 'Invalid credentials. Please check your doctor ID and email.'
-                    };
-                }
+            if (doctor) {
+                // In a real scenario, password verification would be done on the backend
+                // For now, we'll simulate successful login if doctor is found
+                return {
+                    success: true,
+                    data: doctor
+                };
             } else {
                 return {
                     success: false,
-                    error: 'Doctor not found. Please check your doctor ID.'
+                    error: 'Invalid email or password. Please check your credentials.'
                 };
             }
         } else {
-            // Try to find doctor by email and speciality
-            const response = await fetch(`${API_BASE}/v1/healsync/doctor/public-profiles`);
-            
-            if (response.ok) {
-                const doctors = await response.json();
-                const doctor = doctors.find(d => 
-                    d.email === email && 
-                    (!speciality || d.speaciality === speciality)
-                );
-                
-                if (doctor) {
-                    return {
-                        success: true,
-                        data: doctor
-                    };
-                } else {
-                    return {
-                        success: false,
-                        error: 'Doctor not found with the provided credentials.'
-                    };
-                }
-            } else {
-                return {
-                    success: false,
-                    error: 'Unable to verify doctor credentials. Please try again.'
-                };
-            }
+            return {
+                success: false,
+                error: 'Unable to verify doctor credentials. Please try again.'
+            };
         }
     } catch (error) {
         return {
