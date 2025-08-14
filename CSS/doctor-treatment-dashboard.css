@@ -69,6 +69,33 @@
     color: #1E40AF;
 }
 
+.alert-warning {
+    background: #FEF3C7;
+    border: 1px solid #F59E0B;
+    color: #92400E;
+}
+
+/* API Status Alerts */
+.api-status-alert {
+    animation: slideInRight 0.3s ease-out;
+    position: relative;
+}
+
+.api-status-alert i {
+    margin-right: 0.5rem;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
 .alert-close {
     background: none;
     border: none;
@@ -281,6 +308,34 @@
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 1.5rem;
     margin-top: 1rem;
+}
+
+/* No Treatments State */
+.no-treatments {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: white;
+    border: 2px dashed #D1D5DB;
+    border-radius: 12px;
+    margin-top: 1rem;
+}
+
+.no-treatments i {
+    font-size: 3rem;
+    color: #9CA3AF;
+    margin-bottom: 1rem;
+}
+
+.no-treatments h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.no-treatments p {
+    color: #6B7280;
+    font-size: 0.95rem;
 }
 
 .treatment-card {

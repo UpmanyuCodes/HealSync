@@ -2,7 +2,10 @@
 // Fetches all disease details from the HealSync API and displays them in a modal or section.
 
 function fetchDiseaseDetails(diseaseId = 1) {
-    const apiUrl = `https://healsync-backend-d788.onrender.com/v1/healsync/disease/details?id=${diseaseId}`;
+    // Note: API expects 'symptoms' parameter, not 'id'
+    // The diseaseId should be converted to symptoms or use a different endpoint
+    const apiUrl = `https://healsync-backend-d788.onrender.com/v1/healsync/disease/all`;
+    console.warn('disease/details expects symptoms parameter, not id. Using disease/all instead.');
     
     // Show loader if modal exists
     const loader = document.getElementById('modal-loader');
@@ -29,7 +32,7 @@ function fetchDiseaseDetails(diseaseId = 1) {
         });
 }
 
-// Example: Add a button to trigger this fetch (for demo)
+// Initialize disease fetching when page loads
 document.addEventListener('DOMContentLoaded', function() {
     const cta = document.querySelector('.cta-action');
     if (cta) {

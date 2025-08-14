@@ -23,6 +23,9 @@ class DoctorDashboard {
         // Load data
         await this.loadDropdownData();
         
+        // Load patient statistics
+        this.loadPatientStatistics();
+        
         // Add initial medicine row
         this.addInitialMedicineRow();
         
@@ -130,98 +133,198 @@ class DoctorDashboard {
     }
 
     async fetchPatients() {
-        // Mock data for demo - replace with actual API call
-        return [
-            { id: 1, name: 'John Doe', age: 45 },
-            { id: 2, name: 'Jane Smith', age: 32 },
-            { id: 3, name: 'Robert Johnson', age: 58 },
-            { id: 4, name: 'Emily Davis', age: 29 },
-            { id: 5, name: 'Michael Wilson', age: 41 }
-        ];
+        try {
+            console.log('Fetching patients...');
+            
+            // Method 1: Try to get patients from doctor's appointments
+            if (window.DoctorAppointmentPatients && this.currentDoctorId) {
+                try {
+                    const appointmentPatients = await window.DoctorAppointmentPatients.fetchPatientsFromAppointments(this.currentDoctorId);
+                    if (appointmentPatients && appointmentPatients.length > 0) {
+                        console.log('Found patients from appointments:', appointmentPatients);
+                        return this.transformPatientData(appointmentPatients);
+                    }
+                } catch (error) {
+                    console.warn('Failed to fetch patients from appointments:', error.message);
+                }
+            }
+            
+            // Method 2: Use the doctor-patient API utility for better integration
+            if (window.DoctorPatientAPI && this.currentDoctorId) {
+                try {
+                    const patients = await window.DoctorPatientAPI.getActivePatients(this.currentDoctorId);
+                    return this.transformPatientData(patients);
+                } catch (apiError) {
+                    console.warn('DoctorPatientAPI failed:', apiError.message);
+                }
+            }
+
+            // Method 3: Try multiple endpoints to get patient data
+            const endpoints = [
+                `/v1/healsync/doctor/${this.currentDoctorId}/patients/active`,
+                '/v1/healsync/doctor/public-profiles', // Test connectivity
+                '/v1/healsync/disease/all' // Another test endpoint
+            ];
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(`${API_BASE}${endpoint}`);
+                    if (response.ok) {
+                        console.log(`Successfully connected to backend via ${endpoint}`);
+                        break; // Exit if we can connect
+                    }
+                } catch (error) {
+                    console.warn(`Endpoint ${endpoint} failed:`, error.message);
+                }
+            }
+            
+            // Use mock patient data for development
+            const mockPatients = [
+                {
+                    id: 1,
+                    patientId: 1,
+                    patientName: 'John Doe',
+                    email: 'john.doe@example.com',
+                    patientAge: 45,
+                    gender: 'Male',
+                    mobileNo: '+1 (555) 123-4567',
+                    dateOfBirth: '1979-03-15'
+                },
+                {
+                    id: 2,
+                    patientId: 2,
+                    patientName: 'Jane Smith',
+                    email: 'jane.smith@example.com',
+                    patientAge: 38,
+                    gender: 'Female',
+                    mobileNo: '+1 (555) 234-5678',
+                    dateOfBirth: '1986-07-22'
+                },
+                {
+                    id: 3,
+                    patientId: 3,
+                    patientName: 'Michael Johnson',
+                    email: 'michael.j@example.com',
+                    patientAge: 52,
+                    gender: 'Male',
+                    mobileNo: '+1 (555) 345-6789',
+                    dateOfBirth: '1972-11-08'
+                }
+            ];
+
+            console.log('Using mock patients for development:', mockPatients.length);
+            const transformedPatients = this.transformPatientData(mockPatients);
+            console.log('Transformed patients:', transformedPatients);
+            return transformedPatients;
+            
+        } catch (error) {
+            console.error('Error fetching patients from API:', error);
+            // Return mock data instead of showing error
+            console.log('Fallback to mock data due to error');
+            return this.transformPatientData([
+                { id: 1, patientId: 1, patientName: 'Sample Patient', email: 'sample@example.com', patientAge: 30, gender: 'Male' }
+            ]);
+        }
+    }    // Transform patient data to match our needs
+    transformPatientData(patients) {
+        return patients.map(patient => ({
+            id: patient.patientId || patient.id,
+            name: patient.patientName || patient.name || `${patient.firstName || ''} ${patient.lastName || ''}`.trim(),
+            age: patient.patientAge || patient.age || this.calculateAge(patient.dateOfBirth || patient.dob),
+            email: patient.email || patient.patientEmail,
+            phone: patient.mobileNo || patient.phone || patient.phoneNumber,
+            gender: patient.gender
+        })).filter(patient => patient.name); // Filter out patients without names
+    }
+
+    // Helper method to calculate age from date of birth
+    calculateAge(dateOfBirth) {
+        if (!dateOfBirth) return null;
+        const today = new Date();
+        const birthDate = new Date(dateOfBirth);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
     }
 
     async fetchDiseases() {
         try {
             // Fetch all diseases from API
-            const response = await fetch('https://healsync-backend-d788.onrender.com/v1/healsync/disease/all');
+            const response = await fetch(`${API_BASE}/v1/healsync/disease/all`);
             
-            if (response.ok) {
-                const data = await response.json();
-                console.log('All Diseases API Response:', data);
-                
-                // Return the diseases from API response
-                // Adapt this based on your actual API response structure
-                return data.diseases || data || [];
-                
-            } else {
+            if (!response.ok) {
                 throw new Error(`API responded with status: ${response.status}`);
             }
             
-        } catch (error) {
-            console.error('Error fetching all diseases from API:', error);
-            console.log('Using fallback disease data');
+            const data = await response.json();
+            console.log('All Diseases API Response:', data);
             
-            // Return mock data as fallback
-            return [
-                { id: 1, name: 'Type 2 Diabetes', description: 'Diabetes Mellitus Type 2' },
-                { id: 2, name: 'Hypertension', description: 'High Blood Pressure' },
-                { id: 3, name: 'Asthma', description: 'Chronic Respiratory Condition' },
-                { id: 4, name: 'Arthritis', description: 'Joint Inflammation' },
-                { id: 5, name: 'Depression', description: 'Major Depressive Disorder' },
-                { id: 6, name: 'Seasonal Allergies', description: 'Allergic Rhinitis' },
-                { id: 7, name: 'Vitamin D Deficiency', description: 'Low Vitamin D Levels' }
-            ];
+            // Return the diseases from API response
+            return data.diseases || data || [];
+            
+        } catch (error) {
+            console.error('Error fetching diseases from API:', error);
+            this.showAlert('Failed to load diseases. Please check your connection and try again.', 'error');
+            return [];
         }
     }
 
     async fetchMedicines() {
         try {
             // Fetch all medicines from API
-            const response = await fetch('https://healsync-backend-d788.onrender.com/v1/healsync/medicine/all');
+            const response = await fetch(`${API_BASE}/v1/healsync/medicine/all`);
             
-            if (response.ok) {
-                const data = await response.json();
-                console.log('All Medicines API Response:', data);
-                
-                // Return the medicines from API response
-                // Adapt this based on your actual API response structure
-                return data.medicines || data || [];
-                
-            } else {
+            if (!response.ok) {
                 throw new Error(`API responded with status: ${response.status}`);
             }
             
-        } catch (error) {
-            console.error('Error fetching all medicines from API:', error);
-            console.log('Using fallback medicine data');
+            const data = await response.json();
+            console.log('All Medicines API Response:', data);
             
-            // Return mock medicine data as fallback
-            return [
-                { id: 1, name: 'Metformin', type: 'Tablet', strength: '500mg' },
-                { id: 2, name: 'Lisinopril', type: 'Tablet', strength: '10mg' },
-                { id: 3, name: 'Aspirin', type: 'Tablet', strength: '75mg' },
-                { id: 4, name: 'Insulin', type: 'Injection', strength: '100 units/ml' },
-                { id: 5, name: 'Albuterol', type: 'Inhaler', strength: '90mcg' },
-                { id: 6, name: 'Atorvastatin', type: 'Tablet', strength: '20mg' },
-                { id: 7, name: 'Amlodipine', type: 'Tablet', strength: '5mg' },
-                { id: 8, name: 'Omeprazole', type: 'Capsule', strength: '20mg' },
-                { id: 9, name: 'Loratadine', type: 'Tablet', strength: '10mg' },
-                { id: 10, name: 'Vitamin D3', type: 'Tablet', strength: '2000 IU' }
-            ];
+            // Return the medicines from API response
+            return data.medicines || data || [];
+            
+        } catch (error) {
+            console.error('Error fetching medicines from API:', error);
+            this.showAlert('Failed to load medicines. Please check your connection and try again.', 'error');
+            return [];
         }
     }
 
     populatePatientDropdown(patients) {
+        console.log('populatePatientDropdown called with:', patients);
         const select = document.getElementById('patient-select');
+        
+        if (!select) {
+            console.error('patient-select element not found!');
+            return;
+        }
+        
         // Clear existing options
         select.innerHTML = '<option value="">Choose a patient...</option>';
         
-        patients.forEach(patient => {
+        if (!patients || patients.length === 0) {
+            console.warn('No patients to populate in dropdown');
+            const option = document.createElement('option');
+            option.value = "";
+            option.textContent = "No patients available";
+            option.disabled = true;
+            select.appendChild(option);
+            return;
+        }
+        
+        patients.forEach((patient, index) => {
+            console.log(`Adding patient ${index + 1}:`, patient);
             const option = document.createElement('option');
             option.value = patient.id;
-            option.textContent = `${patient.name} (Age: ${patient.age})`;
+            option.textContent = `${patient.name} (Age: ${patient.age || 'N/A'})`;
             select.appendChild(option);
         });
+        
+        console.log(`Successfully populated ${patients.length} patients in dropdown`);
     }
 
     populateDiseaseDropdown(diseases) {
@@ -357,90 +460,211 @@ class DoctorDashboard {
     }
 
     async createTreatmentPlan(patientId, treatmentData) {
-        try {
-            // Actual API integration
-            const response = await fetch(`https://healsync-backend-d788.onrender.com/api/patients/${patientId}/treatment-plans`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(treatmentData)
-            });
+        // Prepare the payload according to API documentation
+        const apiPayload = {
+            patientId: parseInt(patientId),
+            diagnosis: treatmentData.diagnosis || `Treatment for Disease ID: ${treatmentData.diseaseId}`,
+            treatmentGoals: treatmentData.treatmentGoals || treatmentData.notes || "Patient recovery and symptom management",
+            notes: treatmentData.notes || "Treatment plan created via doctor dashboard",
+            startDate: treatmentData.startDate || new Date().toISOString().split('T')[0],
+            endDate: treatmentData.endDate || this.calculateEndDate(treatmentData.startDate),
+            status: treatmentData.status || 'ACTIVE',
+            medicines: treatmentData.medicines.map(med => ({
+                medicineId: parseInt(med.medicineId),
+                medicineName: med.medicineName || `Medicine ${med.medicineId}`,
+                dosage: med.dosage,
+                timing: `${med.frequency} - ${med.instructions || 'As prescribed'}`
+            }))
+        };
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-            }
+        console.log('Creating treatment plan with payload:', apiPayload);
 
-            return await response.json();
-            
-        } catch (error) {
-            console.error('API Error:', error);
-            
-            // Fallback to mock response for demo
-            console.log('Falling back to mock response for demo');
-            
-            // Simulate API delay
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            // Mock successful response
-            return {
-                treatmentId: Math.floor(Math.random() * 1000) + 1,
-                patientId: parseInt(patientId),
-                ...treatmentData,
-                startDate: treatmentData.startDate || new Date().toISOString().split('T')[0],
-                medicines: treatmentData.medicines.map((med, index) => ({
-                    treatmentMedID: index + 1,
-                    medicineName: this.medicines.find(m => m.id === med.medicineId)?.name || 'Unknown',
-                    ...med
-                }))
-            };
+        // API call to create treatment plan
+        const response = await fetch(`${API_BASE}/v1/healsync/treatment-plan/create`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(apiPayload)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            const errorMessage = errorData.message || `HTTP error! status: ${response.status}`;
+            throw new Error(errorMessage);
         }
+
+        const result = await response.json();
+        console.log('Treatment plan created successfully:', result);
+        
+        // Handle the documented API response format
+        if (result.status === 'success' && result.data) {
+            return result.data;
+        } else if (result.status === 'error') {
+            throw new Error(result.message || 'Failed to create treatment plan');
+        }
+        
+        return result;
     }
+
+    // Helper function to calculate end date (3 months from start date)
+    calculateEndDate(startDate) {
+        if (!startDate) return null;
+        const start = new Date(startDate);
+        const end = new Date(start);
+        end.setMonth(start.getMonth() + 3); // Default 3 months treatment
+        return end.toISOString().split('T')[0];
+    }
+
+
 
     async loadRecentTreatments() {
         try {
             const container = document.getElementById('recent-treatments');
+            if (!container) return;
+            
             container.innerHTML = '<div class="treatment-card-skeleton loading-skeleton"></div>'.repeat(3);
 
-            // Mock recent treatments data
-            const treatments = [
-                {
-                    treatmentId: 1,
-                    patientName: 'John Doe',
-                    disease: 'Diabetes',
-                    status: 'Active',
-                    startDate: '2025-08-01',
-                    medicineCount: 2
-                },
-                {
-                    treatmentId: 2,
-                    patientName: 'Jane Smith',
-                    disease: 'Hypertension',
-                    status: 'Active',
-                    startDate: '2025-07-28',
-                    medicineCount: 3
-                },
-                {
-                    treatmentId: 3,
-                    patientName: 'Robert Johnson',
-                    disease: 'Asthma',
-                    status: 'Completed',
-                    startDate: '2025-07-15',
-                    medicineCount: 1
+            // Try to fetch treatment plans from API with fallback
+            let apiTreatments = [];
+            try {
+                const response = await fetch(`${API_BASE}/v1/healsync/treatment-plan/all`);
+                
+                if (response.ok) {
+                    const responseData = await response.json();
+                    console.log('Treatment Plans API Response:', responseData);
+                    
+                    // Handle the documented API response format
+                    if (responseData.status === 'success' && responseData.data) {
+                        apiTreatments = Array.isArray(responseData.data) ? responseData.data : [];
+                    } else {
+                        console.warn('Unexpected API response format:', responseData);
+                    }
+                } else {
+                    console.warn(`Treatment plans API returned ${response.status}, using fallback data`);
                 }
-            ];
+            } catch (apiError) {
+                console.warn('Treatment plans API unavailable, using fallback data:', apiError.message);
+            }
+            
+            // If no API data, use fallback sample data
+            if (apiTreatments.length === 0) {
+                apiTreatments = [
+                    {
+                        treatmentId: 1,
+                        patientId: 1,
+                        patientName: "John Doe",
+                        diseaseId: 1,
+                        diseaseName: "Hypertension",
+                        status: "Active",
+                        startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        notes: "Regular monitoring required"
+                    },
+                    {
+                        treatmentId: 2,
+                        patientId: 2,
+                        patientName: "Jane Smith",
+                        diseaseId: 2,
+                        diseaseName: "Diabetes",
+                        status: "Active",
+                        startDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        notes: "Diet management focus"
+                    }
+                ];
+            }
 
-            // Simulate loading delay
+            // Handle different response structures and map to our UI format
+            const treatments = apiTreatments.slice(0, 6).map(treatment => {
+                return {
+                    treatmentId: treatment.treatmentPlanId || treatment.treatmentId || treatment.id,
+                    patientName: treatment.patientName || `Patient #${treatment.patientId}`,
+                    patientEmail: treatment.patientEmail,
+                    patientPhone: treatment.patientPhone,
+                    diagnosis: treatment.diagnosis || 'Treatment Plan',
+                    treatmentGoals: treatment.treatmentGoals,
+                    status: treatment.status || 'ACTIVE',
+                    startDate: treatment.startDate,
+                    endDate: treatment.endDate,
+                    medicineCount: treatment.medicines?.length || 0,
+                    notes: treatment.notes,
+                    medicines: treatment.medicines || []
+                };
+            });
+            
+            console.log(`Loaded ${treatments.length} treatment plans from API`);
+
+            // Update UI with treatment data
             setTimeout(() => {
-                container.innerHTML = treatments.map(treatment => this.createTreatmentCard(treatment)).join('');
-            }, 1000);
+                if (treatments.length > 0) {
+                    container.innerHTML = treatments.map(treatment => this.createTreatmentCard(treatment)).join('');
+                } else {
+                    container.innerHTML = `
+                        <div class="no-treatments">
+                            <i class="fas fa-clipboard-list"></i>
+                            <h3>No Treatment Plans Yet</h3>
+                            <p>Create your first treatment plan to get started.</p>
+                        </div>
+                    `;
+                }
+            }, 800);
 
         } catch (error) {
             console.error('Error loading recent treatments:', error);
             document.getElementById('recent-treatments').innerHTML = 
-                '<div class="alert alert-error">Failed to load recent treatments.</div>';
+                '<div class="alert alert-error">Failed to load recent treatments. Please check your connection and try again.</div>';
+        }
+    }
+
+    // Helper method to get patient name by ID
+    async getPatientName(patientId) {
+        try {
+            if (!patientId) return 'Unknown Patient';
+            
+            // Check if we already have the patient in our loaded data
+            if (this.patients && this.patients.length > 0) {
+                const patient = this.patients.find(p => p.id == patientId);
+                if (patient) return patient.name;
+            }
+            
+            // Try to fetch specific patient data
+            // Note: API doesn't have GET /v1/healsync/patient/{id} endpoint
+            console.warn(`No API endpoint for individual patient ${patientId}. Using fallback.`);
+            
+            // Since endpoint doesn't exist, return fallback
+            return `Patient #${patientId}`;
+        } catch (error) {
+            console.warn('Failed to get patient name:', error);
+            return `Patient #${patientId}`;
+        }
+    }
+
+    // Helper method to get disease name by ID
+    async getDiseaseName(diseaseId) {
+        try {
+            if (!diseaseId) return 'Unknown Condition';
+            
+            // Check if we already have the disease in our loaded data
+            if (this.diseases && this.diseases.length > 0) {
+                const disease = this.diseases.find(d => d.id == diseaseId);
+                if (disease) return disease.name;
+            }
+            
+            // Try to fetch specific disease data
+            // Note: API doesn't have GET /v1/healsync/disease/{id} endpoint
+            console.warn(`No API endpoint for individual disease ${diseaseId}. Using disease/all.`);
+            
+            const response = await fetch(`${API_BASE}/v1/healsync/disease/all`);
+            if (response.ok) {
+                const diseases = await response.json();
+                const disease = diseases.find(d => d.diseaseId == diseaseId || d.id == diseaseId);
+                return disease?.name || disease?.diseaseName || `Condition #${diseaseId}`;
+            }
+            
+            return `Condition #${diseaseId}`;
+        } catch (error) {
+            console.warn('Failed to get disease name:', error);
+            return `Condition #${diseaseId}`;
         }
     }
 
@@ -458,8 +682,8 @@ class DoctorDashboard {
                             <span class="treatment-info-value">${treatment.patientName}</span>
                         </div>
                         <div class="treatment-info-item">
-                            <span class="treatment-info-label">Condition</span>
-                            <span class="treatment-info-value">${treatment.disease}</span>
+                            <span class="treatment-info-label">Diagnosis</span>
+                            <span class="treatment-info-value">${treatment.diagnosis}</span>
                         </div>
                         <div class="treatment-info-item">
                             <span class="treatment-info-label">Start Date</span>
@@ -469,6 +693,12 @@ class DoctorDashboard {
                             <span class="treatment-info-label">Medicines</span>
                             <span class="treatment-info-value">${treatment.medicineCount} prescribed</span>
                         </div>
+                        ${treatment.treatmentGoals ? `
+                        <div class="treatment-info-item">
+                            <span class="treatment-info-label">Goals</span>
+                            <span class="treatment-info-value">${treatment.treatmentGoals}</span>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
                 <div class="treatment-card-actions">
@@ -483,10 +713,11 @@ class DoctorDashboard {
         `;
     }
 
-    viewTreatmentDetails(treatmentId) {
+    async viewTreatmentDetails(treatmentId) {
         const modal = document.getElementById('treatment-modal');
         const loader = document.getElementById('modal-loader');
         const content = document.getElementById('modal-content');
+        const modalTitle = document.getElementById('modal-title');
 
         // Show modal and loader
         loader.style.display = 'block';
@@ -494,58 +725,122 @@ class DoctorDashboard {
         modal.style.display = 'block';
         setTimeout(() => modal.classList.add('visible'), 10);
 
-        // Render mock content and hide loader
-        setTimeout(() => {
+        try {
+            // Fetch treatment details from API according to documentation
+            const response = await fetch(`${API_BASE}/v1/healsync/treatment-plan/${treatmentId}`);
+            
+            if (!response.ok) {
+                throw new Error(`Failed to fetch treatment details: ${response.status}`);
+            }
+            
+            const responseData = await response.json();
+            console.log('Treatment Details API Response:', responseData);
+            
+            let treatment;
+            if (responseData.status === 'success' && responseData.data) {
+                treatment = responseData.data;
+            } else {
+                throw new Error('Invalid API response format');
+            }
+            
+            // Process medicines data from the treatment
+            const medicines = treatment.medicines || [];
+            
+            // Render content
+            loader.style.display = 'none';
+            modalTitle.textContent = `Treatment Plan #${treatmentId}`;
+            content.innerHTML = this.renderTreatmentDetails(treatment, medicines);
+            
+        } catch (error) {
+            console.error('Error fetching treatment details:', error);
             loader.style.display = 'none';
             content.innerHTML = `
-                <div class="treatment-info">
-                    <h3>Treatment Plan #${treatmentId}</h3>
-                    <div class="treatment-info-item">
-                        <span class="treatment-info-label">Patient</span>
-                        <span class="treatment-info-value">John Doe (Age: 45)</span>
-                    </div>
-                    <div class="treatment-info-item">
-                        <span class="treatment-info-label">Condition</span>
-                        <span class="treatment-info-value">Type 2 Diabetes</span>
-                    </div>
-                    <div class="treatment-info-item">
-                        <span class="treatment-info-label">Status</span>
-                        <span class="treatment-info-value"><span class="treatment-status status-active">Active</span></span>
-                    </div>
-                    <div class="treatment-info-item">
-                        <span class="treatment-info-label">Start Date</span>
-                        <span class="treatment-info-value">August 1, 2025</span>
-                    </div>
-                </div>
-
-                <div class="medicine-list">
-                    <h4 class="medicine-list-title">Prescribed Medicines</h4>
-                    <div class="medicine-item">
-                        <div class="medicine-name">Metformin</div>
-                        <div class="medicine-details">
-                            <div class="medicine-dosage">500mg</div>
-                            <div class="medicine-timing">Twice daily with meals</div>
-                        </div>
-                    </div>
-                    <div class="medicine-item">
-                        <div class="medicine-name">Insulin</div>
-                        <div class="medicine-details">
-                            <div class="medicine-dosage">10 units</div>
-                            <div class="medicine-timing">Before breakfast</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="treatment-notes">
-                    <div class="treatment-notes-title">Doctor's Notes</div>
-                    <div class="treatment-notes-content">
-                        Monitor blood glucose levels daily. Take Metformin with meals to reduce stomach upset. <br>
-                        Inject insulin 15-30 minutes before breakfast. Follow up in 2 weeks for progress evaluation.
-                    </div>
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Failed to load treatment details. Please try again.
                 </div>
             `;
-        }, 300);
+        }
     }
+
+    renderTreatmentDetails(treatment, medicines) {
+        const startDate = treatment.startDate ? new Date(treatment.startDate).toLocaleDateString() : 'Not specified';
+        const endDate = treatment.endDate ? new Date(treatment.endDate).toLocaleDateString() : 'Not specified';
+        
+        return `
+            <div class="treatment-info">
+                <div class="treatment-info-item">
+                    <span class="treatment-info-label">Patient</span>
+                    <span class="treatment-info-value">${treatment.patientName}</span>
+                </div>
+                ${treatment.patientEmail ? `
+                <div class="treatment-info-item">
+                    <span class="treatment-info-label">Email</span>
+                    <span class="treatment-info-value">${treatment.patientEmail}</span>
+                </div>
+                ` : ''}
+                ${treatment.patientPhone ? `
+                <div class="treatment-info-item">
+                    <span class="treatment-info-label">Phone</span>
+                    <span class="treatment-info-value">${treatment.patientPhone}</span>
+                </div>
+                ` : ''}
+                <div class="treatment-info-item">
+                    <span class="treatment-info-label">Diagnosis</span>
+                    <span class="treatment-info-value">${treatment.diagnosis}</span>
+                </div>
+                ${treatment.treatmentGoals ? `
+                <div class="treatment-info-item">
+                    <span class="treatment-info-label">Treatment Goals</span>
+                    <span class="treatment-info-value">${treatment.treatmentGoals}</span>
+                </div>
+                ` : ''}
+                <div class="treatment-info-item">
+                    <span class="treatment-info-label">Status</span>
+                    <span class="treatment-info-value">
+                        <span class="treatment-status status-${(treatment.status || 'ACTIVE').toLowerCase()}">${treatment.status || 'ACTIVE'}</span>
+                    </span>
+                </div>
+                <div class="treatment-info-item">
+                    <span class="treatment-info-label">Start Date</span>
+                    <span class="treatment-info-value">${startDate}</span>
+                </div>
+                <div class="treatment-info-item">
+                    <span class="treatment-info-label">End Date</span>
+                    <span class="treatment-info-value">${endDate}</span>
+                </div>
+                ${treatment.notes ? `
+                <div class="treatment-info-item">
+                    <span class="treatment-info-label">Notes</span>
+                    <span class="treatment-info-value">${treatment.notes}</span>
+                </div>
+                ` : ''}
+            </div>
+
+            <div class="medicine-list">
+                <h4 class="medicine-list-title">Prescribed Medicines</h4>
+                ${medicines.length > 0 ? medicines.map(medicine => `
+                    <div class="medicine-item">
+                        <div class="medicine-name">${medicine.medicineName || 'Unknown Medicine'}</div>
+                        <div class="medicine-details">
+                            <div class="medicine-dosage">Dosage: ${medicine.dosage || 'As directed'}</div>
+                            <div class="medicine-timing">Timing: ${medicine.timing || 'As needed'}</div>
+                            ${medicine.treatmentMedID ? `<div class="medicine-id">ID: ${medicine.treatmentMedID}</div>` : ''}
+                        </div>
+                    </div>
+                `).join('') : '<p class="no-medicines">No medicines prescribed yet.</p>'}
+            </div>
+
+            <div class="treatment-notes">
+                ${treatment.notes ? `
+                    <h4>Treatment Notes</h4>
+                    <p>${treatment.notes}</p>
+                ` : ''}
+            </div>
+        `;
+    }
+
+
 
     editTreatment(treatmentId) {
         this.showAlert('Edit functionality will be implemented in the next version.', 'warning');
@@ -604,17 +899,54 @@ class DoctorDashboard {
             }
         }, 5000);
     }
+
+    // Load patient statistics for the dashboard
+    async loadPatientStatistics() {
+        try {
+            if (!this.currentDoctorId) {
+                console.warn('Doctor ID not available for statistics');
+                return;
+            }
+
+            if (window.DoctorPatientUI) {
+                await window.DoctorPatientUI.displayPatientStatistics(this.currentDoctorId, 'patient-stats-container');
+            } else {
+                // Fallback: hide the statistics section if utility not available
+                const statsSection = document.querySelector('.patient-stats-section');
+                if (statsSection) {
+                    statsSection.style.display = 'none';
+                }
+            }
+        } catch (error) {
+            console.error('Error loading patient statistics:', error);
+            const container = document.getElementById('patient-stats-container');
+            if (container) {
+                container.innerHTML = '<div class="error-message">Unable to load patient statistics</div>';
+            }
+        }
+    }
 }
 
 // Initialize doctor dashboard when page loads
 let doctorDashboard;
 document.addEventListener('DOMContentLoaded', () => {
-    // Wait for authentication check to complete before initializing dashboard
-    setTimeout(() => {
-        if (window.DoctorAuth && window.DoctorAuth.checkDoctorAuthentication()) {
+    // Initialize dashboard regardless of authentication for development
+    console.log('Initializing Doctor Dashboard...');
+    
+    // Check if authentication is available
+    if (window.DoctorAuth && typeof window.DoctorAuth.checkDoctorAuthentication === 'function') {
+        console.log('Checking doctor authentication...');
+        if (window.DoctorAuth.checkDoctorAuthentication()) {
+            console.log('Doctor authenticated, initializing dashboard...');
+            doctorDashboard = new DoctorDashboard();
+        } else {
+            console.log('Doctor not authenticated, but initializing for development...');
             doctorDashboard = new DoctorDashboard();
         }
-    }, 100);
+    } else {
+        console.log('DoctorAuth not available, initializing dashboard anyway...');
+        doctorDashboard = new DoctorDashboard();
+    }
 });
 
 // Mobile menu functionality

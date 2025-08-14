@@ -9,10 +9,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Your existing stylesheet -->
+    <!-- Unified Theme System -->
+    <link rel="stylesheet" href="/CSS/healsync-theme.css">
     <link rel="stylesheet" href="/CSS/index.css">
-    <!-- New stylesheet for the chat assistant -->
     <link rel="stylesheet" href="/CSS/chat.css">
+    <link rel="stylesheet" href="/CSS/health-indicator.css">
 </head>
 <body>
 
@@ -27,27 +28,28 @@
 
             <div class="desktop-menu">
                 <a href="#features">Features</a>
-                <a href="/HTML/doctor-treatment-dashboard.html">Doctor Dashboard</a>
-                <a href="/HTML/patient-treatment-dashboard.html">Patient Dashboard</a>
+                <a href="/HTML/doctors.html">Find Doctors</a>
+                <a href="/HTML/tracker.html">Health Tracker</a>
+                <a href="#about">About</a>
             </div>
 
             <div class="desktop-menu-actions">
                  <a href="/HTML/login.html" class="btn btn-secondary">Login</a>
-                 <a href="/HTML/doctor-treatment-dashboard.html" class="btn btn-primary">Doctor Portal</a>
+                 <a href="/HTML/register.html" class="btn btn-primary">Get Started</a>
             </div>
 
             <button id="mobile-menu-button" class="mobile-menu-toggle">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
             </button>
         </nav>
-        <div id="mobile-menu" class="mobile-menu">
-            <a href="#features">Features</a>
-            <a href="/HTML/doctor-treatment-dashboard.html">Doctor Dashboard</a>
-            <a href="/HTML/patient-treatment-dashboard.html">Patient Dashboard</a>
-            <hr>
-            <a href="/HTML/login.html">Login</a>
-            <a href="/HTML/doctor-treatment-dashboard.html" class="btn btn-primary">Doctor Portal</a>
-        </div>
+        <nav class="mobile-nav" id="mobile-menu">
+            <a href="#features" class="mobile-nav-link">Features</a>
+            <a href="/HTML/doctors.html" class="mobile-nav-link">Find Doctors</a>
+            <a href="/HTML/tracker.html" class="mobile-nav-link">Health Tracker</a>
+            <a href="#about" class="mobile-nav-link">About</a>
+            <a href="/HTML/login.html" class="mobile-nav-link">Login</a>
+            <a href="/HTML/register.html" class="mobile-nav-link">Get Started</a>
+        </nav>
     </header>
 
     <main>
@@ -124,6 +126,12 @@
 
     <div id="footer-placeholder"></div>
     
+    <!-- API Health Indicator -->
+    <div id="api-health-indicator" class="health-indicator">
+        <div class="health-dot"></div>
+        <span>Checking API...</span>
+    </div>
+    
     <!-- AI Chat Assistant Elements -->
     <div id="chat-widget" class="chat-widget">
         <div class="chat-header">
@@ -150,6 +158,9 @@
     </button>
 
     <!-- Scripts -->
+    <script src="/JS/api-health.js"></script>
+    <script src="/JS/navigation.js"></script>
+    <script src="/JS/system-validator.js"></script>
     <script src="/JS/footer.js"></script>
     <script src="/JS/index.js"></script>
 </body>

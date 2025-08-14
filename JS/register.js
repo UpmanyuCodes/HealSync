@@ -3,9 +3,9 @@
 
 const REGISTER_API = 'https://healsync-backend-d788.onrender.com/v1/healsync/patient/add';
 // OTP endpoints from attachments
-const OTP_SEND_API = 'https://healsync-backend-d788.onrender.com/v1/healsync/otp/send'; // POST ?email=
-const OTP_RESEND_API = 'https://healsync-backend-d788.onrender.com/v1/healsync/otp/resend'; // GET ?email=
-const OTP_VERIFY_API = 'https://healsync-backend-d788.onrender.com/v1/healsync/otp/verify'; // POST ?email=&otp=
+const OTP_SEND_API = 'https://healsync-backend-d788.onrender.com/v1/healsync/email/send'; // POST with email in body
+const OTP_RESEND_API = 'https://healsync-backend-d788.onrender.com/v1/healsync/email/send'; // Same endpoint for resend
+const OTP_VERIFY_API = 'https://healsync-backend-d788.onrender.com/v1/healsync/email/verify'; // POST with email and otp in body
 
 function setMsg(text, type = 'info') {
   const container = document.getElementById('alert-container');

@@ -12,6 +12,80 @@
     <link rel="stylesheet" href="/CSS/index.css">
     <link rel="stylesheet" href="/CSS/treatment.css">
     <link rel="stylesheet" href="/CSS/doctor-treatment-dashboard.css">
+    
+    <style>
+        /* Patient Statistics Styles */
+        .patient-stats-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .loading-stats {
+            text-align: center;
+            padding: 2rem;
+            font-style: italic;
+            opacity: 0.8;
+        }
+        
+        .error-message {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 6px;
+            color: #fef2f2;
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <header class="site-header">
@@ -63,6 +137,14 @@
 
             <!-- Success/Error Messages -->
             <div id="alert-container"></div>
+
+            <!-- Patient Statistics Section -->
+            <div class="patient-stats-section">
+                <h2 class="section-title">My Patient Overview</h2>
+                <div id="patient-stats-container" class="stats-container">
+                    <div class="loading-stats">Loading patient statistics...</div>
+                </div>
+            </div>
 
             <!-- Create Treatment Plan Form -->
             <div class="create-treatment-form">
@@ -172,6 +254,8 @@
     <!-- JavaScript Files -->
     <script src="/JS/footer.js"></script>
     <script src="/JS/doctor-treatment-dashboard-auth.js"></script>
+    <script src="/JS/doctor-patient-api.js"></script>
+    <script src="/JS/doctor-appointment-patients.js"></script>
     <script src="/JS/doctor-treatment-dashboard.js"></script>
 </body>
 </html>

@@ -13,9 +13,11 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Admin CSS -->
+    <!-- Unified Theme System -->
+    <link rel="stylesheet" href="/CSS/healsync-theme.css">
     <link rel="stylesheet" href="/admin/styles.css">
     <link rel="stylesheet" href="/CSS/snackbar.css">
+    <link rel="stylesheet" href="/CSS/health-indicator.css">
 </head>
 <body>
 
@@ -24,7 +26,9 @@
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
-                    <i class="fas fa-heartbeat"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="logo-icon" viewBox="0 0 20 20" fill="currentColor" style="width: 28px; height: 28px;">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                    </svg>
                     <h2>HealSync Admin</h2>
                 </div>
                 <div class="admin-info">
@@ -362,6 +366,12 @@
         </main>
     </div>
 
+    <!-- API Health Indicator -->
+    <div id="api-health-indicator" class="health-indicator">
+        <div class="health-dot"></div>
+        <span>Checking API...</span>
+    </div>
+
     <!-- Admin JavaScript -->
     <script>
         // Password toggle functionality
@@ -380,6 +390,8 @@
             }
         }
     </script>
+    <script src="/JS/api-health.js"></script>
+    <script src="/JS/system-validator.js"></script>
     <script src="admin.js"></script>
 </body>
 </html>

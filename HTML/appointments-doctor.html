@@ -1,73 +1,287 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HealSync - Appointments (Doctor)</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/CSS/index.css" />
-  <link rel="stylesheet" href="/CSS/appointments.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealSync - Doctor Appointments</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/CSS/healsync-theme.css">
+    <link rel="stylesheet" href="/CSS/index.css">
+    <link rel="stylesheet" href="/CSS/appointments-theme.css">
+    <link rel="stylesheet" href="/CSS/snackbar.css">
+    <link rel="stylesheet" href="/CSS/health-indicator.css">
 </head>
 <body>
-  <header class="site-header">
-    <nav class="container nav-container">
-      <a href="/HTML/index.html" class="logo">
-        <svg xmlns="http://www.w3.org/2000/svg" class="logo-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/></svg>
-        HealSync
-      </a>
-      <div class="desktop-menu">
-        <a href="/HTML/doctor-treatment-dashboard.html">Treatments</a>
-        <a href="#my">My Appointments</a>
-      </div>
-      <div class="desktop-menu-actions">
-        <a href="/HTML/patient-treatment-dashboard.html" class="btn btn-secondary">Patient View</a>
-        <a href="/HTML/index.html" class="btn btn-primary">Logout</a>
-      </div>
-      <button id="mobile-menu-button" class="mobile-menu-toggle">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
-      </button>
-    </nav>
-    <div id="mobile-menu" class="mobile-menu">
-      <a href="/HTML/doctor-treatment-dashboard.html">Treatments</a>
-      <a href="#my">My Appointments</a>
-      <hr />
-      <a href="/HTML/patient-treatment-dashboard.html">Patient View</a>
-      <a href="/HTML/index.html" class="btn btn-primary">Logout</a>
-    </div>
-  </header>
+    <header class="site-header">
+        <nav class="container nav-container">
+            <a href="/HTML/index.html" class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" class="logo-icon" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                </svg> 
+                HealSync
+            </a>
 
-  <main class="appointments-page">
-    <div class="container">
-      <div class="page-header text-center">
-        <div class="user-type-badge user-type-doctor">Doctor</div>
-        <h1 class="page-title">My Schedule</h1>
-        <p class="page-subtitle">View, reschedule, cancel, and add notes to your appointments</p>
-      </div>
+            <div class="desktop-menu">
+                <a href="/HTML/doctor-treatment-dashboard.html">Dashboard</a>
+                <a href="/HTML/appointments-doctor.html">Appointments</a>
+                <a href="/HTML/doctor-profile.html">Profile</a>
+            </div>
 
-      <div id="alert" class="alert alert-info" style="display:none"></div>
+            <div class="desktop-menu-actions">
+                <a href="/HTML/patient-treatment-dashboard.html" class="btn btn-secondary">Patient View</a>
+                <a href="/HTML/index.html" class="btn btn-primary" onclick="handleDoctorLogout()">Logout</a>
+            </div>
 
-      <section id="my" class="card">
-        <h2 class="section-title">Appointments</h2>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Doctor ID</label>
-            <input type="number" id="doctorIdList" placeholder="e.g., 10" />
-          </div>
-          <div class="form-group" style="align-self:end">
-            <button id="loadDoctorAppts" class="btn btn-secondary">Load</button>
-          </div>
+            <button id="mobile-menu-button" class="mobile-menu-toggle">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="mobile-menu">
+            <a href="/HTML/doctor-treatment-dashboard.html">Dashboard</a>
+            <a href="/HTML/appointments-doctor.html">Appointments</a>
+            <a href="/HTML/doctor-profile.html">Profile</a>
+            <hr>
+            <a href="/HTML/patient-treatment-dashboard.html">Patient View</a>
+            <a href="/HTML/index.html" class="btn btn-primary" onclick="handleDoctorLogout()">Logout</a>
         </div>
-        <div id="doctorApptList" class="grid-responsive" style="margin-top:0.75rem"></div>
-      </section>
+    </header>
+
+    <main class="appointments-page">
+        <div class="container">
+            <div class="page-header text-center">
+                <div class="user-type-badge user-type-doctor">Doctor</div>
+                <h1 class="section-title">My Appointments</h1>
+                <p class="page-subtitle">Manage your appointments and patient schedules</p>
+            </div>
+
+            <!-- Quick Stats -->
+            <section class="appointments-stats-section">
+                <div class="appointments-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="today-count">--</h3>
+                            <p>Today's Appointments</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="pending-count">--</h3>
+                            <p>Pending Confirmation</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="completed-count">--</h3>
+                            <p>Completed Today</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Actions -->
+            <section class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-tools"></i> Quick Actions</h3>
+                </div>
+                <div class="card-body">
+                    <div class="quick-actions">
+                        <button class="btn btn-primary" onclick="bulkConfirm()">
+                            <i class="fas fa-check-double"></i>
+                            Confirm All Pending
+                        </button>
+                        <button class="btn btn-secondary" onclick="setAvailability()">
+                            <i class="fas fa-calendar-alt"></i>
+                            Set Availability
+                        </button>
+                        <button class="btn btn-secondary-alt" onclick="viewAnalytics()">
+                            <i class="fas fa-chart-bar"></i>
+                            View Analytics
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Appointment Filters -->
+            <section class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-filter"></i> Filter Appointments</h3>
+                </div>
+                <div class="card-body">
+                    <div class="filter-grid">
+                        <div class="form-group">
+                            <label for="date-filter">
+                                <i class="fas fa-calendar"></i>
+                                Date
+                            </label>
+                            <input type="date" id="date-filter" onchange="applyFilters()">
+                        </div>
+                        <div class="form-group">
+                            <label for="status-filter">
+                                <i class="fas fa-flag"></i>
+                                Status
+                            </label>
+                            <select id="status-filter" onchange="applyFilters()">
+                                <option value="">All Statuses</option>
+                                <option value="booked">Booked</option>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                                <option value="no-show">No Show</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="time-filter">
+                                <i class="fas fa-clock"></i>
+                                Time Range
+                            </label>
+                            <select id="time-filter" onchange="applyFilters()">
+                                <option value="">All Times</option>
+                                <option value="morning">Morning (6AM - 12PM)</option>
+                                <option value="afternoon">Afternoon (12PM - 6PM)</option>
+                                <option value="evening">Evening (6PM - 10PM)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button class="btn btn-light" onclick="clearFilters()">
+                                <i class="fas fa-times"></i>
+                                Clear Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Appointments List -->
+            <section class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-list"></i> My Appointments</h3>
+                    <div class="card-actions">
+                        <button class="btn btn-light" onclick="loadDoctorAppointments()">
+                            <i class="fas fa-sync-alt"></i>
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="appointments-container" class="appointments-grid">
+                        <!-- Appointments will be loaded here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading Overlay -->
+            <div id="loading-overlay" class="loading-overlay">
+                <div class="loading-spinner"></div>
+                <p>Processing your request...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Availability Modal -->
+    <div id="availability-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-calendar-alt"></i> Set Availability</h3>
+                <button class="modal-close" onclick="closeAvailabilityModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="availability-form" class="form-grid">
+                    <div class="form-group">
+                        <label for="availability-date">
+                            <i class="fas fa-calendar"></i>
+                            Date
+                        </label>
+                        <input type="date" id="availability-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="start-time">
+                            <i class="fas fa-clock"></i>
+                            Start Time
+                        </label>
+                        <input type="time" id="start-time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="end-time">
+                            <i class="fas fa-clock"></i>
+                            End Time
+                        </label>
+                        <input type="time" id="end-time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="slot-duration">
+                            <i class="fas fa-hourglass-half"></i>
+                            Slot Duration (minutes)
+                        </label>
+                        <select id="slot-duration" required>
+                            <option value="30">30 minutes</option>
+                            <option value="60" selected>60 minutes</option>
+                            <option value="90">90 minutes</option>
+                        </select>
+                    </div>
+                    <div class="form-actions full-width">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Set Availability
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeAvailabilityModal()">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-  </main>
 
-  <div id="footer-placeholder"></div>
+    <!-- Analytics Modal -->
+    <div id="analytics-modal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3><i class="fas fa-chart-bar"></i> Appointment Analytics</h3>
+                <button class="modal-close" onclick="closeAnalyticsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="analytics-content">
+                    <!-- Analytics will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <script src="/JS/footer.js"></script>
-  <script src="/JS/appointments-shared.js"></script>
-  <script src="/JS/appointments-doctor.js"></script>
+    <!-- API Health Indicator -->
+    <div id="api-health-indicator" class="health-indicator">
+        <div class="health-dot"></div>
+        <span>Checking API...</span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/JS/api-health.js"></script>
+    <script src="/JS/navigation.js"></script>
+    <script src="/JS/doctor-patient-api.js"></script>
+    <script src="/JS/appointments-doctor.js"></script>
+    <script>
+        // Mobile menu toggle function
+        function toggleMobileMenu() {
+            const mobileNav = document.querySelector('.mobile-nav');
+            mobileNav.classList.toggle('active');
+        }
+    </script>
 </body>
 </html>
