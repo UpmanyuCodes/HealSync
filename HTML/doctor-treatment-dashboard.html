@@ -3,89 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HealSync - Doctor Dashboard</title>
+    <title>Treatment Dashboard - HealSync</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Unified Theme System -->
+    <link rel="stylesheet" href="/CSS/healsync-theme.css">
     <link rel="stylesheet" href="/CSS/index.css">
-    <link rel="stylesheet" href="/CSS/treatment.css">
     <link rel="stylesheet" href="/CSS/doctor-treatment-dashboard.css">
-    
-    <style>
-        /* Patient Statistics Styles */
-        .patient-stats-section {
-            margin: 2rem 0;
-            padding: 1.5rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
-            color: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .section-title {
-            margin: 0 0 1.5rem 0;
-            font-size: 1.5rem;
-            font-weight: 600;
-            text-align: center;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-        
-        .stat-card {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 1.5rem;
-            border-radius: 8px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: #ffffff;
-        }
-        
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .loading-stats {
-            text-align: center;
-            padding: 2rem;
-            font-style: italic;
-            opacity: 0.8;
-        }
-        
-        .error-message {
-            text-align: center;
-            padding: 1rem;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 6px;
-            color: #fef2f2;
-        }
-        
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .stat-value {
-                font-size: 1.5rem;
-            }
-        }
-    </style>
 </head>
 <body>
     <header class="site-header">
@@ -98,41 +26,44 @@
             </a>
 
             <div class="desktop-menu">
-                <a href="#dashboard">Dashboard</a>
-                <a href="#patients">My Patients</a>
                 <a href="/HTML/appointments-doctor.html">Appointments</a>
-                <a href="/HTML/create-treatment-plan.html">Create Treatment</a>
+                <a href="/HTML/doctor-schedule-management.html">Schedule</a>
+                <a href="/HTML/doctor-treatment-dashboard.html" class="active">Treatment Plans</a>
                 <a href="/HTML/doctor-profile.html">My Profile</a>
             </div>
 
             <div class="desktop-menu-actions">
-                 <a href="/HTML/patient-treatment-dashboard.html" class="btn btn-secondary">Patient View</a>
-                 <a href="/HTML/index.html" class="btn btn-primary">Logout</a>
+                 <button onclick="handleDoctorLogout()" class="btn btn-primary">Logout</button>
             </div>
 
             <button id="mobile-menu-button" class="mobile-menu-toggle">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
             </button>
         </nav>
-        <div id="mobile-menu" class="mobile-menu">
-            <a href="#dashboard">Dashboard</a>
-            <a href="#patients">My Patients</a>
-            <a href="/HTML/appointments-doctor.html">Appointments</a>
-            <a href="/HTML/create-treatment-plan.html">Create Treatment</a>
-            <a href="/HTML/doctor-profile.html">My Profile</a>
-            <hr>
-            <a href="/HTML/patient-treatment-dashboard.html">Patient View</a>
-            <a href="/HTML/index.html" class="btn btn-primary">Logout</a>
-        </div>
+        <nav class="mobile-nav" id="mobile-menu">
+            <a href="/HTML/appointments-doctor.html" class="mobile-nav-link">Appointments</a>
+            <a href="/HTML/doctor-schedule-management.html" class="mobile-nav-link">Schedule</a>
+            <a href="/HTML/doctor-treatment-dashboard.html" class="mobile-nav-link active">Treatment Plans</a>
+            <a href="/HTML/doctor-profile.html" class="mobile-nav-link">My Profile</a>
+            <button onclick="handleDoctorLogout()" class="mobile-nav-link btn btn-primary">Logout</button>
+        </nav>
     </header>
 
-    <main class="treatment-dashboard">
+    <!-- Main Content -->
+    <section class="directory-content">
         <div class="container">
-            <!-- Dashboard Header -->
-            <div class="dashboard-header text-center">
-                <div class="user-type-badge user-type-doctor">Doctor Dashboard</div>
-                <h1 class="dashboard-title">Treatment Plan Management</h1>
-                <p class="dashboard-subtitle">Create and manage treatment plans for your patients with ease</p>
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-header-content">
+                    <h1 class="page-title">Treatment Plan Management</h1>
+                    <p class="page-subtitle">Create and manage treatment plans for your patients</p>
+                </div>
+                <div class="page-header-actions">
+                    <div class="doctor-info-badge">
+                        <i class="fas fa-user-md"></i>
+                        <span id="doctor-name-display">Dr. Loading...</span>
+                    </div>
+                </div>
             </div>
 
             <!-- Success/Error Messages -->
@@ -219,12 +150,22 @@
 
             <!-- Recent Treatment Plans -->
             <div class="form-section">
-                <h2 class="form-section-title">
-                    Recent Treatment Plans
-                </h2>
+                <div class="section-header">
+                    <div>
+                        <h2 class="form-section-title">
+                            <i class="fas fa-clipboard-list"></i>
+                            My Treatment Plans
+                        </h2>
+                        <p class="section-description">Treatment plans you've created for your patients</p>
+                    </div>
+                    <button onclick="doctorDashboard.loadRecentTreatments()" class="btn btn-secondary" title="Refresh treatment plans">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh
+                    </button>
+                </div>
                 
                 <div id="recent-treatments" class="treatment-grid">
-                    <!-- Recent treatment plans will be loaded here -->
+                    <!-- Treatment plans will be loaded here -->
                 </div>
             </div>
         </div>
@@ -247,7 +188,7 @@
                 <p><strong>Note:</strong> Treatment plans can be modified or updated through the patient management system.</p>
             </div>
         </div>
-    </div>
+    </section>
 
     <div id="footer-placeholder"></div>
     
@@ -257,5 +198,16 @@
     <script src="/JS/doctor-patient-api.js"></script>
     <script src="/JS/doctor-appointment-patients.js"></script>
     <script src="/JS/doctor-treatment-dashboard.js"></script>
+    
+    <script>
+        // Logout function
+        function handleDoctorLogout() {
+            // Clear any stored auth data
+            localStorage.removeItem('healSync_userData');
+            localStorage.removeItem('currentDoctorId');
+            // Redirect to home page
+            window.location.href = '/HTML/index.html';
+        }
+    </script>
 </body>
 </html>

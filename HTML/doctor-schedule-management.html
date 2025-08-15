@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Management - HealSync</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Unified Theme System -->
+    <link rel="stylesheet" href="/CSS/healsync-theme.css">
+    <link rel="stylesheet" href="/CSS/index.css">
+    <link rel="stylesheet" href="/CSS/doctor-schedule-management-new.css">
+</head>
+<body>
+
+    <!-- Main Site Header -->
+    <header class="site-header">
+        <nav class="container nav-container">
+            <a href="/HTML/index.html" class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" class="logo-icon" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                </svg>
+                HealSync
+            </a>
+            
+            <div class="desktop-menu">
+                <a href="/HTML/appointments-doctor.html">Appointments</a>
+                <a href="/HTML/doctor-schedule-management.html" class="active">Schedule</a>
+                <a href="/HTML/doctor-treatment-dashboard.html">Treatment Plans</a>
+                <a href="/HTML/doctor-profile.html">My Profile</a>
+            </div>
+            
+            <div class="desktop-menu-actions">
+                <button onclick="handleDoctorLogout()" class="btn btn-primary">Logout</button>
+            </div>
+            
+            <button id="mobile-menu-button" class="mobile-menu-toggle">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+            </button>
+        </nav>
+        <nav class="mobile-nav" id="mobile-menu">
+            <a href="/HTML/appointments-doctor.html" class="mobile-nav-link">Appointments</a>
+            <a href="/HTML/doctor-schedule-management.html" class="mobile-nav-link active">Schedule</a>
+            <a href="/HTML/doctor-treatment-dashboard.html" class="mobile-nav-link">Treatment Plans</a>
+            <a href="/HTML/doctor-profile.html" class="mobile-nav-link">My Profile</a>
+            <button onclick="handleDoctorLogout()" class="mobile-nav-link btn btn-primary">Logout</button>
+        </nav>
+    </header>
+
+    <!-- Schedule Management Content -->
+    <section class="directory-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-header-content">
+                    <h1 class="page-title">Schedule Management</h1>
+                    <p class="page-subtitle">Manage your availability and appointment slots with ease</p>
+                </div>
+                <div class="page-header-actions">
+                    <a href="/HTML/doctor-treatment-dashboard.html" class="btn btn-secondary">
+                        <i class="fas fa-plus-circle"></i>
+                        Create Treatment Plan
+                    </a>
+                    <div class="doctor-info-badge">
+                        <i class="fas fa-user-md"></i>
+                        <span id="doctor-name-display">Dr. Loading...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedule Management Card -->
+            <div class="schedule-management-card">
+                <div class="card-header">
+                    <div class="header-content">
+                        <h2><i class="fas fa-calendar-alt"></i> Weekly Availability</h2>
+                        <p>Set your available hours for patient appointments throughout the week</p>
+                    </div>
+                </div>
+
+                <div class="card-content">
+                    <!-- Schedule Tips -->
+                    <div class="schedule-tips-card">
+                        <div class="tips-header">
+                            <i class="fas fa-lightbulb"></i>
+                            <h3>Quick Tips</h3>
+                        </div>
+                        <div class="tips-grid">
+                            <div class="tip-item">
+                                <i class="fas fa-toggle-on"></i>
+                                <span>Toggle days on/off to set availability</span>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-clock"></i>
+                                <span>Set specific hours for each day</span>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-calendar-check"></i>
+                                <span>30-minute appointment slots</span>
+                            </div>
+                            <div class="tip-item">
+                                <i class="fas fa-sync-alt"></i>
+                                <span>Changes apply immediately</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Validation Error -->
+                    <div id="schedule-validation-error" class="alert alert-error" style="display: none;"></div>
+
+                    <!-- Schedule Grid -->
+                    <div class="schedule-grid">
+                        <div class="schedule-grid-header">
+                            <div class="grid-header-day">Day</div>
+                            <div class="grid-header-time">Available Hours</div>
+                            <div class="grid-header-status">Status</div>
+                        </div>
+
+                        <form id="schedule-form" class="schedule-form">
+                            <!-- Monday -->
+                            <div class="schedule-day-card" data-day="monday">
+                                <div class="day-info">
+                                    <div class="day-icon">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </div>
+                                    <div class="day-details">
+                                        <h4>Monday</h4>
+                                        <span class="day-subtitle">Start your week</span>
+                                    </div>
+                                </div>
+                                <div class="time-controls">
+                                    <div class="time-input-group">
+                                        <input type="time" id="monday-start" class="time-input" 
+                                               data-day="monday" data-type="start" value="09:00">
+                                        <span class="time-separator">to</span>
+                                        <input type="time" id="monday-end" class="time-input" 
+                                               data-day="monday" data-type="end" value="17:00">
+                                    </div>
+                                </div>
+                                <div class="status-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="monday-available" class="availability-checkbox" 
+                                               data-day="monday" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="status-text">Available</span>
+                                </div>
+                            </div>
+
+                            <!-- Tuesday -->
+                            <div class="schedule-day-card" data-day="tuesday">
+                                <div class="day-info">
+                                    <div class="day-icon">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </div>
+                                    <div class="day-details">
+                                        <h4>Tuesday</h4>
+                                        <span class="day-subtitle">Keep the momentum</span>
+                                    </div>
+                                </div>
+                                <div class="time-controls">
+                                    <div class="time-input-group">
+                                        <input type="time" id="tuesday-start" class="time-input" 
+                                               data-day="tuesday" data-type="start" value="09:00">
+                                        <span class="time-separator">to</span>
+                                        <input type="time" id="tuesday-end" class="time-input" 
+                                               data-day="tuesday" data-type="end" value="17:00">
+                                    </div>
+                                </div>
+                                <div class="status-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="tuesday-available" class="availability-checkbox" 
+                                               data-day="tuesday" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="status-text">Available</span>
+                                </div>
+                            </div>
+
+                            <!-- Wednesday -->
+                            <div class="schedule-day-card" data-day="wednesday">
+                                <div class="day-info">
+                                    <div class="day-icon">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </div>
+                                    <div class="day-details">
+                                        <h4>Wednesday</h4>
+                                        <span class="day-subtitle">Mid-week focus</span>
+                                    </div>
+                                </div>
+                                <div class="time-controls">
+                                    <div class="time-input-group">
+                                        <input type="time" id="wednesday-start" class="time-input" 
+                                               data-day="wednesday" data-type="start" value="09:00">
+                                        <span class="time-separator">to</span>
+                                        <input type="time" id="wednesday-end" class="time-input" 
+                                               data-day="wednesday" data-type="end" value="17:00">
+                                    </div>
+                                </div>
+                                <div class="status-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="wednesday-available" class="availability-checkbox" 
+                                               data-day="wednesday" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="status-text">Available</span>
+                                </div>
+                            </div>
+
+                            <!-- Thursday -->
+                            <div class="schedule-day-card" data-day="thursday">
+                                <div class="day-info">
+                                    <div class="day-icon">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </div>
+                                    <div class="day-details">
+                                        <h4>Thursday</h4>
+                                        <span class="day-subtitle">Almost there</span>
+                                    </div>
+                                </div>
+                                <div class="time-controls">
+                                    <div class="time-input-group">
+                                        <input type="time" id="thursday-start" class="time-input" 
+                                               data-day="thursday" data-type="start" value="09:00">
+                                        <span class="time-separator">to</span>
+                                        <input type="time" id="thursday-end" class="time-input" 
+                                               data-day="thursday" data-type="end" value="17:00">
+                                    </div>
+                                </div>
+                                <div class="status-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="thursday-available" class="availability-checkbox" 
+                                               data-day="thursday" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="status-text">Available</span>
+                                </div>
+                            </div>
+
+                            <!-- Friday -->
+                            <div class="schedule-day-card" data-day="friday">
+                                <div class="day-info">
+                                    <div class="day-icon">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </div>
+                                    <div class="day-details">
+                                        <h4>Friday</h4>
+                                        <span class="day-subtitle">End strong</span>
+                                    </div>
+                                </div>
+                                <div class="time-controls">
+                                    <div class="time-input-group">
+                                        <input type="time" id="friday-start" class="time-input" 
+                                               data-day="friday" data-type="start" value="09:00">
+                                        <span class="time-separator">to</span>
+                                        <input type="time" id="friday-end" class="time-input" 
+                                               data-day="friday" data-type="end" value="17:00">
+                                    </div>
+                                </div>
+                                <div class="status-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="friday-available" class="availability-checkbox" 
+                                               data-day="friday" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="status-text">Available</span>
+                                </div>
+                            </div>
+
+                            <!-- Saturday -->
+                            <div class="schedule-day-card" data-day="saturday">
+                                <div class="day-info">
+                                    <div class="day-icon">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </div>
+                                    <div class="day-details">
+                                        <h4>Saturday</h4>
+                                        <span class="day-subtitle">Weekend care</span>
+                                    </div>
+                                </div>
+                                <div class="time-controls">
+                                    <div class="time-input-group">
+                                        <input type="time" id="saturday-start" class="time-input" 
+                                               data-day="saturday" data-type="start" value="10:00" disabled>
+                                        <span class="time-separator">to</span>
+                                        <input type="time" id="saturday-end" class="time-input" 
+                                               data-day="saturday" data-type="end" value="15:00" disabled>
+                                    </div>
+                                </div>
+                                <div class="status-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="saturday-available" class="availability-checkbox" 
+                                               data-day="saturday">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="status-text">Unavailable</span>
+                                </div>
+                            </div>
+
+                            <!-- Sunday -->
+                            <div class="schedule-day-card" data-day="sunday">
+                                <div class="day-info">
+                                    <div class="day-icon">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </div>
+                                    <div class="day-details">
+                                        <h4>Sunday</h4>
+                                        <span class="day-subtitle">Rest day</span>
+                                    </div>
+                                </div>
+                                <div class="time-controls">
+                                    <div class="time-input-group">
+                                        <input type="time" id="sunday-start" class="time-input" 
+                                               data-day="sunday" data-type="start" value="10:00" disabled>
+                                        <span class="time-separator">to</span>
+                                        <input type="time" id="sunday-end" class="time-input" 
+                                               data-day="sunday" data-type="end" value="15:00" disabled>
+                                    </div>
+                                </div>
+                                <div class="status-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="sunday-available" class="availability-checkbox" 
+                                               data-day="sunday">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <span class="status-text">Unavailable</span>
+                                </div>
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="form-actions">
+                                <button type="button" id="reset-schedule-btn" class="btn btn-secondary">
+                                    <i class="fas fa-undo-alt"></i> Reset to Default
+                                </button>
+                                <button type="button" id="save-schedule-btn" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save Schedule
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Overlay -->
+            <div id="schedule-save-loader" class="loading-overlay" style="display: none;">
+                <div class="loading-content">
+                    <div class="loading-spinner"></div>
+                    <p>Saving your schedule...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script src="/JS/auth.js"></script>
+    <script src="/JS/development-override.js"></script>
+    <script src="/JS/snackbar.js"></script>
+    <script src="/JS/doctor-schedule-booking.js"></script>
+    
+    <script>
+        // Toggle switch functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle toggle switches
+            document.querySelectorAll('.availability-checkbox').forEach(checkbox => {
+                const statusText = checkbox.parentElement.nextElementSibling;
+                
+                checkbox.addEventListener('change', function() {
+                    const dayCard = this.closest('.schedule-day-card');
+                    const timeInputs = dayCard.querySelectorAll('.time-input');
+                    
+                    if (this.checked) {
+                        statusText.textContent = 'Available';
+                        statusText.style.color = '#059669';
+                        timeInputs.forEach(input => input.disabled = false);
+                    } else {
+                        statusText.textContent = 'Unavailable';
+                        statusText.style.color = '#6B7280';
+                        timeInputs.forEach(input => input.disabled = true);
+                    }
+                });
+            });
+
+            // Mobile menu functionality
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('active');
+                });
+            }
+        });
+
+        // Logout function
+        function handleDoctorLogout() {
+            // Add logout logic here
+            window.location.href = '/HTML/index.html';
+        }
+    </script>
+</body>
+</html>

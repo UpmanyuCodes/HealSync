@@ -244,8 +244,20 @@ function storeUserSession(userData, userType) {
     localStorage.setItem('healSync_userData', JSON.stringify(userData));
     
     if (userType === 'patient') {
-        localStorage.setItem('healSync_patientId', userData.patientId);
-        localStorage.setItem('healSync_userName', userData.patientName);
+        // Store patient data in the format expected by appointments-patient.js
+        const patientSessionData = {
+            patientId: userData.patientId || userData.id,
+            patientName: userData.patientName || userData.name,
+            email: userData.email,
+            mobileNo: userData.mobileNo || userData.phone,
+            patientAge: userData.patientAge || userData.age,
+            gender: userData.gender,
+            expiresAt: new Date().getTime() + (24 * 60 * 60 * 1000) // 24 hours from now
+        };
+        
+        localStorage.setItem('healSync_patient_data', JSON.stringify(patientSessionData));
+        localStorage.setItem('healSync_patientId', userData.patientId || userData.id);
+        localStorage.setItem('healSync_userName', userData.patientName || userData.name);
     } else {
         localStorage.setItem('healSync_doctorId', userData.doctorId);
         localStorage.setItem('healSync_userName', userData.name);
@@ -292,8 +304,19 @@ function clearUserSession() {
 
 // Redirect after successful login
 function redirectAfterLogin(userType) {
+    // Check for return URL
+    const returnUrl = sessionStorage.getItem('returnUrl');
+    
+    if (returnUrl) {
+        // Clear return URL and redirect to it
+        sessionStorage.removeItem('returnUrl');
+        window.location.href = returnUrl;
+        return;
+    }
+    
+    // Redirect to index page instead of dashboard for better UX
     if (userType === 'patient') {
-        window.location.href = '/HTML/patient-treatment-dashboard.html';
+        window.location.href = '/HTML/index.html';
     } else {
         window.location.href = '/HTML/doctor-treatment-dashboard.html';
     }

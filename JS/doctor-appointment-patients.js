@@ -1,37 +1,106 @@
 // Doctor Appointment-Based Patient Fetcher
-// This module fetches patients who have booked appointments with the doctor
+// Updated to use backend API endpoints from documentation
 
 const DoctorAppointmentPatients = {
     
     // Fetch all patients who have booked appointments with this doctor
     async fetchPatientsFromAppointments(doctorId) {
         try {
-            console.log('Fetching patients from doctor appointments...', doctorId);
+            console.log('🩺 Fetching patients from doctor appointments...', doctorId);
             
-            // Method 1: Check localStorage for recent appointments
+            // Method 1: Try to get patients directly from backend API
+            const apiPatients = await this.getPatientsFromAPI(doctorId);
+            if (apiPatients && apiPatients.length > 0) {
+                console.log('✅ Found patients from API:', apiPatients);
+                return apiPatients;
+            }
+            
+            // Method 2: Check localStorage for recent appointments
             const localPatients = this.getPatientsFromLocalStorage(doctorId);
             if (localPatients && localPatients.length > 0) {
-                console.log('Found patients from localStorage:', localPatients);
+                console.log('📂 Found patients from localStorage:', localPatients);
                 return localPatients;
             }
             
-            // Method 2: Try to get doctor's appointments from API
+            // Method 3: Try to get doctor's appointments from API and extract patients
             const appointments = await this.getDoctorAppointments(doctorId);
-            
             if (appointments && appointments.length > 0) {
-                // Extract unique patients from appointments
                 const patients = this.extractPatientsFromAppointments(appointments);
-                console.log('Patients extracted from API appointments:', patients);
+                console.log('🔗 Patients extracted from API appointments:', patients);
                 return patients;
             }
             
-            // If no appointments found, return empty array
-            console.log('No appointments found for doctor', doctorId);
+            console.log('⚠️ No appointments found for doctor', doctorId);
             return [];
             
         } catch (error) {
-            console.error('Error fetching patients from appointments:', error);
+            console.error('❌ Error fetching patients from appointments:', error);
             return [];
+        }
+    },
+
+    // Get patients directly from backend API (optimized to avoid 404 errors)
+    async getPatientsFromAPI(doctorId) {
+        try {
+            console.log('🌐 Attempting to fetch patients from backend API...');
+            
+            // First check if the endpoint exists by testing connectivity
+            const testResponse = await fetch(`https://healsync-backend-d788.onrender.com/api/doctors`);
+            
+            if (!testResponse.ok) {
+                console.log('⚠️ Backend API not fully available, using local data');
+                return null;
+            }
+            
+            // Try to get doctor's patients (this endpoint may not exist yet)
+            const response = await fetch(`https://healsync-backend-d788.onrender.com/v1/healsync/doctor/${doctorId}/patients`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                timeout: 5000
+            });
+            
+            if (response.ok) {
+                const patients = await response.json();
+                console.log('📊 API response:', patients);
+                
+                // Store in localStorage for offline access
+                localStorage.setItem(`doctor_${doctorId}_patients`, JSON.stringify(patients));
+                
+                return patients;
+            } else if (response.status === 404) {
+                console.log('ℹ️ Doctor patient endpoint not available yet (404). This is normal during development.');
+                return null;
+            } else {
+                console.log('⚠️ API request failed:', response.status, response.statusText);
+                return null;
+            }
+        } catch (error) {
+            // Don't log this as an error since the endpoint might not exist yet
+            console.log('ℹ️ API endpoint not available, falling back to local data');
+            return null;
+        }
+    },
+
+    // Get doctor's appointments from backend API
+    async getDoctorAppointments(doctorId) {
+        try {
+            console.log('📅 Fetching doctor appointments from API...');
+            
+            const response = await fetch(`https://healsync-backend-d788.onrender.com/v1/healsync/book/doctor/appointments?doctorId=${doctorId}`);
+            
+            if (response.ok) {
+                const appointments = await response.json();
+                console.log('📊 Doctor appointments from API:', appointments);
+                return appointments;
+            } else {
+                console.log('⚠️ Appointments API request failed:', response.status);
+                return null;
+            }
+        } catch (error) {
+            console.error('🚫 Appointments API error:', error);
+            return null;
         }
     },
 
