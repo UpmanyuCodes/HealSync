@@ -173,6 +173,19 @@ ul {
 .mobile-menu a:hover {
     background-color: #F0FDFA; /* teal-50 */
 }
+.mobile-menu .logout-btn {
+    background: none;
+    border: none;
+    color: #DC2626; /* red-600 */
+    font-size: 1rem;
+    font-family: inherit;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+}
+.mobile-menu .logout-btn:hover {
+    background-color: #FEF2F2; /* red-50 */
+}
 .mobile-menu hr {
     margin: 0.5rem 0;
     border: none;

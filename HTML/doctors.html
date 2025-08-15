@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Doctors - HealSync</title>
+    <title>Find Doctors - HealSync</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,7 +15,6 @@
     <link rel="stylesheet" href="/CSS/directory.css">
     <link rel="stylesheet" href="/CSS/doctors.css">
     <link rel="stylesheet" href="/CSS/snackbar.css">
-    <link rel="stylesheet" href="/CSS/health-indicator.css">
 </head>
 <body>
 
@@ -29,8 +28,6 @@
                 HealSync
             </a>
             <div class="desktop-menu">
-                <a href="/HTML/index.html#features">Features</a>
-                <a href="/HTML/doctors.html" class="active">Find Doctors</a>
                 <a href="/HTML/tracker.html">Health Tracker</a>
                 <a href="/HTML/index.html#about">About</a>
             </div>
@@ -43,8 +40,6 @@
             </button>
         </nav>
         <nav class="mobile-nav" id="mobile-menu">
-            <a href="/HTML/index.html#features" class="mobile-nav-link">Features</a>
-            <a href="/HTML/doctors.html" class="mobile-nav-link">Find Doctors</a>
             <a href="/HTML/tracker.html" class="mobile-nav-link">Health Tracker</a>
             <a href="/HTML/index.html#about" class="mobile-nav-link">About</a>
             <a href="/HTML/login.html" class="mobile-nav-link">Login</a>
@@ -53,52 +48,71 @@
     </header>
 
     <main class="directory-main">
-        <section class="directory-header">
-            <div class="container">
-                <h1>Meet Our Medical Experts</h1>
-                <p>Connect with qualified healthcare professionals who are ready to guide you on your recovery journey.</p>
-            </div>
-        </section>
-
-        <section class="directory-content">
-            <div class="container">
-                <!-- Search and Filter Bar -->
-                <div class="search-filter-bar">
-                    <div class="search-box">
+        <!-- Hero Section for Doctors Page -->
+        <section class="doctors-hero-section">
+            <div class="container text-center">
+                <h1 class="hero-title">Find Your <span class="text-highlight">Perfect Doctor</span></h1>
+                <p class="hero-subtitle">Connect with qualified healthcare professionals who are ready to guide you on your health journey.</p>
+                
+                <div class="hero-search-bar">
+                    <div class="search-box-hero">
                         <i class="fas fa-search"></i>
-                        <input type="text" id="doctor-search" placeholder="Search doctors by name or specialty...">
-                        <button type="button" id="clear-search" class="clear-btn" style="display: none;">
-                            <i class="fas fa-times"></i>
+                        <input type="text" id="hero-doctor-search" placeholder="Search by doctor name, specialty, or condition...">
+                        <button type="button" class="btn btn-primary search-btn">
+                            <i class="fas fa-search"></i>
+                            Search
                         </button>
                     </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="directory-content">
+            <div class="container">
+                <!-- Advanced Search and Filter Bar -->
+                <div class="search-filter-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Browse Doctors</h2>
+                        <p class="section-subtitle">Filter by specialty, availability, or search by name</p>
+                    </div>
                     
-                    <div class="filter-controls">
-                        <div class="filter-group">
-                            <label for="specialty-filter">
-                                <i class="fas fa-stethoscope"></i>
-                                Specialty
-                            </label>
-                            <select id="specialty-filter">
-                                <option value="all">All Specialties</option>
-                            </select>
+                    <div class="search-filter-bar">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="doctor-search" placeholder="Search doctors by name or specialty...">
+                            <button type="button" id="clear-search" class="clear-btn" style="display: none;">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
                         
-                        <div class="filter-group">
-                            <label for="shift-filter">
-                                <i class="fas fa-clock"></i>
-                                Availability
-                            </label>
-                            <select id="shift-filter">
-                                <option value="all">All Times</option>
-                                <option value="Day">Day Shift</option>
-                                <option value="Night">Night Shift</option>
-                            </select>
+                        <div class="filter-controls">
+                            <div class="filter-group">
+                                <label for="specialty-filter">
+                                    <i class="fas fa-stethoscope"></i>
+                                    Specialty
+                                </label>
+                                <select id="specialty-filter">
+                                    <option value="all">All Specialties</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label for="shift-filter">
+                                    <i class="fas fa-clock"></i>
+                                    Availability
+                                </label>
+                                <select id="shift-filter">
+                                    <option value="all">All Times</option>
+                                    <option value="Day">Day Shift</option>
+                                    <option value="Night">Night Shift</option>
+                                </select>
+                            </div>
+                            
+                            <button type="button" id="reset-filters" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-undo"></i>
+                                Reset
+                            </button>
                         </div>
-                        
-                        <button type="button" id="reset-filters" class="btn btn-secondary btn-sm">
-                            <i class="fas fa-undo"></i>
-                            Reset
-                        </button>
                     </div>
                 </div>
 
@@ -123,7 +137,17 @@
 
                 <!-- Results Summary -->
                 <div id="results-summary" class="results-summary" style="display: none;">
-                    <p>Showing <span id="results-count">0</span> doctors</p>
+                    <div class="results-info">
+                        <p>Showing <span id="results-count">0</span> doctors</p>
+                        <div class="view-toggle">
+                            <button class="view-btn active" data-view="grid">
+                                <i class="fas fa-th-large"></i>
+                            </button>
+                            <button class="view-btn" data-view="list">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Doctor Grid -->
@@ -184,21 +208,13 @@
                                 
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="appointment-duration">
-                                            <i class="fas fa-hourglass-half"></i>
-                                            Duration
+                                        <label for="appointment-end-time">
+                                            <i class="fas fa-clock"></i>
+                                            End Time
                                         </label>
-                                        <select id="appointment-duration" required>
-                                            <option value="">Select Duration</option>
-                                            <option value="15">15 minutes - Quick Consultation</option>
-                                            <option value="30">30 minutes - Standard Consultation</option>
-                                            <option value="45">45 minutes - Detailed Consultation</option>
-                                            <option value="60">1 hour - Comprehensive Consultation</option>
-                                            <option value="90">1.5 hours - Extended Consultation</option>
-                                            <option value="120">2 hours - Complete Assessment</option>
-                                        </select>
-                                        <div class="form-validation-message" id="duration-validation"></div>
-                                        <small class="form-help-text">Choose based on your consultation needs</small>
+                                        <input type="time" id="appointment-end-time" required min="08:15" max="20:30" step="300">
+                                        <div class="form-validation-message" id="end-time-validation"></div>
+                                        <small class="form-help-text">Must be after start time</small>
                                     </div>
                                     
                                     <div class="form-group">
@@ -259,8 +275,6 @@
                                         Book Appointment
                                     </button>
                                 </div>
-                                    </button>
-                                </div>
                             </form>
                         </div>
                     </div>
@@ -272,21 +286,52 @@
     <!-- Footer Placeholder -->
     <div id="footer-placeholder"></div>
 
-    <!-- API Health Indicator -->
-    <div id="api-health-indicator" class="health-indicator">
-        <div class="health-dot"></div>
-        <span>Checking API...</span>
-    </div>
-
     <!-- Scripts -->
-    <script src="/JS/api-health.js"></script>
     <script src="/JS/navigation.js"></script>
     <script src="/JS/footer.js"></script>
+    <script src="/JS/slot-availability-checker.js"></script>
     <script src="/JS/doctors.js"></script>
     <script>
         // Mobile menu toggle
         document.getElementById('mobile-menu-button')?.addEventListener('click', () => {
             document.getElementById('mobile-menu')?.classList.toggle('visible');
+        });
+        
+        // Hero search functionality
+        document.getElementById('hero-doctor-search')?.addEventListener('input', (e) => {
+            document.getElementById('doctor-search').value = e.target.value;
+        });
+        
+        document.querySelector('.search-btn')?.addEventListener('click', () => {
+            const searchTerm = document.getElementById('hero-doctor-search').value;
+            if (searchTerm.trim()) {
+                // Trigger search
+                const event = new Event('input');
+                document.getElementById('doctor-search').dispatchEvent(event);
+                
+                // Scroll to results
+                document.getElementById('doctor-grid').scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+        
+        // View toggle functionality
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const view = btn.dataset.view;
+                const grid = document.getElementById('doctor-grid');
+                
+                if (view === 'list') {
+                    grid.classList.add('list-view');
+                } else {
+                    grid.classList.remove('list-view');
+                }
+            });
         });
     </script>
 </body>

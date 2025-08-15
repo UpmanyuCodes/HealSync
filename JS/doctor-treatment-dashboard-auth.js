@@ -79,6 +79,12 @@ function displayUserInfo() {
             el.textContent = userName;
         });
         
+        // Update doctor name display in header badge
+        const doctorNameDisplay = document.getElementById('doctor-name-display');
+        if (doctorNameDisplay) {
+            doctorNameDisplay.textContent = userName;
+        }
+        
         // Update dashboard title
         const titleElement = document.querySelector('.dashboard-title');
         if (titleElement) {

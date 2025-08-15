@@ -40,9 +40,101 @@ class DoctorDashboard {
                 const doctor = JSON.parse(userData);
                 this.currentDoctorId = doctor.doctorId || localStorage.getItem('currentDoctorId');
                 console.log('Current doctor ID:', this.currentDoctorId);
+                
+                // Update doctor name display
+                this.updateDoctorNameDisplay(doctor);
+                
+                // Debug: Add API test function to global scope for manual testing
+                window.testDoctorTreatmentPlansAPI = () => {
+                    if (this.currentDoctorId) {
+                        console.log(`Testing API: GET ${API_BASE}/api/doctors/${this.currentDoctorId}/treatment-plans`);
+                        fetch(`${API_BASE}/api/doctors/${this.currentDoctorId}/treatment-plans`)
+                            .then(response => {
+                                console.log('API Response Status:', response.status);
+                                return response.json();
+                            })
+                            .then(data => console.log('API Response Data:', data))
+                            .catch(error => console.error('API Test Error:', error));
+                    } else {
+                        console.error('No doctor ID available for API test');
+                    }
+                };
+                
+                // Debug: Add localStorage inspection function
+                window.debugDoctorData = () => {
+                    console.log('=== Doctor Data Debug ===');
+                    console.log('healSync_userData:', localStorage.getItem('healSync_userData'));
+                    console.log('currentDoctorId:', localStorage.getItem('currentDoctorId'));
+                    console.log('healSync_userType:', localStorage.getItem('healSync_userType'));
+                    console.log('Doctor object:', doctor);
+                    console.log('Current doctor ID:', this.currentDoctorId);
+                };
+            } else {
+                console.warn('No doctor data found in localStorage');
+                // Set a fallback doctor ID for development/testing
+                this.currentDoctorId = localStorage.getItem('currentDoctorId') || '3';
+                localStorage.setItem('currentDoctorId', this.currentDoctorId);
+                
+                // Try to fetch doctor details
+                this.fetchDoctorDetails();
             }
         } catch (error) {
             console.error('Error getting doctor info:', error);
+            // Fallback for development
+            this.currentDoctorId = '3';
+            this.fetchDoctorDetails();
+        }
+    }
+
+    updateDoctorNameDisplay(doctor) {
+        try {
+            const nameDisplay = document.getElementById('doctor-name-display');
+            if (nameDisplay && doctor) {
+                // Try different possible name properties from the doctor object
+                const doctorName = doctor.name || doctor.doctorName || doctor.firstName || 
+                                 `Dr. ${doctor.lastName || 'Doctor'}` || `Doctor #${doctor.doctorId}`;
+                
+                nameDisplay.textContent = doctorName;
+                console.log('Updated doctor name display:', doctorName);
+            } else if (nameDisplay) {
+                // If no doctor data, try to fetch it
+                this.fetchDoctorDetails();
+            }
+        } catch (error) {
+            console.error('Error updating doctor name display:', error);
+        }
+    }
+
+    async fetchDoctorDetails() {
+        try {
+            if (!this.currentDoctorId) return;
+            
+            const nameDisplay = document.getElementById('doctor-name-display');
+            if (!nameDisplay) return;
+            
+            // Try to fetch doctor details from API
+            const response = await fetch(`${API_BASE}/api/doctors/${this.currentDoctorId}`);
+            if (response.ok) {
+                const doctorData = await response.json();
+                console.log('Fetched doctor details:', doctorData);
+                
+                if (doctorData && (doctorData.name || doctorData.doctorName)) {
+                    const doctorName = doctorData.name || doctorData.doctorName || `Dr. ${doctorData.lastName || 'Doctor'}`;
+                    nameDisplay.textContent = doctorName;
+                    console.log('Updated doctor name from API:', doctorName);
+                } else {
+                    nameDisplay.textContent = `Dr. #${this.currentDoctorId}`;
+                }
+            } else {
+                console.warn('Could not fetch doctor details, using fallback');
+                nameDisplay.textContent = `Dr. #${this.currentDoctorId}`;
+            }
+        } catch (error) {
+            console.error('Error fetching doctor details:', error);
+            const nameDisplay = document.getElementById('doctor-name-display');
+            if (nameDisplay) {
+                nameDisplay.textContent = `Dr. #${this.currentDoctorId || 'Unknown'}`;
+            }
         }
     }
 
@@ -274,18 +366,32 @@ class DoctorDashboard {
 
     async fetchMedicines() {
         try {
+            console.log('🔍 Fetching medicines from API...');
             // Fetch all medicines from API
             const response = await fetch(`${API_BASE}/v1/healsync/medicine/all`);
+            
+            console.log('🔍 Medicine API Response Status:', response.status, response.ok);
             
             if (!response.ok) {
                 throw new Error(`API responded with status: ${response.status}`);
             }
             
             const data = await response.json();
-            console.log('All Medicines API Response:', data);
+            console.log('🔍 All Medicines API Response:', data);
             
             // Return the medicines from API response
-            return data.medicines || data || [];
+            const medicines = data.medicines || data || [];
+            console.log('🔍 Processed medicines array:', medicines);
+            console.log(`🔍 Medicine count: ${medicines.length}`);
+            
+            if (medicines.length > 0) {
+                console.log('🔍 First medicine structure:', medicines[0]);
+                console.log('🔍 Medicine keys:', Object.keys(medicines[0]));
+                console.log('🔍 Medicine ID field exists:', 'id' in medicines[0]);
+                console.log('🔍 Medicine ID value:', medicines[0].id);
+            }
+            
+            return medicines;
             
         } catch (error) {
             console.error('Error fetching medicines from API:', error);
@@ -350,14 +456,32 @@ class DoctorDashboard {
         row.className = 'medicine-row';
         row.setAttribute('data-row-id', this.medicineCounter);
 
+        console.log('🔍 Adding medicine row, medicines available:', this.medicines?.length || 0);
+        console.log('🔍 First few medicines:', this.medicines?.slice(0, 3));
+
+        // Generate medicine options
+        let medicineOptions = '<option value="">Select medicine...</option>';
+        if (this.medicines && this.medicines.length > 0) {
+            medicineOptions += this.medicines.map(med => {
+                const id = med.id || med.medicineId || med._id;
+                const name = med.name || med.medicineName || 'Unknown Medicine';
+                const strength = med.strength || med.dosage || '';
+                const displayText = strength ? `${name} (${strength})` : name;
+                
+                console.log('🔍 Medicine option:', {id, name, strength, displayText, fullMedicine: med});
+                
+                return `<option value="${id}">${displayText}</option>`;
+            }).join('');
+        } else {
+            console.warn('⚠️ No medicines available for dropdown');
+            medicineOptions += '<option value="" disabled>No medicines available</option>';
+        }
+
         row.innerHTML = `
             <div class="form-group">
                 <label class="form-label">Medicine</label>
                 <select name="medicines[${this.medicineCounter}][medicineId]" class="form-select medicine-select" required>
-                    <option value="">Select medicine...</option>
-                    ${this.medicines.map(med => 
-                        `<option value="${med.id}">${med.name} (${med.strength})</option>`
-                    ).join('')}
+                    ${medicineOptions}
                 </select>
             </div>
             <div class="form-group">
@@ -420,19 +544,59 @@ class DoctorDashboard {
 
             // Collect medicines data
             const medicineRows = document.querySelectorAll('.medicine-row');
+            console.log('🔍 Found medicine rows:', medicineRows.length);
+            
             medicineRows.forEach((row, index) => {
-                const medicineId = row.querySelector('select[name*="medicineId"]').value;
-                const dosage = row.querySelector('input[name*="dosage"]').value;
-                const timing = row.querySelector('input[name*="timing"]').value;
+                const medicineSelect = row.querySelector('select[name*="medicineId"]');
+                const dosageInput = row.querySelector('input[name*="dosage"]');
+                const timingInput = row.querySelector('input[name*="timing"]') || row.querySelector('input[name*="frequency"]');
+
+                console.log(`🔍 Medicine ${index + 1} - DOM Elements:`, {
+                    medicineSelect: medicineSelect,
+                    dosageInput: dosageInput,
+                    timingInput: timingInput,
+                    rowHTML: row.innerHTML.substring(0, 200) + '...'
+                });
+
+                const medicineId = medicineSelect?.value;
+                const dosage = dosageInput?.value;
+                const timing = timingInput?.value;
+
+                console.log(`🔍 Medicine ${index + 1} - Values:`, {
+                    medicineId,
+                    medicineIdType: typeof medicineId,
+                    dosage,
+                    timing,
+                    selectOptions: medicineSelect ? Array.from(medicineSelect.options).map(opt => ({value: opt.value, text: opt.text, selected: opt.selected})) : 'No select found'
+                });
 
                 if (medicineId && dosage && timing) {
+                    const parsedMedicineId = parseInt(medicineId);
+                    console.log(`✅ Medicine ${index + 1} - Adding to treatment:`, {
+                        originalId: medicineId,
+                        parsedId: parsedMedicineId,
+                        isValid: !isNaN(parsedMedicineId)
+                    });
+                    
                     treatmentData.medicines.push({
-                        medicineId: parseInt(medicineId),
+                        medicineId: parsedMedicineId,
                         dosage: dosage.trim(),
-                        timing: timing.trim()
+                        frequency: timing.trim(), // Use frequency as expected by API
+                        timing: timing.trim() // Keep timing for backward compatibility
+                    });
+                } else {
+                    console.warn(`⚠️ Medicine ${index + 1} missing data:`, {
+                        hasMedicineId: !!medicineId,
+                        medicineIdValue: medicineId,
+                        hasDosage: !!dosage,
+                        dosageValue: dosage,
+                        hasTiming: !!timing,
+                        timingValue: timing
                     });
                 }
             });
+
+            console.log('🔍 Collected medicines:', treatmentData.medicines);
 
             // Validate medicines
             if (treatmentData.medicines.length === 0) {
@@ -460,52 +624,111 @@ class DoctorDashboard {
     }
 
     async createTreatmentPlan(patientId, treatmentData) {
-        // Prepare the payload according to API documentation
+        // Validate required data before API call
+        if (!patientId || isNaN(parseInt(patientId))) {
+            throw new Error('Valid Patient ID is required');
+        }
+
+        if (!treatmentData.medicines || treatmentData.medicines.length === 0) {
+            throw new Error('At least one medicine is required for the treatment plan');
+        }
+
+        // Validate each medicine has required fields
+        for (let i = 0; i < treatmentData.medicines.length; i++) {
+            const med = treatmentData.medicines[i];
+            console.log(`🔍 Validating medicine ${i + 1}:`, med);
+            
+            if (!med.medicineId) {
+                throw new Error(`Medicine ${i + 1}: Please select a medicine from the dropdown`);
+            }
+            if (isNaN(parseInt(med.medicineId))) {
+                throw new Error(`Medicine ${i + 1}: Invalid medicine ID format (${med.medicineId})`);
+            }
+            if (!med.dosage || med.dosage.trim() === '') {
+                throw new Error(`Medicine ${i + 1}: Please enter the dosage`);
+            }
+            if (!med.frequency && !med.timing) {
+                throw new Error(`Medicine ${i + 1}: Please enter the timing/frequency`);
+            }
+        }
+
+        // Prepare the payload according to the working Postman format
         const apiPayload = {
-            patientId: parseInt(patientId),
-            diagnosis: treatmentData.diagnosis || `Treatment for Disease ID: ${treatmentData.diseaseId}`,
-            treatmentGoals: treatmentData.treatmentGoals || treatmentData.notes || "Patient recovery and symptom management",
+            doctorId: parseInt(treatmentData.doctorId) || 3, // Default doctor ID or from form
+            diseaseId: parseInt(treatmentData.diseaseId) || 8, // From form or default
+            status: treatmentData.status || "ongoing",
             notes: treatmentData.notes || "Treatment plan created via doctor dashboard",
-            startDate: treatmentData.startDate || new Date().toISOString().split('T')[0],
-            endDate: treatmentData.endDate || this.calculateEndDate(treatmentData.startDate),
-            status: treatmentData.status || 'ACTIVE',
             medicines: treatmentData.medicines.map(med => ({
                 medicineId: parseInt(med.medicineId),
-                medicineName: med.medicineName || `Medicine ${med.medicineId}`,
                 dosage: med.dosage,
                 timing: `${med.frequency} - ${med.instructions || 'As prescribed'}`
             }))
         };
 
-        console.log('Creating treatment plan with payload:', apiPayload);
+        console.log('Creating treatment plan with Postman-compatible payload:', apiPayload);
 
-        // API call to create treatment plan
-        const response = await fetch(`${API_BASE}/v1/healsync/treatment-plan/create`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify(apiPayload)
-        });
+        // API call using the correct endpoint format from Postman
+        try {
+            console.log('Using Postman-compatible endpoint format...');
+            
+            // Use the exact endpoint format from your Postman screenshot
+            const apiUrl = `${API_BASE}/api/patients/${patientId}/treatment-plans`;
+            console.log('API URL:', apiUrl);
+            
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(apiPayload)
+            });
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            const errorMessage = errorData.message || `HTTP error! status: ${response.status}`;
-            throw new Error(errorMessage);
+            console.log('API Response Status:', response.status);
+
+            if (!response.ok) {
+                // Try to get detailed error information
+                let errorData;
+                const contentType = response.headers.get('content-type');
+                
+                if (contentType && contentType.includes('application/json')) {
+                    errorData = await response.json().catch(() => ({}));
+                } else {
+                    const errorText = await response.text().catch(() => 'Unknown error');
+                    errorData = { message: errorText };
+                }
+                
+                console.error('API Error Response:', errorData);
+                
+                const errorMessage = errorData.message || errorData.error || `HTTP ${response.status}: ${response.statusText}`;
+                throw new Error(`Treatment Plan Creation Failed: ${errorMessage}`);
+            }
+
+            const result = await response.json();
+            console.log('Treatment plan created successfully:', result);
+            
+            // Return the result in expected format
+            return {
+                treatmentId: result.treatmentId || result.id,
+                patientId: result.patientId,
+                doctorId: result.doctorId,
+                diseaseId: result.diseaseId,
+                status: result.status,
+                startDate: result.startDate,
+                ...result
+            };
+            
+        } catch (networkError) {
+            console.error('Network/Fetch Error:', networkError);
+            
+            // Check if it's a network connectivity issue
+            if (networkError.name === 'TypeError' && networkError.message.includes('fetch')) {
+                throw new Error('Network Error: Unable to connect to the server. Please check your internet connection.');
+            }
+            
+            // Re-throw the error with additional context
+            throw new Error(`API Request Failed: ${networkError.message}`);
         }
-
-        const result = await response.json();
-        console.log('Treatment plan created successfully:', result);
-        
-        // Handle the documented API response format
-        if (result.status === 'success' && result.data) {
-            return result.data;
-        } else if (result.status === 'error') {
-            throw new Error(result.message || 'Failed to create treatment plan');
-        }
-        
-        return result;
     }
 
     // Helper function to calculate end date (3 months from start date)
@@ -524,75 +747,87 @@ class DoctorDashboard {
             const container = document.getElementById('recent-treatments');
             if (!container) return;
             
-            container.innerHTML = '<div class="treatment-card-skeleton loading-skeleton"></div>'.repeat(3);
+            // Show loading state
+            container.innerHTML = `
+                <div class="loading-treatment-plans">
+                    <div class="loading-spinner"></div>
+                    <p>Loading your treatment plans...</p>
+                </div>
+            `;
 
-            // Try to fetch treatment plans from API with fallback
+            // Check if we have doctor ID
+            if (!this.currentDoctorId) {
+                console.error('No doctor ID available for fetching treatment plans');
+                container.innerHTML = `
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Unable to load treatment plans. Please log in again.
+                        <button onclick="window.location.href='/HTML/login.html'" class="btn btn-small btn-primary" style="margin-left: 1rem;">
+                            Login Again
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            console.log(`🔄 Fetching treatment plans for doctor ID: ${this.currentDoctorId}`);
+
+            // Fetch doctor's treatment plans from API
             let apiTreatments = [];
             try {
-                const response = await fetch(`${API_BASE}/v1/healsync/treatment-plan/all`);
+                const response = await fetch(`${API_BASE}/api/doctors/${this.currentDoctorId}/treatment-plans`);
                 
                 if (response.ok) {
                     const responseData = await response.json();
-                    console.log('Treatment Plans API Response:', responseData);
+                    console.log('Doctor Treatment Plans API Response:', responseData);
                     
-                    // Handle the documented API response format
-                    if (responseData.status === 'success' && responseData.data) {
+                    // Handle the API response format
+                    if (responseData.success && responseData.data) {
                         apiTreatments = Array.isArray(responseData.data) ? responseData.data : [];
+                    } else if (Array.isArray(responseData)) {
+                        // Direct array response
+                        apiTreatments = responseData;
                     } else {
                         console.warn('Unexpected API response format:', responseData);
+                        apiTreatments = [];
                     }
+                } else if (response.status === 404) {
+                    console.log('No treatment plans found for this doctor');
+                    apiTreatments = [];
                 } else {
-                    console.warn(`Treatment plans API returned ${response.status}, using fallback data`);
+                    console.error(`Treatment plans API returned ${response.status}`);
+                    throw new Error(`API Error: ${response.status}`);
                 }
             } catch (apiError) {
-                console.warn('Treatment plans API unavailable, using fallback data:', apiError.message);
-            }
-            
-            // If no API data, use fallback sample data
-            if (apiTreatments.length === 0) {
-                apiTreatments = [
-                    {
-                        treatmentId: 1,
-                        patientId: 1,
-                        patientName: "John Doe",
-                        diseaseId: 1,
-                        diseaseName: "Hypertension",
-                        status: "Active",
-                        startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                        notes: "Regular monitoring required"
-                    },
-                    {
-                        treatmentId: 2,
-                        patientId: 2,
-                        patientName: "Jane Smith",
-                        diseaseId: 2,
-                        diseaseName: "Diabetes",
-                        status: "Active",
-                        startDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                        notes: "Diet management focus"
-                    }
-                ];
+                console.error('Treatment plans API error:', apiError.message);
+                container.innerHTML = `
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Failed to load treatment plans. Please check your connection and try again.
+                    </div>
+                `;
+                return;
             }
 
-            // Handle different response structures and map to our UI format
+            // Process and format the treatment plans data
             const treatments = apiTreatments.slice(0, 6).map(treatment => {
                 return {
-                    treatmentId: treatment.treatmentPlanId || treatment.treatmentId || treatment.id,
-                    patientName: treatment.patientName || `Patient #${treatment.patientId}`,
-                    patientEmail: treatment.patientEmail,
-                    patientPhone: treatment.patientPhone,
-                    diagnosis: treatment.diagnosis || 'Treatment Plan',
-                    treatmentGoals: treatment.treatmentGoals,
-                    status: treatment.status || 'ACTIVE',
-                    startDate: treatment.startDate,
+                    treatmentId: treatment.treatmentPlanId || treatment.id,
+                    patientName: treatment.patientName || treatment.patient?.name || `Patient #${treatment.patientId}`,
+                    patientEmail: treatment.patientEmail || treatment.patient?.email,
+                    patientPhone: treatment.patientPhone || treatment.patient?.phone,
+                    diagnosis: treatment.diagnosis || treatment.diseaseName || 'Treatment Plan',
+                    treatmentGoals: treatment.treatmentGoals || treatment.goals,
+                    status: treatment.status || treatment.treatmentStatus || 'ACTIVE',
+                    startDate: treatment.startDate || treatment.createdAt,
                     endDate: treatment.endDate,
-                    medicineCount: treatment.medicines?.length || 0,
-                    notes: treatment.notes,
-                    medicines: treatment.medicines || []
+                    medicineCount: treatment.medicines?.length || treatment.prescriptions?.length || 0,
+                    notes: treatment.notes || treatment.instructions,
+                    medicines: treatment.medicines || treatment.prescriptions || []
                 };
             });
             
-            console.log(`Loaded ${treatments.length} treatment plans from API`);
+            console.log(`Loaded ${treatments.length} treatment plans for doctor ${this.currentDoctorId}`);
 
             // Update UI with treatment data
             setTimeout(() => {
@@ -604,6 +839,9 @@ class DoctorDashboard {
                             <i class="fas fa-clipboard-list"></i>
                             <h3>No Treatment Plans Yet</h3>
                             <p>Create your first treatment plan to get started.</p>
+                            <a href="/HTML/create-treatment-plan.html" class="btn btn-primary" style="margin-top: 1rem;">
+                                <i class="fas fa-plus"></i> Create Treatment Plan
+                            </a>
                         </div>
                     `;
                 }
@@ -956,7 +1194,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (mobileMenuButton && mobileMenu) {
         mobileMenuButton.addEventListener('click', function() {
-            mobileMenu.classList.toggle('visible');
+            mobileMenu.classList.toggle('active');
         });
     }
 });

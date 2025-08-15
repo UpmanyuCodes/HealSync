@@ -27,8 +27,6 @@
             </a>
 
             <div class="desktop-menu">
-                <a href="#features">Features</a>
-                <a href="/HTML/doctors.html">Find Doctors</a>
                 <a href="/HTML/tracker.html">Health Tracker</a>
                 <a href="#about">About</a>
             </div>
@@ -43,8 +41,6 @@
             </button>
         </nav>
         <nav class="mobile-nav" id="mobile-menu">
-            <a href="#features" class="mobile-nav-link">Features</a>
-            <a href="/HTML/doctors.html" class="mobile-nav-link">Find Doctors</a>
             <a href="/HTML/tracker.html" class="mobile-nav-link">Health Tracker</a>
             <a href="#about" class="mobile-nav-link">About</a>
             <a href="/HTML/login.html" class="mobile-nav-link">Login</a>
@@ -58,9 +54,9 @@
             <div class="container text-center">
                 <h1 class="hero-title">Intelligent Care for a <span class="text-highlight">Healthier You.</span></h1>
                 <p class="hero-subtitle">Seamlessly track your progress, monitor your well-being, and stay connected with your loved ones, all with your AI-powered partner in health.</p>
+                
                 <div class="hero-actions">
                     <a href="/HTML/login.html" class="btn btn-primary btn-lg">Get Started for Free</a>
-                    <a href="/HTML/doctor-treatment-dashboard.html" class="btn btn-secondary btn-lg">Doctor Portal</a>
                 </div>
             </div>
         </section>
@@ -87,7 +83,7 @@
                         <h3 class="feature-title">Mood Tracker</h3>
                         <p>Stay in tune with your emotional well-being. Identify patterns and understand your feelings.</p>
                     </div>
-                    <div class="feature-card" data-link="/HTML/appointments-patient.html" tabindex="0">
+                    <div class="feature-card" data-link="/HTML/doctors.html" tabindex="0">
                         <div class="feature-icon-wrapper" style="--icon-bg: #ECFDF5; --icon-color: #10B981;">
                             <svg xmlns="http://www.w3.org/2000/svg" class="feature-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3M5 11h14M5 19h14M5 11a7 7 0 0114 0v8a2 2 0 01-2 2H7a2 2 0 01-2-2v-8z"/></svg>
                         </div>
@@ -132,23 +128,23 @@
         <span>Checking API...</span>
     </div>
     
-    <!-- AI Chat Assistant Elements -->
-    <div id="chat-widget" class="chat-widget">
-        <div class="chat-header">
-            <h3>AI Assistant</h3>
-            <button id="close-chat-btn" class="close-chat-btn">&times;</button>
+        <!-- AI Chat Assistant Elements -->
+        <div id="chat-widget" class="chat-widget">
+            <div class="chat-header">
+                <h3>AI Assistant</h3>
+                <button id="close-chat-btn" class="close-chat-btn">&times;</button>
+            </div>
+            <div id="chat-body" class="chat-body">
+                <div class="chat-message ai">Hello! How can I help you today?</div>
+            </div>
+            <form id="chat-form" class="chat-form">
+                <input type="text" id="chat-input" placeholder="Ask a question or use the mic..." autocomplete="off">
+                <button type="button" id="mic-btn" class="mic-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 18.75a6 6 0 006-6v-1.5a6 6 0 00-12 0v1.5a6 6 0 006 6zM12 2.25a.75.75 0 01.75.75v6a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM10.5 19.5a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM8.075 16.075a.75.75 0 011.06 0l1.115 1.115a.75.75 0 01-1.06 1.06L8.075 17.135a.75.75 0 010-1.06zM14.815 17.135a.75.75 0 011.06-1.06l1.115 1.115a.75.75 0 01-1.06 1.06l-1.115-1.115z"/></svg>
+                </button>
+                <button type="submit" id="chat-submit-btn">Send</button>
+            </form>
         </div>
-        <div id="chat-body" class="chat-body">
-            <div class="chat-message ai">Hello! How can I help you today?</div>
-        </div>
-        <form id="chat-form" class="chat-form">
-            <input type="text" id="chat-input" placeholder="Ask a question or use the mic..." autocomplete="off">
-            <button type="button" id="mic-btn" class="mic-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 18.75a6 6 0 006-6v-1.5a6 6 0 00-12 0v1.5a6 6 0 006 6zM12 2.25a.75.75 0 01.75.75v6a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM10.5 19.5a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM8.075 16.075a.75.75 0 011.06 0l1.115 1.115a.75.75 0 01-1.06 1.06L8.075 17.135a.75.75 0 010-1.06zM14.815 17.135a.75.75 0 011.06-1.06l1.115 1.115a.75.75 0 01-1.06 1.06l-1.115-1.115z"/></svg>
-            </button>
-            <button type="submit" id="chat-submit-btn">Send</button>
-        </form>
-    </div>
 
     <button id="chat-toggle-btn" class="chat-toggle-btn" aria-label="Open AI Assistant">
         <!-- Updated bot icon -->
@@ -158,7 +154,6 @@
     </button>
 
     <!-- Scripts -->
-    <script src="/JS/api-health.js"></script>
     <script src="/JS/navigation.js"></script>
     <script src="/JS/system-validator.js"></script>
     <script src="/JS/footer.js"></script>

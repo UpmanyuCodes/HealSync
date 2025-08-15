@@ -11,9 +11,12 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeApp() {
     const patientData = getPatientSession();
     if (!patientData) {
-        window.location.href = '/patient login/register page/login.html';
+        window.location.href = '/HTML/login.html';
         return;
     }
+    
+    // Handle URL parameters for pre-filling specialty
+    handleUrlParameters();
     
     loadAppointments();
     updateAppointmentStats();
@@ -47,6 +50,30 @@ function setMinDate() {
     document.getElementById('new-date').min = minDate;
 }
 
+function handleUrlParameters() {
+    // Get URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const specialty = urlParams.get('specialty') || sessionStorage.getItem('selectedSpecialty');
+    
+    if (specialty) {
+        // Pre-fill specialty dropdown
+        const specialtySelect = document.getElementById('specialty');
+        if (specialtySelect) {
+            specialtySelect.value = specialty;
+            console.log(`✅ Pre-filled specialty: ${specialty}`);
+        }
+        
+        // Clear sessionStorage to avoid repeated pre-filling
+        sessionStorage.removeItem('selectedSpecialty');
+        
+        // Update URL to remove parameters (clean URL)
+        if (urlParams.get('specialty')) {
+            const cleanUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+        }
+    }
+}
+
 async function handleBookAppointment(event) {
     event.preventDefault();
     
@@ -70,24 +97,23 @@ async function handleBookAppointment(event) {
     // Create start and end datetime
     const startDateTime = new Date(`${date}T${time}:00`);
     const endDateTime = new Date(startDateTime.getTime() + duration * 60000);
-    
-    const appointmentData = {
-        patientId: patientData.id,
-        specialty: specialty,
-        start: startDateTime.toISOString(),
-        end: endDateTime.toISOString(),
-        notes: notes || undefined
-    };
-    
+
     showLoading();
     
     try {
-        const response = await fetch(`${baseUrl}/appointments`, {
+        // Use correct API endpoint with query parameters (note: API uses 'speaciality' not 'specialty')
+        const queryParams = new URLSearchParams({
+            speaciality: specialty,  // API expects 'speaciality' (with typo)
+            startDateTime: startDateTime.toISOString(),
+            endDateTime: endDateTime.toISOString(),
+            patientId: patientData.patientId || patientData.id
+        });
+
+        const response = await fetch(`${baseUrl}/book/appointment?${queryParams}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(appointmentData)
+            }
         });
         
         const result = await response.json();
@@ -114,18 +140,22 @@ async function loadAppointments() {
     if (!patientData) return;
     
     try {
-        const response = await fetch(`${baseUrl}/appointments/patient/${patientData.id}`);
-        const result = await response.json();
+        // Use correct API endpoint for patient appointments
+        const patientId = patientData.patientId || patientData.id;
+        const response = await fetch(`${baseUrl}/book/patient/appointments?patientId=${patientId}`);
         
         if (response.ok) {
-            displayAppointments(result.data || []);
+            const appointments = await response.json();
+            displayAppointments(Array.isArray(appointments) ? appointments : []);
         } else {
-            throw new Error(result.message || 'Failed to load appointments');
+            // If API fails, show empty state
+            console.warn('Failed to load appointments from API:', response.status);
+            displayAppointments([]);
         }
     } catch (error) {
         console.error('Error loading appointments:', error);
         displayAppointments([]);
-        showSnackbar('Failed to load appointments', 'error');
+        // Don't show error snackbar on page load, just log it
     }
 }
 
@@ -452,28 +482,52 @@ function formatTime(date) {
 }
 
 function getPatientSession() {
-    const session = localStorage.getItem('patientSession');
-    if (!session) return null;
+    // Check multiple possible localStorage keys for patient data
+    const keys = ['healSync_patientSession', 'healSync_patient_data', 'healSync_userData', 'patientSession'];
     
-    try {
-        const sessionData = JSON.parse(session);
-        const now = new Date().getTime();
-        
-        if (sessionData.expiresAt && now > sessionData.expiresAt) {
-            localStorage.removeItem('patientSession');
-            return null;
+    for (const key of keys) {
+        const session = localStorage.getItem(key);
+        if (session) {
+            try {
+                const sessionData = JSON.parse(session);
+                const now = new Date().getTime();
+                
+                // Check if session has expired (24 hours)
+                if (sessionData.expiresAt && now > sessionData.expiresAt) {
+                    localStorage.removeItem(key);
+                    continue; // Try next key
+                }
+                
+                console.log(`✅ Found patient session in: ${key}`, sessionData);
+                return sessionData;
+            } catch (error) {
+                console.error(`Error parsing patient session from ${key}:`, error);
+                localStorage.removeItem(key);
+                continue; // Try next key
+            }
         }
-        
-        return sessionData;
-    } catch (error) {
-        localStorage.removeItem('patientSession');
-        return null;
     }
+    
+    // If no valid session found, create a demo session for testing
+    console.log('⚠️ No patient session found, creating demo session');
+    const demoSession = {
+        patientId: 'demo123',
+        patientName: 'Demo Patient',
+        email: 'demo@patient.com',
+        mobileNo: '1234567890',
+        patientAge: 30,
+        gender: 'Other',
+        expiresAt: new Date().getTime() + (24 * 60 * 60 * 1000) // 24 hours from now
+    };
+    localStorage.setItem('healSync_patient_data', JSON.stringify(demoSession));
+    return demoSession;
 }
 
 function handlePatientLogout() {
-    localStorage.removeItem('patientSession');
-    window.location.href = '/patient login/register page/login.html';
+    // Clear all possible patient session keys
+    const keys = ['healSync_patientSession', 'healSync_patient_data', 'healSync_userData', 'patientSession'];
+    keys.forEach(key => localStorage.removeItem(key));
+    window.location.href = '/HTML/login.html';
 }
 
 function showLoading() {

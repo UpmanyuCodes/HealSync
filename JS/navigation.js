@@ -284,7 +284,7 @@ class NavigationManager {
         appointments: () => {
             const userRole = this.getUserRole();
             if (userRole === 'patient') {
-                this.navigateTo('/HTML/appointments-patient.html');
+                this.navigateTo('/HTML/doctors.html');
             } else if (userRole === 'doctor') {
                 this.navigateTo('/HTML/appointments-doctor.html');
             } else {

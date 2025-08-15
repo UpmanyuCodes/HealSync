@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor Profile - HealSync</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -11,684 +12,303 @@
     
     <!-- Unified Theme System -->
     <link rel="stylesheet" href="/CSS/healsync-theme.css">
-    <link rel="stylesheet" href="/CSS/index.css"> 
-    <link rel="stylesheet" href="/CSS/directory.css">
-    <link rel="stylesheet" href="/CSS/doctors.css">
-    <link rel="stylesheet" href="/CSS/snackbar.css">
-    <link rel="stylesheet" href="/CSS/health-indicator.css">
-    
-    <style>
-        .doctor-profile-container {
-            max-width: 1000px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-        
-        .doctor-profile-header {
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-        
-        .doctor-profile-avatar {
-            flex-shrink: 0;
-        }
-        
-        .doctor-profile-avatar img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid var(--primary-color);
-        }
-        
-        .doctor-profile-info {
-            flex: 1;
-        }
-        
-        .doctor-profile-info h1 {
-            margin: 0 0 0.5rem 0;
-            color: var(--text-color);
-            font-size: 2rem;
-            font-weight: 700;
-        }
-        
-        .doctor-specialty-badge {
-            display: inline-block;
-            background: var(--primary-color);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-weight: 500;
-            margin-bottom: 1rem;
-        }
-        
-        .doctor-contact-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .contact-detail {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--text-muted);
-        }
-        
-        .contact-detail i {
-            color: var(--primary-color);
-            width: 20px;
-        }
-        
-        .doctor-profile-content {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2rem;
-        }
-        
-        .doctor-details {
-            background: white;
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-        
-        .doctor-sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-        
-        .appointment-card {
-            background: white;
-            border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            text-align: center;
-        }
-        
-        .appointment-card h3 {
-            margin-bottom: 1rem;
-            color: var(--text-color);
-        }
-        
-        .quick-book-btn {
-            width: 100%;
-            padding: 12px;
-            font-size: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .back-to-doctors {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
-            margin-bottom: 2rem;
-            transition: all 0.2s ease;
-        }
-        
-        .back-to-doctors:hover {
-            color: var(--primary-dark);
-            transform: translateX(-2px);
-        }
-        
-        .professional-info .info-item {
-            margin-bottom: 0.75rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        
-        .professional-info .info-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-        
-        @media (max-width: 768px) {
-            .doctor-profile-header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .doctor-profile-avatar img {
-                width: 120px;
-                height: 120px;
-            }
-            
-            .doctor-profile-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .doctor-contact-info {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="/CSS/index.css">
+    <link rel="stylesheet" href="/CSS/doctor-profile.css">
 </head>
 <body>
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <a href="/HTML/index.html" class="brand-link">
-                    <i class="fas fa-heartbeat brand-icon"></i>
-                    <span class="brand-text">HealSync</span>
-                </a>
+
+    <header class="site-header">
+        <nav class="container nav-container">
+            <a href="/HTML/index.html" class="logo">
+                <svg xmlns="http://www.w3.org/2000/svg" class="logo-icon" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                </svg>
+                HealSync
+            </a>
+            
+            <div class="desktop-menu">
+                <a href="/HTML/appointments-doctor.html">Appointments</a>
+                <a href="/HTML/doctor-schedule-management.html">Schedule</a>
+                <a href="/HTML/doctor-treatment-dashboard.html">Treatment Plans</a>
+                <a href="/HTML/doctor-profile.html" class="active">My Profile</a>
             </div>
             
-            <ul class="nav-menu" id="nav-menu">
-                <li class="nav-item">
-                    <a href="/HTML/index.html" class="nav-link">
-                        <i class="fas fa-home"></i>
-                        Home
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/HTML/doctors.html" class="nav-link active">
-                        <i class="fas fa-user-md"></i>
-                        Doctors
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/HTML/appointments-patient.html" class="nav-link">
-                        <i class="fas fa-calendar-check"></i>
-                        Appointments
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/HTML/patient-dashboard.html" class="nav-link">
-                        <i class="fas fa-tachometer-alt"></i>
-                        Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="/HTML/login.html" class="nav-link login-btn">
-                        <i class="fas fa-sign-in-alt"></i>
-                        Login
-                    </a>
-                </li>
-            </ul>
+            <div class="desktop-menu-actions">
+                <button onclick="handleDoctorLogout()" class="btn btn-primary">Logout</button>
+            </div>
             
-            <div class="mobile-menu-toggle" id="mobile-menu-button">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobile-menu">
-        <div class="mobile-menu-content">
-            <a href="/HTML/index.html" class="mobile-menu-item">
-                <i class="fas fa-home"></i>
-                Home
-            </a>
-            <a href="/HTML/doctors.html" class="mobile-menu-item active">
-                <i class="fas fa-user-md"></i>
-                Doctors
-            </a>
-            <a href="/HTML/appointments-patient.html" class="mobile-menu-item">
-                <i class="fas fa-calendar-check"></i>
-                Appointments
-            </a>
-            <a href="/HTML/patient-dashboard.html" class="mobile-menu-item">
-                <i class="fas fa-tachometer-alt"></i>
-                Dashboard
-            </a>
-            <a href="/HTML/login.html" class="mobile-menu-item">
-                <i class="fas fa-sign-in-alt"></i>
-                Login
-            </a>
-        </div>
-    </div>
-
-    <!-- API Health Indicator -->
-    <div id="api-health-indicator" class="api-health-indicator">
-        <div class="health-indicator-content">
-            <div class="health-status" id="health-status">
-                <i class="fas fa-circle"></i>
-                <span>Checking API Status...</span>
-            </div>
-        </div>
-    </div>
+            <button id="mobile-menu-button" class="mobile-menu-toggle">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+            </button>
+        </nav>
+        <nav class="mobile-nav" id="mobile-menu">
+            <a href="/HTML/appointments-doctor.html" class="mobile-nav-link">Appointments</a>
+            <a href="/HTML/doctor-schedule-management.html" class="mobile-nav-link">Schedule</a>
+            <a href="/HTML/doctor-treatment-dashboard.html" class="mobile-nav-link">Treatment Plans</a>
+            <a href="/HTML/doctor-profile.html" class="mobile-nav-link active">My Profile</a>
+            <button onclick="handleDoctorLogout()" class="mobile-nav-link btn btn-primary">Logout</button>
+        </nav>
+    </header>
 
     <!-- Main Content -->
-    <main class="main-content">
-        <div class="doctor-profile-container">
-            <!-- Back Navigation -->
-            <a href="/HTML/doctors.html" class="back-to-doctors">
-                <i class="fas fa-arrow-left"></i>
-                Back to Doctors
-            </a>
+    <section class="directory-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-header-content">
+                    <a href="/HTML/doctor-treatment-dashboard.html" class="back-link">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Dashboard
+                    </a>
+                    <h1 class="page-title">My Profile</h1>
+                    <p class="page-subtitle">Manage your professional information and settings</p>
+                </div>
+                <div class="page-header-actions">
+                    <button onclick="toggleEditMode()" class="btn btn-secondary" id="edit-profile-btn">
+                        <i class="fas fa-edit"></i>
+                        Edit Profile
+                    </button>
+                </div>
+            </div>
 
             <!-- Loading State -->
-            <div id="profile-loading" class="loading-container">
+            <div id="profile-loading" class="loading-container" style="display: none;">
                 <div class="loading-spinner"></div>
-                <p>Loading doctor profile...</p>
+                <p>Loading your profile...</p>
             </div>
 
             <!-- Error State -->
             <div id="profile-error" class="error-container" style="display: none;">
-                <i class="fas fa-exclamation-triangle error-icon"></i>
+                <div class="error-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
                 <h3>Unable to Load Profile</h3>
-                <p>We couldn't load the doctor's profile. Please try again later.</p>
-                <button class="btn btn-primary" onclick="loadDoctorProfile()">
-                    <i class="fas fa-redo"></i>
-                    Try Again
-                </button>
+                <p>There was an error loading your profile information. Please try again.</p>
+                <button onclick="loadDoctorProfile()" class="btn btn-primary">Retry</button>
             </div>
 
-            <!-- Doctor Profile Content -->
-            <div id="profile-content" style="display: none;">
-                <!-- Doctor Header -->
-                <div class="doctor-profile-header">
-                    <div class="doctor-profile-avatar">
-                        <img id="doctor-avatar" src="" alt="Doctor Photo">
-                    </div>
-                    <div class="doctor-profile-info">
-                        <h1 id="doctor-name">Doctor Name</h1>
-                        <div class="doctor-specialty-badge" id="doctor-specialty">Specialty</div>
-                        <div class="availability-badge" id="doctor-shift">
-                            <i class="fas fa-clock"></i>
-                            <span>Day Shift</span>
+            <!-- Profile Content -->
+            <div id="profile-content" class="profile-container">
+                <!-- Profile Header Card -->
+                <div class="profile-header-card">
+                <div class="profile-avatar-section">
+                    <div class="profile-avatar">
+                        <div class="avatar-circle" id="doctor-avatar">
+                            <span class="avatar-letter">Dr</span>
                         </div>
-                        <div class="doctor-contact-info">
-                            <div class="contact-detail" id="doctor-email-contact">
+                        <div class="avatar-upload" id="avatar-upload" style="display: none;">
+                            <i class="fas fa-camera"></i>
+                            <input type="file" id="avatar-input" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="profile-status">
+                        <div class="status-indicator active">
+                            <i class="fas fa-circle"></i>
+                            <span>Available</span>
+                        </div>
+                    </div>
+                </div>                    <div class="profile-basic-info">
+                        <div class="profile-name-section">
+                            <h1 id="doctor-name" class="profile-name">Dr. Loading...</h1>
+                            <input type="text" id="doctor-name-edit" class="profile-name-edit" style="display: none;" placeholder="Doctor Name">
+                            
+                            <div class="profile-specialty">
+                                <span id="doctor-specialty" class="specialty-badge">Loading...</span>
+                                <select id="doctor-specialty-edit" class="specialty-edit" style="display: none;">
+                                    <option value="">Select Specialty</option>
+                                    <option value="Cardiology">Cardiology</option>
+                                    <option value="Dermatology">Dermatology</option>
+                                    <option value="Neurology">Neurology</option>
+                                    <option value="Pediatrics">Pediatrics</option>
+                                    <option value="Psychiatry">Psychiatry</option>
+                                    <option value="General Medicine">General Medicine</option>
+                                    <option value="Orthopedics">Orthopedics</option>
+                                    <option value="Gynecology">Gynecology</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-quick-info">
+                            <div class="quick-info-item">
+                                <i class="fas fa-id-badge"></i>
+                                <span>ID: <span id="doctor-id">Loading...</span></span>
+                            </div>
+                            <div class="quick-info-item">
                                 <i class="fas fa-envelope"></i>
-                                <span>Email not available</span>
+                                <span id="doctor-email">Loading...</span>
+                                <input type="email" id="doctor-email-edit" style="display: none;" placeholder="Email">
                             </div>
-                            <div class="contact-detail" id="doctor-phone-contact">
+                            <div class="quick-info-item">
                                 <i class="fas fa-phone"></i>
-                                <span>Phone not available</span>
+                                <span id="doctor-phone">Loading...</span>
+                                <input type="tel" id="doctor-phone-edit" style="display: none;" placeholder="Phone">
+                            </div>
+                            <div class="quick-info-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Joined: <span id="doctor-join-date">Loading...</span></span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Doctor Content -->
-                <div class="doctor-profile-content">
-                    <!-- Main Details -->
-                    <div class="doctor-details">
-                        <h3>About Dr. <span id="doctor-name-about">Doctor</span></h3>
-                        <div id="doctor-bio">
-                            <p>Dedicated healthcare professional committed to providing exceptional patient care...</p>
+                <!-- Profile Content Grid -->
+                <div class="profile-content-grid">
+                    <!-- Professional Information -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-user-md"></i>
+                                <h3>Professional Information</h3>
+                            </div>
                         </div>
-
-                        <h4 style="margin-top: 2rem;">Professional Information</h4>
-                        <div class="professional-info">
-                            <div class="info-item">
-                                <strong>Specialty:</strong>
-                                <span id="doctor-specialty-detail">General Medicine</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>Working Hours:</strong>
-                                <span id="doctor-shift-detail">Day Shift</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>Doctor ID:</strong>
-                                <span id="doctor-id-detail">#0000</span>
+                        <div class="card-content">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Specialization</label>
+                                    <div class="info-value">
+                                        <span id="specialty-display">Loading...</span>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <label>Years of Experience</label>
+                                    <div class="info-value">
+                                        <span id="experience-display">Loading...</span>
+                                        <input type="number" id="experience-edit" style="display: none;" placeholder="Years" min="0" max="50">
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <label>Medical License</label>
+                                    <div class="info-value">
+                                        <span id="license-display">Loading...</span>
+                                        <input type="text" id="license-edit" style="display: none;" placeholder="License Number">
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <label>Qualifications</label>
+                                    <div class="info-value">
+                                        <span id="qualifications-display">Loading...</span>
+                                        <textarea id="qualifications-edit" style="display: none;" placeholder="Your qualifications and degrees" rows="2"></textarea>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Sidebar -->
-                    <div class="doctor-sidebar">
-                        <!-- Quick Appointment -->
-                        <div class="appointment-card">
-                            <h3>Book Appointment</h3>
-                            <p>Schedule your visit with Dr. <span id="doctor-name-appointment">Doctor</span></p>
-                            <button class="btn btn-primary quick-book-btn" onclick="openQuickBooking()">
-                                <i class="fas fa-calendar-plus"></i>
-                                Book Now
-                            </button>
-                            <p class="text-muted" style="font-size: 0.9rem; margin: 0;">
-                                Available for consultations during scheduled hours
-                            </p>
+                    <!-- About Section -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-info-circle"></i>
+                                <h3>About Me</h3>
+                            </div>
                         </div>
+                        <div class="card-content">
+                            <div class="about-section">
+                                <div id="bio-display" class="bio-text">Loading biography...</div>
+                                <textarea id="bio-edit" style="display: none;" placeholder="Tell patients about yourself, your approach to medicine, and your experience..." rows="6"></textarea>
+                            </div>
+                        </div>
+                    </div>
 
-                        <!-- Contact Card -->
-                        <div class="appointment-card">
-                            <h3>Contact Information</h3>
-                            <div id="doctor-contact-details">
-                                <div class="contact-detail">
-                                    <i class="fas fa-envelope"></i>
-                                    <span>Email not available</span>
+                    <!-- Working Hours -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-clock"></i>
+                                <h3>Working Hours</h3>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="schedule-grid">
+                                <div class="schedule-item">
+                                    <span class="day">Monday - Friday</span>
+                                    <span class="time" id="weekday-hours">9:00 AM - 5:00 PM</span>
                                 </div>
-                                <div class="contact-detail">
-                                    <i class="fas fa-phone"></i>
-                                    <span>Phone not available</span>
+                                <div class="schedule-item">
+                                    <span class="day">Saturday</span>
+                                    <span class="time" id="saturday-hours">10:00 AM - 2:00 PM</span>
+                                </div>
+                                <div class="schedule-item">
+                                    <span class="day">Sunday</span>
+                                    <span class="time closed">Closed</span>
+                                </div>
+                            </div>
+                            <div class="schedule-note">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Schedule may vary. Please book appointments in advance.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-chart-bar"></i>
+                                <h3>My Statistics</h3>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-value" id="total-patients">-</div>
+                                    <div class="stat-label">Total Patients</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="total-appointments">-</div>
+                                    <div class="stat-label">Appointments</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="total-treatments">-</div>
+                                    <div class="stat-label">Treatment Plans</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="patient-rating">-</div>
+                                    <div class="stat-label">Patient Rating</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </main>
 
-    <!-- Booking Modal (reuse from doctors.html) -->
-    <div id="booking-modal" class="booking-modal">
-        <div class="booking-modal-content">
-            <div class="booking-modal-header">
-                <h3>Book Appointment</h3>
-                <button class="close-modal" onclick="closeBookingModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="booking-modal-body">
-                <div id="selected-doctor-info"></div>
-                
-                <form id="booking-form" class="booking-form">
-                    <input type="hidden" id="selected-doctor-id">
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="appointment-date">Preferred Date</label>
-                            <input type="date" id="appointment-date" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="appointment-time">Preferred Time</label>
-                            <input type="time" id="appointment-time" required min="08:00" max="20:00" step="300">
-                            <small class="form-help-text">Available: 8:00 AM - 8:00 PM (5-minute intervals)</small>
-                        </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="appointment-reason">Reason for Visit</label>
-                        <textarea id="appointment-reason" placeholder="Brief description of your concern..." required></textarea>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-calendar-plus"></i>
-                        Book Appointment
+                <!-- Edit Mode Actions -->
+                <div class="edit-actions" id="edit-actions" style="display: none;">
+                    <button onclick="cancelEdit()" class="btn btn-secondary">
+                        <i class="fas fa-times"></i>
+                        Cancel
                     </button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <div class="footer-brand">
-                    <i class="fas fa-heartbeat brand-icon"></i>
-                    <span class="brand-text">HealSync</span>
+                    <button onclick="saveProfile()" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Save Changes
+                    </button>
                 </div>
-                <p>Connecting patients with healthcare professionals for better health outcomes.</p>
-            </div>
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="/HTML/index.html">Home</a></li>
-                    <li><a href="/HTML/doctors.html">Find Doctors</a></li>
-                    <li><a href="/HTML/appointments-patient.html">Appointments</a></li>
-                    <li><a href="/HTML/register.html">Register</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Contact</h4>
-                <ul>
-                    <li><i class="fas fa-envelope"></i> info@healsync.com</li>
-                    <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
-                    <li><i class="fas fa-map-marker-alt"></i> 123 Health St, Medical City</li>
-                </ul>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 HealSync. All rights reserved.</p>
-        </div>
-    </footer>
+    </section>
 
-    <!-- Snackbar -->
+    <!-- Success/Error Messages -->
     <div id="snackbar" class="snackbar"></div>
 
-    <!-- Scripts -->
-    <script src="/JS/api-health.js"></script>
-    <script src="/JS/navigation.js"></script>
-    <script src="/JS/footer.js"></script>
-    <script src="/JS/doctors.js"></script>
+    <!-- JavaScript -->
+    <script src="/JS/doctor-profile.js"></script>
     
     <script>
-        // Doctor Profile Management
-        class DoctorProfile {
-            constructor() {
-                this.apiBase = 'https://healsync-backend-d788.onrender.com';
-                this.doctorId = this.getDoctorIdFromURL();
-                this.doctor = null;
-                
-                this.initializeProfile();
-            }
-
-            getDoctorIdFromURL() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const doctorId = urlParams.get('id') || sessionStorage.getItem('selectedDoctorId');
-                return doctorId ? parseInt(doctorId) : null;
-            }
-
-            async initializeProfile() {
-                if (!this.doctorId) {
-                    this.showError('Doctor not found');
-                    return;
-                }
-
-                await this.loadDoctorProfile();
-            }
-
-            async loadDoctorProfile() {
-                this.showLoading(true);
-                this.hideError();
-
-                try {
-                    // Try to get doctor from the doctors directory instance if available
-                    if (window.doctorsDirectory && window.doctorsDirectory.doctors.length > 0) {
-                        this.doctor = window.doctorsDirectory.doctors.find(d => d.doctorId === this.doctorId);
-                        if (this.doctor) {
-                            this.displayDoctorProfile();
-                            this.showLoading(false);
-                            return;
-                        }
-                    }
-
-                    // Fetch doctor data from API
-                    const response = await fetch(`${this.apiBase}/v1/healsync/doctor/public-profiles`);
-                    if (!response.ok) throw new Error('Failed to fetch doctors');
-                    const doctors = await response.json();
-
-                    this.doctor = doctors.find(d => d.doctorId === this.doctorId);
-                    
-                    if (this.doctor) {
-                        this.displayDoctorProfile();
-                    } else {
-                        this.showError('Doctor not found');
-                    }
-
-                } catch (error) {
-                    console.error('Error loading doctor profile:', error);
-                    this.showError('Unable to load doctor profile');
-                } finally {
-                    this.showLoading(false);
-                }
-            }
-
-            displayDoctorProfile() {
-                const doctor = this.doctor;
-                const specialty = doctor.speciality || doctor.specialty || 'General Medicine';
-                
-                // Generate avatar
-                const avatarUrl = this.generateAvatarUrl(doctor.name, specialty);
-                
-                // Update all doctor information
-                document.getElementById('doctor-avatar').src = avatarUrl;
-                document.getElementById('doctor-name').textContent = doctor.name;
-                document.getElementById('doctor-name-about').textContent = doctor.name;
-                document.getElementById('doctor-name-appointment').textContent = doctor.name;
-                
-                document.getElementById('doctor-specialty').textContent = specialty;
-                document.getElementById('doctor-specialty-detail').textContent = specialty;
-                
-                // Update shift information
-                const shiftElement = document.getElementById('doctor-shift');
-                const shiftDetail = document.getElementById('doctor-shift-detail');
-                const shift = doctor.shift || 'Day';
-                
-                shiftElement.className = `availability-badge availability-${shift.toLowerCase()}`;
-                shiftElement.innerHTML = `<i class="fas fa-clock"></i><span>${shift} Shift</span>`;
-                shiftDetail.textContent = `${shift} Shift`;
-                
-                // Update contact information
-                if (doctor.email) {
-                    document.getElementById('doctor-email-contact').innerHTML = `
-                        <i class="fas fa-envelope"></i>
-                        <span>${doctor.email}</span>
-                    `;
-                } else {
-                    document.getElementById('doctor-email-contact').style.display = 'none';
-                }
-                
-                if (doctor.mobileNo) {
-                    document.getElementById('doctor-phone-contact').innerHTML = `
-                        <i class="fas fa-phone"></i>
-                        <span>${doctor.mobileNo}</span>
-                    `;
-                } else {
-                    document.getElementById('doctor-phone-contact').style.display = 'none';
-                }
-                
-                // Update bio
-                const bio = doctor.bio || `Dr. ${doctor.name} is an experienced ${specialty} specialist dedicated to providing exceptional patient care. With years of experience in the field, they are committed to helping patients achieve optimal health outcomes through personalized treatment plans and compassionate care.`;
-                
-                document.getElementById('doctor-bio').innerHTML = `<p>${bio}</p>`;
-                
-                // Update doctor ID
-                document.getElementById('doctor-id-detail').textContent = `#${doctor.doctorId}`;
-                
-                // Update contact details in sidebar
-                const contactDetails = document.getElementById('doctor-contact-details');
-                let contactHTML = '';
-                
-                if (doctor.email) {
-                    contactHTML += `
-                        <div class="contact-detail">
-                            <i class="fas fa-envelope"></i>
-                            <span>${doctor.email}</span>
-                        </div>
-                    `;
-                }
-                
-                if (doctor.mobileNo) {
-                    contactHTML += `
-                        <div class="contact-detail">
-                            <i class="fas fa-phone"></i>
-                            <span>${doctor.mobileNo}</span>
-                        </div>
-                    `;
-                }
-                
-                if (!contactHTML) {
-                    contactHTML = '<p class="text-muted">Contact information not available</p>';
-                }
-                
-                contactDetails.innerHTML = contactHTML;
-                
-                // Show profile content
-                document.getElementById('profile-content').style.display = 'block';
-            }
-
-            generateAvatarUrl(name, specialty) {
-                const colors = [
-                    'E0F2F1/0F766E', 'EFF6FF/2563EB', 'FEF3C7/D97706', 
-                    'F3E8FF/9333EA', 'ECFDF5/059669', 'FEE2E2/DC2626'
-                ];
-                
-                const colorIndex = Math.abs(name.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % colors.length;
-                const initials = name.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2);
-                
-                return `https://placehold.co/300x300/${colors[colorIndex]}?text=${encodeURIComponent(initials)}`;
-            }
-
-            showLoading(show) {
-                document.getElementById('profile-loading').style.display = show ? 'block' : 'none';
-                document.getElementById('profile-content').style.display = show ? 'none' : 'block';
-            }
-
-            showError(message) {
-                document.getElementById('profile-error').style.display = 'block';
-                document.getElementById('profile-content').style.display = 'none';
-                document.getElementById('profile-loading').style.display = 'none';
-            }
-
-            hideError() {
-                document.getElementById('profile-error').style.display = 'none';
-            }
+        // Logout function
+        function handleDoctorLogout() {
+            localStorage.removeItem('healSync_userData');
+            localStorage.removeItem('currentDoctorId');
+            window.location.href = '/HTML/index.html';
         }
 
-        // Global functions
-        function openQuickBooking() {
-            if (window.doctorProfile && window.doctorProfile.doctor) {
-                // Use the existing booking modal from doctors.js
-                if (window.doctorsDirectory) {
-                    window.doctorsDirectory.openBookingModal(window.doctorProfile.doctor.doctorId);
-                } else {
-                    // Fallback implementation
-                    document.getElementById('selected-doctor-id').value = window.doctorProfile.doctor.doctorId;
-                    document.getElementById('booking-modal').style.display = 'flex';
-                }
-            }
-        }
-
-        function closeBookingModal() {
-            document.getElementById('booking-modal').style.display = 'none';
-            document.body.style.overflow = '';
-        }
-
-        function loadDoctorProfile() {
-            if (window.doctorProfile) {
-                window.doctorProfile.loadDoctorProfile();
-            }
-        }
-
-        // Initialize when DOM is loaded
+        // Mobile menu functionality
         document.addEventListener('DOMContentLoaded', function() {
-            window.doctorProfile = new DoctorProfile();
-            
-            // Set minimum date for appointment booking
-            const today = new Date().toISOString().split('T')[0];
-            const dateInput = document.getElementById('appointment-date');
-            if (dateInput) {
-                dateInput.min = today;
-                dateInput.value = today;
-            }
-        });
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
 
-        // Mobile menu toggle
-        document.getElementById('mobile-menu-button')?.addEventListener('click', () => {
-            document.getElementById('mobile-menu')?.classList.toggle('visible');
-        });
-
-        // Modal close on outside click
-        document.addEventListener('click', (e) => {
-            if (e.target.id === 'booking-modal') {
-                closeBookingModal();
-            }
-        });
-
-        // Escape key to close modal
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeBookingModal();
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('active');
+                });
             }
         });
     </script>

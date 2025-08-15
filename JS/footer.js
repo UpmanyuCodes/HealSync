@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function getAiResponse(prompt) {
-        const apiKey = "API_KEY";
+        const apiKey = "YOUR_GEMINI_KEY";
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
         // Shorter, more focused prompt for faster responses
@@ -194,4 +194,54 @@ User: ${prompt}`;
             return "Sorry, an error occurred while processing your request.";
         }
     }
+
+    // Footer Location Intelligence API
+    const footerLocationIndex = {
+        'home': '/HTML/index.html',
+        'login': '/HTML/login.html',
+        'register': '/HTML/register.html',
+        'doctor dashboard': '/HTML/doctor-treatment-dashboard.html',
+        'patient dashboard': '/HTML/patient-treatment-dashboard.html',
+        'appointments': '/HTML/appointments-doctor.html',
+        'profile': '/HTML/patient-profile.html',
+        'edit profile': '/HTML/patient-profile-edit.html',
+        'tracker': '/HTML/tracker.html',
+        'doctors': '/HTML/doctors.html',
+        'footer': '/HTML/footer.html',
+        'reset password': '/HTML/reset-password.html',
+        'verify otp': '/HTML/verify-otp.html',
+        // Add more mappings as needed
+    };
+
+    // Fuzzy search for location
+    function findLocation(query) {
+        query = query.trim().toLowerCase();
+        let bestMatch = null;
+        let bestScore = 0;
+        for (const [key, url] of Object.entries(footerLocationIndex)) {
+            let score = 0;
+            if (key === query) score = 3;
+            else if (key.includes(query)) score = 2;
+            else if (query.includes(key)) score = 1;
+            if (score > bestScore) {
+                bestScore = score;
+                bestMatch = { key, url };
+            }
+        }
+        return bestMatch ? bestMatch.url : null;
+    }
+
+    // Fast answer API for location queries
+    window.footerAPI = {
+        findLocation,
+        getAllLocations: () => Object.assign({}, footerLocationIndex),
+        answer: (question) => {
+            // Example: "Where is the doctor dashboard?"
+            const match = findLocation(question.replace(/where is|how to get to|go to|open/gi, '').trim());
+            return match ? `You can find it at: ${match}` : 'Sorry, location not found.';
+        }
+    };
+
+    // Example usage:
+    // console.log(window.footerAPI.answer('Where is the patient dashboard?'));
 });
