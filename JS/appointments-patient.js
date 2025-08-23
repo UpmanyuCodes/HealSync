@@ -168,8 +168,11 @@ function createAppointmentCard(appointment) {
             
             <div class="appointment-actions">
                 ${canChat ? `
-                <button class="appointment-chat-btn" 
-                        onclick="openChatWithDoctor(${JSON.stringify(appointment).replace(/"/g, '&quot;')}, {id: ${appointment.doctorId || 1}, name: '${appointment.doctorName}', specialty: '${appointment.specialty}'})"
+                <button class="appointment-chat-btn"
+                        data-appointment='${encodeURIComponent(JSON.stringify(appointment))}'
+                        data-doctor-id="${appointment.doctorId || 1}"
+                        data-doctor-name="${appointment.doctorName || ''}"
+                        data-doctor-specialty="${appointment.specialty || ''}"
                         data-appointment-id="${appointment.id}">
                     <i class="fas fa-comments"></i>
                     Chat with Doctor
