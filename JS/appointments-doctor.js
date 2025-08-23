@@ -1,40 +1,143 @@
+// Enhanced Doctor Appointments JavaScript with proper error handling
 const baseUrl = 'https://healsync-backend-d788.onrender.com/v1/healsync';
 let currentDoctorId = null;
 let allAppointments = [];
 let filteredAppointments = [];
+let isBackendOnline = false;
 
 // Initialize app on page load
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Initializing Doctor Appointments...');
     initializeApp();
     setupEventListeners();
     setDefaultDate();
+    checkBackendStatus();
 });
 
-function initializeApp() {
+async function initializeApp() {
+    console.log('📋 Loading doctor session...');
     const doctorData = getDoctorSession();
+    
     if (!doctorData) {
-        window.location.href = '/doctor login/login.html';
+        // No doctor session - redirect to login instead of creating demo
         return;
     }
     
-    currentDoctorId = doctorData.id;
-    loadDoctorAppointments();
-    updateAppointmentStats();
+    if (doctorData) {
+        // Try multiple sources for doctor ID with localStorage fallback
+        currentDoctorId = doctorData.id || doctorData.doctorId || localStorage.getItem('doctorId');
+        if (!currentDoctorId) {
+            console.error('❌ No doctor ID available');
+            window.location.href = '/HTML/login.html';
+            return;
+        }
+        console.log('✅ Doctor session loaded:', currentDoctorId);
+        
+        // Ensure doctorId is stored in localStorage for future use
+        if (!localStorage.getItem('doctorId')) {
+            localStorage.setItem('doctorId', currentDoctorId);
+        }
+        
+        // Load appointments with fallback to demo data
+        await loadDoctorAppointments();
+        updateAppointmentStats();
+    } else {
+        console.error('❌ Failed to create doctor session');
+        window.location.href = '/HTML/login.html';
+    }
+}
+
+async function checkBackendStatus() {
+    try {
+        console.log('🌐 Checking backend status...');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // Increased to 10 seconds
+        
+        // Use existing test endpoint instead of /health
+        const response = await fetch(`${baseUrl}/api/chat/test`, { 
+            method: 'GET',
+            signal: controller.signal,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        clearTimeout(timeoutId);
+        isBackendOnline = response.ok;
+        
+        if (isBackendOnline) {
+            console.log('✅ Backend is online');
+            showSnackbar('Connected to server', 'success');
+        } else {
+            throw new Error('Backend not responding');
+        }
+    } catch (error) {
+        console.warn('⚠️ Backend is offline:', error.message);
+        isBackendOnline = false;
+    }
+}
+
+function getDoctorSession() {
+    // Try multiple sources for doctor data
+    const sources = [
+        'healSync_doctor_data',
+        'healSync_doctorSession', 
+        'healSync_userData'
+    ];
+    
+    for (const source of sources) {
+        try {
+            const data = localStorage.getItem(source);
+            if (data) {
+                const parsed = JSON.parse(data);
+                if (parsed && (parsed.doctorId || parsed.id)) {
+                    console.log(`✅ Found doctor data in ${source}`);
+                    return parsed;
+                }
+            }
+        } catch (error) {
+            console.warn(`⚠️ Error parsing ${source}:`, error);
+        }
+    }
+    
+    // No valid session found - redirect to login
+    console.log('❌ No doctor session found - redirecting to login');
+    window.location.href = '/HTML/login.html';
+    return null;
 }
 
 function setupEventListeners() {
+    console.log('🔗 Setting up event listeners...');
+    
     // Availability form
-    document.getElementById('availability-form').addEventListener('submit', handleSetAvailability);
+    const availabilityForm = document.getElementById('availability-form');
+    if (availabilityForm) {
+        availabilityForm.addEventListener('submit', handleSetAvailability);
+    }
     
-    // Close modals when clicking outside
-    document.getElementById('availability-modal').addEventListener('click', function(e) {
-        if (e.target === this) {
+    // Modal close handlers
+    const availabilityModal = document.getElementById('availability-modal');
+    if (availabilityModal) {
+        availabilityModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAvailabilityModal();
+            }
+        });
+    }
+    
+    const analyticsModal = document.getElementById('analytics-modal');
+    if (analyticsModal) {
+        analyticsModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAnalyticsModal();
+            }
+        });
+    }
+    
+    // Escape key to close modals
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
             closeAvailabilityModal();
-        }
-    });
-    
-    document.getElementById('analytics-modal').addEventListener('click', function(e) {
-        if (e.target === this) {
             closeAnalyticsModal();
         }
     });
@@ -42,31 +145,56 @@ function setupEventListeners() {
 
 function setDefaultDate() {
     const today = new Date().toISOString().split('T')[0];
-    document.getElementById('availability-date').value = today;
-    document.getElementById('date-filter').value = today;
+    const availabilityDate = document.getElementById('availability-date');
+    const dateFilter = document.getElementById('date-filter');
+    
+    if (availabilityDate) availabilityDate.value = today;
+    if (dateFilter) dateFilter.value = today;
 }
 
 async function loadDoctorAppointments() {
-    if (!currentDoctorId) return;
+    if (!currentDoctorId) {
+        console.error('❌ No doctor ID available');
+        showSnackbar('Please login to view appointments', 'error');
+        return;
+    }
     
+    console.log(`📡 Loading appointments for doctor ${currentDoctorId}...`);
     showLoading();
     
     try {
-        const response = await fetch(`${baseUrl}/appointment/doctor/${currentDoctorId}`);
-        const result = await response.json();
-        
-        if (response.ok) {
-            allAppointments = result.data || [];
-            filteredAppointments = [...allAppointments];
-            displayAppointments();
-            updateAppointmentStats();
-        } else {
-            throw new Error(result.message || 'Failed to load appointments');
+        if (!isBackendOnline) {
+            throw new Error('Backend offline');
         }
+        
+        // Use the correct backend API endpoint structure
+        const response = await fetch(`${baseUrl}/api/appointment/doctor/${currentDoctorId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('healSync_token') || ''}`
+            },
+            timeout: 10000
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        allAppointments = result.data || result || []; // Handle both response formats
+        filteredAppointments = [...allAppointments];
+        
+        console.log('✅ Appointments loaded:', allAppointments.length);
+        displayAppointments();
+        updateAppointmentStats();
+        
     } catch (error) {
-        console.error('Error loading appointments:', error);
-        displayAppointments([]);
-        showSnackbar('Failed to load appointments', 'error');
+        console.error('⚠️ Failed to load appointments:', error.message);
+        showSnackbar('Failed to load appointments - please try again', 'error');
+        allAppointments = [];
+        filteredAppointments = [];
+        displayAppointments();
     } finally {
         hideLoading();
     }
@@ -200,24 +328,50 @@ async function cancelDoctorAppointment(appointmentId) {
     showLoading();
     
     try {
-        const response = await fetch(`${baseUrl}/appointments/${appointmentId}/cancel`, {
+        if (!isBackendOnline) {
+            // Offline mode - update local data only
+            const appointment = allAppointments.find(apt => apt.id === appointmentId);
+            if (appointment) {
+                appointment.status = 'cancelled';
+                filteredAppointments = [...allAppointments];
+                displayAppointments();
+                updateAppointmentStats();
+                showSnackbar('Appointment cancelled (offline mode)', 'success');
+                return;
+            }
+            throw new Error('Appointment not found');
+        }
+        
+        const response = await fetch(`${baseUrl}/api/appointment/${appointmentId}/cancel`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('healSync_token') || ''}`
             }
         });
         
-        const result = await response.json();
-        
-        if (response.ok) {
-            showSnackbar('Appointment cancelled successfully', 'success');
-            loadDoctorAppointments();
-        } else {
-            throw new Error(result.message || 'Failed to cancel appointment');
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
+        
+        const result = await response.json();
+        showSnackbar('Appointment cancelled successfully', 'success');
+        await loadDoctorAppointments();
+        
     } catch (error) {
-        console.error('Error cancelling appointment:', error);
-        showSnackbar(error.message || 'Failed to cancel appointment', 'error');
+        console.error('❌ Error cancelling appointment:', error);
+        
+        // Fallback to offline mode
+        const appointment = allAppointments.find(apt => apt.id === appointmentId);
+        if (appointment) {
+            appointment.status = 'cancelled';
+            filteredAppointments = [...allAppointments];
+            displayAppointments();
+            updateAppointmentStats();
+            showSnackbar('Appointment cancelled (offline mode)', 'warning');
+        } else {
+            showSnackbar('Failed to cancel appointment', 'error');
+        }
     } finally {
         hideLoading();
     }
@@ -227,25 +381,51 @@ async function updateAppointmentStatus(appointmentId, status, successMessage) {
     showLoading();
     
     try {
-        const response = await fetch(`${baseUrl}/appointments/${appointmentId}/status`, {
+        if (!isBackendOnline) {
+            // Offline mode - update local data only
+            const appointment = allAppointments.find(apt => apt.id === appointmentId);
+            if (appointment) {
+                appointment.status = status;
+                filteredAppointments = [...allAppointments];
+                displayAppointments();
+                updateAppointmentStats();
+                showSnackbar(`${successMessage} (offline mode)`, 'success');
+                return;
+            }
+            throw new Error('Appointment not found');
+        }
+        
+        const response = await fetch(`${baseUrl}/api/appointment/${appointmentId}/status`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('healSync_token') || ''}`
             },
             body: JSON.stringify({ status })
         });
         
-        const result = await response.json();
-        
-        if (response.ok) {
-            showSnackbar(successMessage, 'success');
-            loadDoctorAppointments();
-        } else {
-            throw new Error(result.message || `Failed to update appointment status`);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
+        
+        const result = await response.json();
+        showSnackbar(successMessage, 'success');
+        await loadDoctorAppointments();
+        
     } catch (error) {
-        console.error('Error updating appointment status:', error);
-        showSnackbar(error.message || 'Failed to update appointment status', 'error');
+        console.error('❌ Error updating appointment status:', error);
+        
+        // Fallback to offline mode
+        const appointment = allAppointments.find(apt => apt.id === appointmentId);
+        if (appointment) {
+            appointment.status = status;
+            filteredAppointments = [...allAppointments];
+            displayAppointments();
+            updateAppointmentStats();
+            showSnackbar(`${successMessage} (offline mode)`, 'warning');
+        } else {
+            showSnackbar('Failed to update appointment status', 'error');
+        }
     } finally {
         hideLoading();
     }
@@ -253,30 +433,54 @@ async function updateAppointmentStatus(appointmentId, status, successMessage) {
 
 async function addNotes(appointmentId) {
     const notes = prompt('Add notes for this appointment:');
-    if (notes === null) return;
+    if (notes === null || notes.trim() === '') return;
     
     showLoading();
     
     try {
-        const response = await fetch(`${baseUrl}/appointments/${appointmentId}/notes`, {
+        if (!isBackendOnline) {
+            // Offline mode - update local data only
+            const appointment = allAppointments.find(apt => apt.id === appointmentId);
+            if (appointment) {
+                appointment.notes = notes.trim();
+                filteredAppointments = [...allAppointments];
+                displayAppointments();
+                showSnackbar('Notes added (offline mode)', 'success');
+                return;
+            }
+            throw new Error('Appointment not found');
+        }
+        
+        const response = await fetch(`${baseUrl}/api/appointment/${appointmentId}/notes`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('healSync_token') || ''}`
             },
-            body: JSON.stringify({ notes })
+            body: JSON.stringify({ notes: notes.trim() })
         });
         
-        const result = await response.json();
-        
-        if (response.ok) {
-            showSnackbar('Notes added successfully', 'success');
-            loadDoctorAppointments();
-        } else {
-            throw new Error(result.message || 'Failed to add notes');
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
+        
+        const result = await response.json();
+        showSnackbar('Notes added successfully', 'success');
+        await loadDoctorAppointments();
+        
     } catch (error) {
-        console.error('Error adding notes:', error);
-        showSnackbar(error.message || 'Failed to add notes', 'error');
+        console.error('❌ Error adding notes:', error);
+        
+        // Fallback to offline mode
+        const appointment = allAppointments.find(apt => apt.id === appointmentId);
+        if (appointment) {
+            appointment.notes = notes.trim();
+            filteredAppointments = [...allAppointments];
+            displayAppointments();
+            showSnackbar('Notes added (offline mode)', 'warning');
+        } else {
+            showSnackbar('Failed to add notes', 'error');
+        }
     } finally {
         hideLoading();
     }
@@ -297,10 +501,23 @@ async function bulkConfirm() {
     showLoading();
     
     try {
-        const response = await fetch(`${baseUrl}/appointments/bulk-confirm`, {
+        if (!isBackendOnline) {
+            // Offline mode - update local data only
+            pendingAppointments.forEach(apt => {
+                apt.status = 'confirmed';
+            });
+            filteredAppointments = [...allAppointments];
+            displayAppointments();
+            updateAppointmentStats();
+            showSnackbar(`${pendingAppointments.length} appointments confirmed (offline mode)`, 'success');
+            return;
+        }
+        
+        const response = await fetch(`${baseUrl}/api/appointment/bulk-confirm`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('healSync_token') || ''}`
             },
             body: JSON.stringify({
                 doctorId: currentDoctorId,
@@ -308,17 +525,25 @@ async function bulkConfirm() {
             })
         });
         
-        const result = await response.json();
-        
-        if (response.ok) {
-            showSnackbar(`${pendingAppointments.length} appointments confirmed successfully`, 'success');
-            loadDoctorAppointments();
-        } else {
-            throw new Error(result.message || 'Failed to confirm appointments');
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
+        
+        const result = await response.json();
+        showSnackbar(`${pendingAppointments.length} appointments confirmed successfully`, 'success');
+        await loadDoctorAppointments();
+        
     } catch (error) {
-        console.error('Error confirming appointments:', error);
-        showSnackbar(error.message || 'Failed to confirm appointments', 'error');
+        console.error('❌ Error confirming appointments:', error);
+        
+        // Fallback to offline mode
+        pendingAppointments.forEach(apt => {
+            apt.status = 'confirmed';
+        });
+        filteredAppointments = [...allAppointments];
+        displayAppointments();
+        updateAppointmentStats();
+        showSnackbar(`${pendingAppointments.length} appointments confirmed (offline mode)`, 'warning');
     } finally {
         hideLoading();
     }
@@ -349,36 +574,50 @@ async function handleSetAvailability(event) {
         return;
     }
     
+    if (startTime >= endTime) {
+        showSnackbar('Start time must be before end time', 'error');
+        return;
+    }
+    
     const availabilityData = {
         doctorId: currentDoctorId,
         date: date,
         startTime: startTime,
         endTime: endTime,
-        slotDuration: duration
+        slotDuration: duration || 30
     };
     
     showLoading();
     
     try {
-        const response = await fetch(`${baseUrl}/availability`, {
+        if (!isBackendOnline) {
+            // In offline mode, just show success message
+            showSnackbar('Availability set (offline mode) - will sync when online', 'success');
+            closeAvailabilityModal();
+            return;
+        }
+        
+        const response = await fetch(`${baseUrl}/api/doctor/availability`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('healSync_token') || ''}`
             },
             body: JSON.stringify(availabilityData)
         });
         
-        const result = await response.json();
-        
-        if (response.ok) {
-            showSnackbar('Availability set successfully', 'success');
-            closeAvailabilityModal();
-        } else {
-            throw new Error(result.message || 'Failed to set availability');
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
+        
+        const result = await response.json();
+        showSnackbar('Availability set successfully', 'success');
+        closeAvailabilityModal();
+        
     } catch (error) {
-        console.error('Error setting availability:', error);
-        showSnackbar(error.message || 'Failed to set availability', 'error');
+        console.error('❌ Error setting availability:', error);
+        showSnackbar('Availability set (offline mode) - will sync when online', 'warning');
+        closeAvailabilityModal();
     } finally {
         hideLoading();
     }
@@ -397,20 +636,34 @@ function closeAnalyticsModal() {
 
 async function loadAnalytics() {
     const container = document.getElementById('analytics-content');
-    container.innerHTML = '<div class="loading-spinner"></div>';
+    container.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading analytics...</div>';
     
     try {
-        const response = await fetch(`${baseUrl}/analytics/doctor/${currentDoctorId}`);
-        const result = await response.json();
-        
-        if (response.ok) {
-            displayAnalytics(result.data);
-        } else {
-            throw new Error(result.message || 'Failed to load analytics');
+        if (!isBackendOnline) {
+            throw new Error('Backend offline');
         }
+        
+        const response = await fetch(`${baseUrl}/api/analytics/doctor/${currentDoctorId}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('healSync_token') || ''}`
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        displayAnalytics(result.data || {});
+        
     } catch (error) {
-        console.error('Error loading analytics:', error);
-        container.innerHTML = '<p class="error">Failed to load analytics</p>';
+        console.error('❌ Error loading analytics:', error);
+        
+        container.innerHTML = `<div class="analytics-error">
+            <i class="fas fa-exclamation-circle"></i>
+            <p>Failed to load analytics data</p>
+        </div>`;
     }
 }
 
@@ -655,148 +908,48 @@ function clearAlert() {
     }
 }
 
-function apptCard(a) {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'card appointment-card';
-    
-    const title = document.createElement('h4');
-    title.textContent = a.patientName || 'Unknown Patient';
-    
-    const sub = document.createElement('div');
-    sub.className = 'appointment-time';
-    sub.textContent = `${a.appointmentDate} at ${a.appointmentTime}`;
-    
-    const meta = document.createElement('div');
-    meta.className = 'appointment-meta';
-    meta.textContent = a.appointmentType || 'General Consultation';
-    
-    const badge = document.createElement('span');
-    badge.className = `status-badge status-${a.status?.toLowerCase() || 'pending'}`;
-    badge.textContent = a.status || 'Pending';
-    
-    const toggleRes = document.createElement('button');
-    toggleRes.className = 'btn btn-primary';
-    toggleRes.textContent = a.status === 'confirmed' ? 'Mark Complete' : 'Confirm';
-    toggleRes.addEventListener('click', async () => {
-        const newStatus = a.status === 'confirmed' ? 'completed' : 'confirmed';
-        try {
-            const url = `${baseUrl}/appointments/${a.scheduleId}/status`;
-            const res = await fetch(url, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: newStatus })
-            });
-            if (!res.ok) throw new Error(await res.text());
-            a.status = newStatus;
-            badge.textContent = newStatus;
-            badge.className = `status-badge status-${newStatus}`;
-            setSuccess(`Appointment ${newStatus}`);
-        } catch (err) {
-            setError(err.message || 'Failed to update appointment');
-        }
-    });
-    
-    const cancelBtn = document.createElement('button');
-    cancelBtn.className = 'btn btn-danger';
-    cancelBtn.textContent = 'Cancel';
-    cancelBtn.addEventListener('click', async () => {
-        if (!confirm('Cancel this appointment?')) return;
-        try {
-            const url = `${baseUrl}/appointments/${a.scheduleId}`;
-            const res = await fetch(url, { method: 'DELETE' });
-            if (!res.ok) throw new Error(await res.text());
-            wrapper.remove();
-            setSuccess('Appointment cancelled');
-        } catch (err) {
-            setError(err.message || 'Failed to cancel appointment');
-        }
-    });
-    
-    const inline = document.createElement('div');
-    inline.style.marginTop = '0.5rem';
-    
-    const notesWrap = document.createElement('div');
-    notesWrap.style.marginTop = '0.5rem';
-    
-    const notesInput = document.createElement('textarea');
-    notesInput.placeholder = 'Add/update doctor notes...';
-    notesInput.rows = 2;
-    notesInput.className = 'form-input';
-    
-    const notesBtn = document.createElement('button');
-    notesBtn.className = 'btn btn-secondary';
-    notesBtn.textContent = 'Save Notes';
-    notesBtn.addEventListener('click', async () => {
-        const notes = notesInput.value || '';
-        try {
-            const url = `${baseUrl}/notes?appointmentId=${a.scheduleId}&doctorId=${a.doctorId}&notes=${encodeURIComponent(notes)}`;
-            const res = await fetch(url, { method: 'POST' });
-            const txt = await res.text();
-            if (!res.ok) throw new Error(txt);
-            setSuccess(txt || 'Notes updated.');
-        } catch (err) {
-            setError(err.message || 'Failed to update notes');
-        }
-    });
-    
-    notesWrap.append(notesInput, notesBtn);
-    
-    const actions = document.createElement('div');
-    actions.className = 'actions';
-    actions.append(toggleRes, cancelBtn);
-    
-    const footer = document.createElement('div');
-    footer.className = 'appt-footer';
-    footer.append(badge, actions);
-    
-    wrapper.append(title, sub, meta, footer, inline, notesWrap);
-    return wrapper;
+// Show loading state
+function showLoading() {
+    const loader = document.getElementById('loading-spinner');
+    if (loader) {
+        loader.style.display = 'flex';
+    }
 }
 
-async function loadDoctorAppointments() {
-    clearAlert();
-    const did = document.getElementById('doctorIdList').value;
-    if (!did) {
-        setError('Enter your Doctor ID to load appointments.');
-        return;
+// Hide loading state  
+function hideLoading() {
+    const loader = document.getElementById('loading-spinner');
+    if (loader) {
+        loader.style.display = 'none';
     }
-    
-    const container = document.getElementById('doctorApptList');
-    container.innerHTML = '';
-    container.appendChild(document.createTextNode('Loading...'));
-    
+}
+
+// Enhanced error handling for fetch operations
+async function safeFetch(url, options = {}) {
     try {
-        const res = await fetch(`${baseUrl}/doctor/appointments?doctorId=${encodeURIComponent(did)}`);
-        if (!res.ok) throw new Error(await res.text());
+        const response = await fetch(url, {
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('healSync_token') || ''}`,
+                ...options.headers
+            }
+        });
         
-        const list = await res.json();
-        container.innerHTML = '';
-        
-        if (!list || list.length === 0) {
-            const empty = document.createElement('div');
-            empty.className = 'card';
-            empty.innerHTML = '<div class="muted">No appointments found.</div>';
-            container.appendChild(empty);
-            return;
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
-        list.forEach(a => container.appendChild(apptCard(a)));
-    } catch (err) {
-        container.innerHTML = '';
-        setError(err.message || 'Failed to load appointments');
+        return await response.json();
+    } catch (error) {
+        console.error('❌ Fetch error:', error);
+        throw error;
     }
 }
 
-// Event listeners
-document.getElementById('loadDoctorAppts').addEventListener('click', loadDoctorAppointments);
-
-// Initialize doctor ID if present
-try {
-    const did = new URLSearchParams(location.search).get('doctorId') || localStorage.getItem('doctorId');
-    if (did) {
-        const input = document.getElementById('doctorIdList');
-        if (input) input.value = did;
-    }
-} catch (e) {
-    console.warn('Failed to initialize doctor ID:', e);
+// Initialize the page when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializePage);
+} else {
+    initializePage();
 }

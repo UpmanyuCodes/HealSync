@@ -1,4 +1,149 @@
-/* Doctor-Patient Chat System - WhatsApp Style */
+/* Doctor-Patient Chat System - Enhanced with Error Handling */
+
+/* Chat Connection Status */
+#chat-connection-status {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    z-index: 10000;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Chat Loading State */
+.chat-loading {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.chat-loading div:first-child {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* Enhanced Welcome Message */
+.chat-welcome-message {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+}
+
+.chat-welcome-message h3 {
+    margin: 0 0 0.5rem;
+    color: var(--text-primary);
+    font-size: 1.125rem;
+}
+
+.chat-welcome-message p {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+/* Offline Mode Indicator */
+.offline-indicator {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background: var(--warning-50, #FFFBEB);
+    border: 1px solid var(--warning-200, #FED7AA);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: var(--warning-700, #B45309);
+}
+
+/* Enhanced Message Bubbles */
+.message-bubble {
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+.message-time {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+/* Unread Badge */
+.unread-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: var(--error-500, #EF4444);
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    min-width: 18px;
+    padding: 0 2px;
+}
+
+/* Chat Input Enhancements */
+#chat-input {
+    min-height: 20px;
+    max-height: 100px;
+    resize: none;
+    overflow-y: auto;
+    transition: height 0.2s ease;
+}
+
+#chat-input::-webkit-scrollbar {
+    width: 4px;
+}
+
+#chat-input::-webkit-scrollbar-thumb {
+    background: var(--border-secondary);
+    border-radius: 2px;
+}
+
+/* Toast Notifications */
+.chat-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 10001;
+    box-shadow: var(--shadow-lg);
+    transition: all 0.3s ease;
+    max-width: 300px;
+}
+
+.chat-toast.success {
+    background: var(--success-500);
+    color: white;
+}
+
+.chat-toast.error {
+    background: var(--error-500);
+    color: white;
+}
+
+.chat-toast.warning {
+    background: var(--warning-500);
+    color: white;
+}
+
+/* Enhanced Chat Drawer */
 
 /* Chat Drawer */
 .chat-drawer {

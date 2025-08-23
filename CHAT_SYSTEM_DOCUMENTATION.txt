@@ -1,0 +1,436 @@
+# HealSync Chat System Backend Documentation
+
+## Overview
+The HealSync chat system allows patients and doctors to communicate through a secure messaging platform. The system is built with the following architecture:
+
+- **Chat Sessions**: Each doctor-patient pair has a unique chat session, typically linked to an appointment
+- **Messages**: Individual messages are stored permanently with timestamp and read status
+- **Security**: Only patients and doctors with valid appointments can communicate
+
+---
+
+## Backend Architecture
+
+### Database Tables
+1. **chat_session**
+   - `id` (Long) - Primary key
+   - `doctor_id` (Integer) - Doctor's ID
+   - `patient_id` (Integer) - Patient's ID  
+   - `appointment_id` (Integer) - Related appointment ID
+   - `created_at` (DateTime) - Session creation time
+
+2. **chat_message**
+   - `id` (Long) - Primary key
+   - `chat_session_id` (Long) - Reference to chat session
+   - `sender_id` (Integer) - ID of message sender
+   - `receiver_id` (Integer) - ID of message receiver
+   - `message` (String) - Message content
+   - `sent_at` (DateTime) - Message timestamp
+   - `read` (Boolean) - Read status
+
+---
+
+## API Endpoints
+
+### Base URL
+- **Local:** `http://localhost:8080`
+- **Render:** `https://healsync-backend-d788.onrender.com`
+
+### 1. Create Chat Session
+**Endpoint:** `POST /api/chat/session`
+
+**Purpose:** Creates a new chat session between doctor and patient
+
+**Request Body:**
+```json
+{
+  "doctorId": 101,
+  "patientId": 202,
+  "appointmentId": 303
+}
+```
+
+**Success Response (200 OK):**
+```json
+{
+  "id": 1,
+  "doctorId": 101,
+  "patientId": 202,
+  "appointmentId": 303,
+  "createdAt": "2024-08-23T10:30:00"
+}
+```
+
+**Error Response (400 Bad Request):**
+```json
+{
+  "message": "Error creating chat session: [error details]"
+}
+```
+
+### 2. Send Message
+**Endpoint:** `POST /api/chat/messages`
+
+**Purpose:** Sends a message in an existing chat session
+
+**Request Body:**
+```json
+{
+  "chatSessionId": 1,
+  "senderId": 202,
+  "receiverId": 101,
+  "message": "Hello Doctor, I have a question about my medication."
+}
+```
+
+**Success Response (200 OK):**
+```json
+{
+  "id": 15,
+  "chatSessionId": 1,
+  "senderId": 202,
+  "receiverId": 101,
+  "message": "Hello Doctor, I have a question about my medication.",
+  "sentAt": "2024-08-23T10:35:00",
+  "read": false
+}
+```
+
+### 3. Get Chat History
+**Endpoint:** `GET /api/chat/messages?chatSessionId={id}`
+
+**Purpose:** Retrieves all messages for a specific chat session
+
+**Query Parameters:**
+- `chatSessionId` (Long, required) - ID of the chat session
+
+**Success Response (200 OK):**
+```json
+[
+  {
+    "id": 14,
+    "chatSessionId": 1,
+    "senderId": 101,
+    "receiverId": 202,
+    "message": "Hello! How can I help you today?",
+    "sentAt": "2024-08-23T10:30:00",
+    "read": true
+  },
+  {
+    "id": 15,
+    "chatSessionId": 1,
+    "senderId": 202,
+    "receiverId": 101,
+    "message": "Hello Doctor, I have a question about my medication.",
+    "sentAt": "2024-08-23T10:35:00",
+    "read": false
+  }
+]
+```
+
+### 4. Get User's Chat Sessions
+**Endpoint:** `GET /api/chat/sessions?userId={id}`
+
+**Purpose:** Gets all chat sessions for a specific user (doctor or patient)
+
+**Query Parameters:**
+- `userId` (Integer, required) - ID of the user (doctor or patient)
+
+**Success Response (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "doctorId": 101,
+    "patientId": 202,
+    "appointmentId": 303,
+    "createdAt": "2024-08-23T10:30:00"
+  },
+  {
+    "id": 2,
+    "doctorId": 104,
+    "patientId": 202,
+    "appointmentId": 305,
+    "createdAt": "2024-08-22T14:20:00"
+  }
+]
+```
+
+### 5. Mark Message as Read
+**Endpoint:** `PUT /api/chat/messages/{messageId}/read`
+
+**Purpose:** Marks a specific message as read
+
+**Path Parameters:**
+- `messageId` (Long, required) - ID of the message to mark as read
+
+**Success Response (200 OK):**
+```json
+"Message marked as read"
+```
+
+---
+
+## Frontend Integration Guide
+
+### JavaScript Fetch Examples
+
+#### 1. Create Chat Session
+```javascript
+async function createChatSession(doctorId, patientId, appointmentId) {
+  try {
+    const response = await fetch('https://healsync-backend-d788.onrender.com/api/chat/session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        doctorId: doctorId,
+        patientId: patientId,
+        appointmentId: appointmentId
+      })
+    });
+    
+    if (response.ok) {
+      const chatSession = await response.json();
+      console.log('Chat session created:', chatSession);
+      return chatSession;
+    } else {
+      const error = await response.text();
+      console.error('Error creating session:', error);
+    }
+  } catch (error) {
+    console.error('Network error:', error);
+  }
+}
+```
+
+#### 2. Send Message
+```javascript
+async function sendMessage(chatSessionId, senderId, receiverId, message) {
+  try {
+    const response = await fetch('https://healsync-backend-d788.onrender.com/api/chat/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chatSessionId: chatSessionId,
+        senderId: senderId,
+        receiverId: receiverId,
+        message: message
+      })
+    });
+    
+    if (response.ok) {
+      const messageData = await response.json();
+      console.log('Message sent:', messageData);
+      return messageData;
+    } else {
+      const error = await response.text();
+      console.error('Error sending message:', error);
+    }
+  } catch (error) {
+    console.error('Network error:', error);
+  }
+}
+```
+
+#### 3. Get Chat History
+```javascript
+async function getChatHistory(chatSessionId) {
+  try {
+    const response = await fetch(
+      `https://healsync-backend-d788.onrender.com/api/chat/messages?chatSessionId=${chatSessionId}`
+    );
+    
+    if (response.ok) {
+      const messages = await response.json();
+      console.log('Chat history:', messages);
+      return messages;
+    } else {
+      const error = await response.text();
+      console.error('Error getting history:', error);
+    }
+  } catch (error) {
+    console.error('Network error:', error);
+  }
+}
+```
+
+#### 4. Get User's Chat Sessions
+```javascript
+async function getUserChatSessions(userId) {
+  try {
+    const response = await fetch(
+      `https://healsync-backend-d788.onrender.com/api/chat/sessions?userId=${userId}`
+    );
+    
+    if (response.ok) {
+      const sessions = await response.json();
+      console.log('User chat sessions:', sessions);
+      return sessions;
+    } else {
+      const error = await response.text();
+      console.error('Error getting sessions:', error);
+    }
+  } catch (error) {
+    console.error('Network error:', error);
+  }
+}
+```
+
+#### 5. Mark Message as Read
+```javascript
+async function markMessageAsRead(messageId) {
+  try {
+    const response = await fetch(
+      `https://healsync-backend-d788.onrender.com/api/chat/messages/${messageId}/read`,
+      {
+        method: 'PUT'
+      }
+    );
+    
+    if (response.ok) {
+      const result = await response.text();
+      console.log('Message marked as read:', result);
+      return true;
+    } else {
+      const error = await response.text();
+      console.error('Error marking message as read:', error);
+      return false;
+    }
+  } catch (error) {
+    console.error('Network error:', error);
+    return false;
+  }
+}
+```
+
+---
+
+## Typical Frontend Workflow
+
+### For Patient Chat Interface:
+1. **Load Patient's Chat Sessions**: Call `GET /api/chat/sessions?userId={patientId}`
+2. **Display Session List**: Show all doctors the patient can chat with
+3. **Select Session**: When patient clicks on a doctor, get `chatSessionId`
+4. **Load Chat History**: Call `GET /api/chat/messages?chatSessionId={sessionId}`
+5. **Display Messages**: Show conversation history
+6. **Send New Message**: When patient types and sends, call `POST /api/chat/messages`
+7. **Mark Messages as Read**: When patient reads messages, call `PUT /api/chat/messages/{messageId}/read`
+
+### For Doctor Chat Interface:
+1. **Load Doctor's Chat Sessions**: Call `GET /api/chat/sessions?userId={doctorId}`
+2. **Display Patient List**: Show all patients the doctor can chat with
+3. **Select Patient**: When doctor clicks on a patient, get `chatSessionId`
+4. **Load Chat History**: Call `GET /api/chat/messages?chatSessionId={sessionId}`
+5. **Display Messages**: Show conversation history
+6. **Send New Message**: When doctor types and sends, call `POST /api/chat/messages`
+7. **Mark Messages as Read**: When doctor reads messages, call `PUT /api/chat/messages/{messageId}/read`
+
+---
+
+## Error Handling
+
+### Common HTTP Status Codes:
+- **200 OK**: Request successful
+- **400 Bad Request**: Invalid request data or server error
+- **404 Not Found**: Endpoint not found (check URL spelling)
+- **500 Internal Server Error**: Database or server issue
+
+### Frontend Error Handling Best Practices:
+```javascript
+async function handleApiCall(apiFunction) {
+  try {
+    const result = await apiFunction();
+    return result;
+  } catch (error) {
+    // Handle network errors
+    console.error('Network error:', error);
+    alert('Connection error. Please check your internet connection.');
+    return null;
+  }
+}
+
+// Usage
+const messages = await handleApiCall(() => getChatHistory(sessionId));
+if (messages) {
+  displayMessages(messages);
+} else {
+  showErrorMessage('Failed to load messages');
+}
+```
+
+---
+
+## Troubleshooting Common Issues
+
+### 1. 404 Not Found Errors
+- **Cause**: Incorrect URL or server not running
+- **Solution**: 
+  - Check if backend server is running
+  - Verify URL spelling: `/api/chat/session` not `/api/chat/sessions`
+  - Ensure CORS is properly configured on backend
+
+### 2. CORS Issues
+- **Symptom**: Browser blocks requests from frontend to backend
+- **Solution**: Backend needs CORS configuration for your frontend domain
+
+### 3. Empty Responses
+- **Cause**: No data exists for the requested parameters
+- **Solution**: 
+  - Check if chat session exists before getting messages
+  - Verify user IDs are correct
+  - Create chat session first if it doesn't exist
+
+### 4. Message Not Sending
+- **Cause**: Missing required fields or invalid session
+- **Solution**: 
+  - Ensure all required fields are provided (chatSessionId, senderId, receiverId, message)
+  - Verify chat session exists
+  - Check sender/receiver IDs are valid
+
+---
+
+## Real-time Updates (Future Enhancement)
+
+Currently, the system uses REST APIs. For real-time messaging, consider:
+- **WebSocket integration** for instant message delivery
+- **Polling mechanism** to periodically check for new messages
+- **Push notifications** for mobile apps
+
+---
+
+## Security Considerations
+
+### Frontend Security:
+- Validate user permissions before showing chat interfaces
+- Don't expose sensitive user IDs in URLs
+- Implement proper authentication checks
+- Sanitize message content before displaying
+
+### Backend Security (Already Implemented):
+- Input validation on all endpoints
+- Error handling to prevent information leakage
+- Database constraints to ensure data integrity
+
+---
+
+## Testing the APIs
+
+You can test these APIs using:
+- **Postman**: Import the provided examples
+- **Browser Developer Tools**: Use fetch() in console
+- **cURL**: Command line testing
+
+### Sample Test Sequence:
+1. Create a session with valid doctor/patient/appointment IDs
+2. Send a few messages back and forth
+3. Get chat history to verify messages are saved
+4. Mark messages as read
+5. Get user sessions to verify session exists
+
+---
+
+This documentation should provide everything your frontend developer needs to integrate the chat system successfully!
