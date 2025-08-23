@@ -1,0 +1,297 @@
+/* =================================================================
+   PATIENT HEALTH TRACKER FORM STYLES
+   ================================================================= */
+
+@import url('/CSS/healsync-theme.css');
+
+body {
+    background-color: var(--secondary-50);
+    font-family: 'Inter', sans-serif;
+    color: var(--secondary-800);
+}
+
+.dashboard-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar (reusing from dashboard) */
+.sidebar {
+    width: 280px;
+    background: var(--bg-primary, #fff);
+    border-right: 1px solid var(--border-color, #e5e7eb);
+    position: fixed;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-lg);
+}
+
+.sidebar-header {
+    padding: 2rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--primary-500);
+}
+
+.logo i { font-size: 2rem; }
+.logo h2 { font-size: 1.5rem; font-weight: 700; }
+
+.sidebar-nav {
+    flex: 1;
+    padding: 1.5rem 0;
+}
+
+.sidebar-nav ul { list-style: none; padding: 0; margin: 0; }
+
+.sidebar-nav .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 1rem 1.5rem;
+    color: var(--secondary-500);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-nav .nav-link:hover {
+    background: var(--primary-50);
+    color: var(--primary-600);
+}
+
+.sidebar-nav .nav-link.active {
+    background: var(--primary-100);
+    color: var(--primary-700);
+    border-left-color: var(--primary-500);
+}
+
+.sidebar-nav .nav-link i {
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-footer {
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.logout-btn {
+    width: 100%;
+    padding: 1rem;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    color: var(--secondary-500);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.logout-btn:hover {
+    background: var(--error-50);
+    border-color: var(--error-500);
+    color: var(--error-600);
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    margin-left: 280px;
+    padding: 2rem;
+}
+
+.main-header {
+    margin-bottom: 2rem;
+}
+
+.main-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--secondary-900);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.main-header h1 i {
+    color: var(--primary-500);
+}
+
+.header-subtitle {
+    color: var(--secondary-500);
+    margin-top: 0.5rem;
+}
+
+/* Form Container */
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 2.5rem;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+}
+
+.health-form .form-section {
+    margin-bottom: 2.5rem;
+}
+
+.health-form .section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--secondary-800);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+/* Mood Selector */
+.mood-selector {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.mood-option {
+    cursor: pointer;
+}
+
+.mood-option input[type="radio"] {
+    display: none;
+}
+
+.mood-icon {
+    font-size: 3rem;
+    color: var(--secondary-300);
+    transition: all 0.2s ease-in-out;
+    padding: 1rem;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mood-option input[type="radio"]:checked + .mood-icon {
+    background-color: var(--primary-100);
+    color: var(--primary-600);
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px var(--primary-200);
+}
+
+.mood-option:hover .mood-icon {
+    color: var(--primary-500);
+}
+
+/* Vitals Grid */
+.vitals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: var(--secondary-600);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    color: var(--secondary-800);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Form Actions */
+.form-actions {
+    margin-top: 2.5rem;
+    text-align: center;
+}
+
+.btn-submit {
+    padding: 1rem 2.5rem;
+    background-color: var(--primary-500);
+    color: #fff;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.btn-submit:hover {
+    background-color: var(--primary-600);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .sidebar {
+        position: fixed;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+    }
+    
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .form-container {
+        padding: 1.5rem;
+    }
+
+    .mood-icon {
+        font-size: 2.5rem;
+        width: 60px;
+        height: 60px;
+    }
+}

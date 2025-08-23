@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Health Data - HealSync</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/CSS/healsync-theme.css">
+    <link rel="stylesheet" href="/CSS/patient-health-tracker.css">
+    <link rel="stylesheet" href="/CSS/loader.css">
+    <link rel="stylesheet" href="/CSS/snackbar.css">
+</head>
+<body>
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loader-wrapper">
+            <div class="loader-icon"><i class="fas fa-heartbeat"></i></div>
+            <p class="loader-text">Loading...</p>
+        </div>
+    </div>
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-heartbeat"></i>
+                    <h2>HealSync</h2>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="/HTML/patient-profile-dashboard.html" class="nav-link">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Profile Dashboard</span>
+                    </a></li>
+                    <li><a href="/HTML/patient-health-tracker.html" class="nav-link active">
+                        <i class="fas fa-heart-pulse"></i>
+                        <span>Log Health Data</span>
+                    </a></li>
+                    <li><a href="/HTML/tracker.html" class="nav-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span>View Progress</span>
+                    </a></li>
+                    <li><a href="/HTML/appointments-patient.html" class="nav-link">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Appointments</span>
+                    </a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-content">
+                    <h1><i class="fas fa-heart-pulse"></i> Log Your Health Data</h1>
+                    <p class="header-subtitle">Keep a consistent record of your health metrics.</p>
+                </div>
+            </header>
+
+            <div class="form-container">
+                <form id="healthTrackerForm" class="health-form">
+                    <div class="form-section">
+                        <h2 class="section-title">How are you feeling today?</h2>
+                        <div class="mood-selector">
+                            <label class="mood-option">
+                                <input type="radio" name="mood" value="HAPPY" required>
+                                <div class="mood-icon" title="Happy"><i class="fas fa-smile-beam"></i></div>
+                            </label>
+                            <label class="mood-option">
+                                <input type="radio" name="mood" value="CALM">
+                                <div class="mood-icon" title="Calm"><i class="fas fa-smile"></i></div>
+                            </label>
+                            <label class="mood-option">
+                                <input type="radio" name="mood" value="NEUTRAL">
+                                <div class="mood-icon" title="Neutral"><i class="fas fa-meh"></i></div>
+                            </label>
+                            <label class="mood-option">
+                                <input type="radio" name="mood" value="SAD">
+                                <div class="mood-icon" title="Sad"><i class="fas fa-frown"></i></div>
+                            </label>
+                            <label class="mood-option">
+                                <input type="radio" name="mood" value="ANGRY">
+                                <div class="mood-icon" title="Angry"><i class="fas fa-angry"></i></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2 class="section-title">Vital Signs</h2>
+                        <div class="vitals-grid">
+                            <div class="form-group">
+                                <label for="weight"><i class="fas fa-weight"></i> Weight (kg)</label>
+                                <input type="number" id="weight" name="weight" step="0.1" placeholder="e.g., 70.5">
+                            </div>
+                            <div class="form-group">
+                                <label for="bloodPressureSystolic"><i class="fas fa-heartbeat"></i> Blood Pressure (Systolic)</label>
+                                <input type="number" id="bloodPressureSystolic" name="bloodPressureSystolic" placeholder="e.g., 120">
+                            </div>
+                            <div class="form-group">
+                                <label for="bloodPressureDiastolic"><i class="fas fa-heartbeat"></i> Blood Pressure (Diastolic)</label>
+                                <input type="number" id="bloodPressureDiastolic" name="bloodPressureDiastolic" placeholder="e.g., 80">
+                            </div>
+                            <div class="form-group">
+                                <label for="bloodSugar"><i class="fas fa-tint"></i> Blood Sugar (mg/dL)</label>
+                                <input type="number" id="bloodSugar" name="bloodSugar" placeholder="e.g., 90">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2 class="section-title">Additional Notes</h2>
+                        <div class="form-group">
+                            <label for="notes">Any symptoms, activities, or meals to note?</label>
+                            <textarea id="notes" name="notes" rows="4" placeholder="e.g., Went for a 30-minute walk, felt a slight headache..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-save"></i> Save Today's Entry
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <div id="snackbar"></div>
+
+    <script src="/JS/loader.js"></script>
+    <script src="/JS/snackbar.js"></script>
+    <script src="/JS/patient-api-service.js"></script>
+    <script src="/JS/patient-health-tracker.js"></script>
+</body>
+</html>
