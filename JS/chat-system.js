@@ -3,7 +3,7 @@
 
 class HealSyncChat {
     constructor() {
-        this.apiBase = 'https://healsync-backend-d788.onrender.com/api/chat';
+        this.apiBase = 'https://healsync-backend-d788.onrender.com';
         this.currentUser = null;
         this.currentChatSession = null;
         this.chatPollInterval = null;
@@ -13,12 +13,6 @@ class HealSyncChat {
         this.isOnline = true;
         this.retryAttempts = 0;
         this.maxRetries = 3;
-        
-        console.log('🚀 Initializing HealSync Chat System with API endpoints:', {
-            session: `${this.apiBase}/session`,
-            messages: `${this.apiBase}/messages`,
-            sessions: `${this.apiBase}/sessions`
-        });
         
         this.init();
     }
@@ -46,42 +40,29 @@ class HealSyncChat {
         try {
             console.log('🔍 Loading user data...');
             
-            // Try multiple sources for user data - prioritize keys that appointment system uses
+            // Try multiple sources for user data
             const dataSources = [
-                { key: 'patient', type: 'patient', idField: 'id', nameField: 'name' },
-                { key: 'patientInfo', type: 'patient', idField: 'id', nameField: 'name' },
-                { key: 'healSync_userSession', type: 'patient', idField: 'id', nameField: 'patientName' },
-                { key: 'healSync_patientSession', type: 'patient', idField: 'patientId', nameField: 'patientName' },
                 { key: 'healSync_patient_data', type: 'patient', idField: 'patientId', nameField: 'patientName' },
-                { key: 'healSync_userData', type: 'patient', idField: 'id', nameField: 'name' },
-                { key: 'healSync_doctor_data', type: 'doctor', idField: 'doctorId', nameField: 'doctorName' }
+                { key: 'healSync_doctor_data', type: 'doctor', idField: 'doctorId', nameField: 'doctorName' },
+                { key: 'healSync_userData', type: 'user', idField: 'userId', nameField: 'userName' },
+                { key: 'healSync_userSession', type: 'user', idField: 'id', nameField: 'name' }
             ];
 
             for (const source of dataSources) {
                 const data = localStorage.getItem(source.key);
-                console.log(`🔍 Checking ${source.key}:`, data ? 'found' : 'not found');
-                
                 if (data) {
                     try {
                         const parsed = JSON.parse(data);
-                        console.log(`📋 ${source.key} content:`, parsed);
-                        
                         if (parsed && (parsed[source.idField] || parsed.id)) {
-                            // Ensure ID is an integer for API calls
-                            const rawId = parsed[source.idField] || parsed.id;
-                            const userId = typeof rawId === 'string' && rawId.includes('demo_') 
-                                ? Math.floor(Math.random() * 1000) + 1  // Convert demo IDs to integers
-                                : parseInt(rawId) || rawId;
-                                
                             this.currentUser = {
-                                id: userId,
-                                name: parsed[source.nameField] || parsed.name || parsed.patientName || 'User',
+                                id: parsed[source.idField] || parsed.id,
+                                name: parsed[source.nameField] || parsed.name || 'User',
                                 email: parsed.email || '',
                                 type: parsed.userType || source.type,
                                 phone: parsed.phone || parsed.mobileNo || '',
                                 data: parsed
                             };
-                            console.log('✅ User loaded successfully from', source.key, ':', this.currentUser);
+                            console.log('✅ User loaded successfully:', this.currentUser);
                             return;
                         }
                     } catch (parseError) {
@@ -101,10 +82,8 @@ class HealSyncChat {
     }
 
     createDemoUser() {
-        // Use a simple integer ID for demo user instead of string
-        const demoId = Math.floor(Math.random() * 1000) + 1; // Random ID between 1-1000
         this.currentUser = {
-            id: demoId,
+            id: 'demo_' + Date.now(),
             name: 'Demo User',
             email: 'demo@healsync.com',
             type: 'patient',
@@ -120,28 +99,27 @@ class HealSyncChat {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 10000); // Increased to 10 seconds
             
-            // Test with a simple API call to check if the chat API is available
-            const response = await fetch(`${this.apiBase}/sessions?userId=1`, {
+            // Use existing test endpoint instead of /health
+            const response = await fetch(`${this.apiBase}/api/chat/test`, {
                 method: 'GET',
                 signal: controller.signal,
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('healSync_token') || ''}`
+                    'Content-Type': 'application/json'
                 }
             });
             
             clearTimeout(timeoutId);
             
-            if (response.ok || response.status === 401) { // 401 is fine, it means API is working but needs auth
+            if (response.ok) {
                 this.isOnline = true;
-                console.log('✅ Chat API is online');
-                this.showConnectionStatus('Connected to chat server', 'success');
+                console.log('✅ Backend is online');
+                this.showConnectionStatus('Connected to server', 'success');
             } else {
                 throw new Error(`Server returned ${response.status}`);
             }
         } catch (error) {
             this.isOnline = false;
-            console.warn('⚠️ Chat API is offline:', error.message);
+            console.warn('⚠️ Backend is offline:', error.message);
             this.enableOfflineMode();
         }
     }
@@ -341,22 +319,30 @@ class HealSyncChat {
                 return;
             }
 
-            // Use the new getUserChatSessions API method
-            const sessions = await this.getUserChatSessions(this.currentUser.id);
-            console.log(`✅ Chat sessions loaded: ${sessions.length} sessions`);
-            
-            if (Array.isArray(sessions)) {
-                sessions.forEach(session => {
-                    this.chatSessions.set(session.id, session);
-                });
-                this.updateUnreadCounts(sessions);
-            } else {
-                console.warn('⚠️ Invalid sessions response format');
+            // Try the chat sessions endpoint - it might not exist in your backend
+            try {
+                const sessions = await this.apiRequest(`/api/chat/sessions?userId=${this.currentUser.id}`);
+                console.log('✅ Chat sessions loaded:', sessions);
+                
+                if (Array.isArray(sessions)) {
+                    sessions.forEach(session => {
+                        this.chatSessions.set(session.id, session);
+                    });
+                    this.updateUnreadCounts(sessions);
+                } else {
+                    console.warn('⚠️ Invalid sessions response format');
+                }
+            } catch (apiError) {
+                // If sessions endpoint doesn't exist, skip it gracefully
+                if (apiError.message.includes('404')) {
+                    console.log('ℹ️ Chat sessions endpoint not available - skipping');
+                } else {
+                    throw apiError;
+                }
             }
 
         } catch (error) {
             console.error('❌ Failed to load chat sessions:', error);
-            console.log('🔄 Falling back to offline mode');
             this.enableOfflineMode();
         }
     }
@@ -421,20 +407,17 @@ class HealSyncChat {
         try {
             console.log(`📡 Loading chat history for session ${chatSessionId}...`);
             
-            // Check if we're in offline/demo mode
-            if (!this.isOnline || chatSessionId?.toString().startsWith('mock_') || chatSessionId?.toString().startsWith('fallback_')) {
-                console.log('📴 Using mock messages for offline/demo mode');
+            if (!this.isOnline || chatSessionId.startsWith('mock_') || chatSessionId.startsWith('fallback_')) {
+                // Return mock messages for offline/demo mode
                 return this.getMockMessages(chatSessionId);
             }
 
-            // Use the new API method
-            const messages = await this.getMessagesForSession(chatSessionId);
-            console.log(`✅ Chat history loaded: ${messages.length} messages`);
+            const messages = await this.apiRequest(`/api/chat/messages?chatSessionId=${chatSessionId}`);
+            console.log('✅ Chat history loaded:', messages.length, 'messages');
             return messages;
             
         } catch (error) {
             console.error('❌ Failed to load chat history:', error);
-            console.log('🔄 Falling back to mock messages');
             return this.getMockMessages(chatSessionId);
         }
     }
@@ -473,42 +456,6 @@ class HealSyncChat {
         return mockMessages;
     }
 
-    // ============ CHAT API INTEGRATION ============
-    
-    // 1. Create or get chat session: POST /api/chat/session
-    async createChatSession(doctorId, patientId, appointmentId) {
-        try {
-            console.log('🔄 Creating chat session:', { doctorId, patientId, appointmentId });
-            
-            const response = await fetch(`${this.apiBase}/session`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('healSync_token') || ''}`
-                },
-                body: JSON.stringify({
-                    doctorId: parseInt(doctorId),
-                    patientId: parseInt(patientId),
-                    appointmentId: parseInt(appointmentId)
-                })
-            });
-            
-            if (response.ok) {
-                const session = await response.json();
-                console.log('✅ Chat session created:', session);
-                return session;
-            } else {
-                const errorText = await response.text();
-                console.error('❌ Failed to create chat session:', response.status, errorText);
-                throw new Error(`HTTP ${response.status}: ${errorText}`);
-            }
-        } catch (error) {
-            console.error('❌ Error creating chat session:', error);
-            throw error;
-        }
-    }
-    
-    // 2. Send message: POST /api/chat/messages
     async sendMessageToApi(message) {
         if (!this.currentChatSession || !this.currentUser) {
             console.error('❌ No active chat session or user');
@@ -524,11 +471,9 @@ class HealSyncChat {
                 receiverId = this.currentChatSession.patientId;
             }
 
-            console.log(`📡 Sending message via API: "${message.substring(0, 50)}..."`);
+            console.log(`📡 Sending message: "${message.substring(0, 50)}..."`);
             
-            // Check if we're in offline/mock mode
-            if (!this.isOnline || this.currentChatSession.id?.toString().startsWith('mock_') || this.currentChatSession.id?.toString().startsWith('fallback_')) {
-                console.log('📴 Offline mode - simulating message send');
+            if (!this.isOnline || this.currentChatSession.id.startsWith('mock_') || this.currentChatSession.id.startsWith('fallback_')) {
                 // Simulate sending in offline mode
                 await new Promise(resolve => setTimeout(resolve, 500));
                 
@@ -551,14 +496,9 @@ class HealSyncChat {
                 
                 return mockResponse;
             }
-            
-            // Send via real API
-            const response = await fetch(`${this.apiBase}/messages`, {
+
+            const messageData = await this.apiRequest('/api/chat/messages', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('healSync_token') || ''}`
-                },
                 body: JSON.stringify({
                     chatSessionId: this.currentChatSession.id,
                     senderId: this.currentUser.id,
@@ -566,114 +506,14 @@ class HealSyncChat {
                     message: message
                 })
             });
-            
-            if (response.ok) {
-                const sentMessage = await response.json();
-                console.log('✅ Message sent successfully:', sentMessage);
-                return sentMessage;
-            } else {
-                const errorText = await response.text();
-                console.error('❌ Failed to send message:', response.status, errorText);
-                throw new Error(`HTTP ${response.status}: ${errorText}`);
-            }
-            
-        } catch (error) {
-            console.error('❌ Error sending message:', error);
-            return false;
-        }
-    }
-    
-    // 3. Get messages for a chat session: GET /api/chat/messages?chatSessionId=1
-    async getMessagesForSession(chatSessionId) {
-        try {
-            console.log(`📨 Fetching messages for session ${chatSessionId}`);
-            
-            const response = await fetch(`${this.apiBase}/messages?chatSessionId=${chatSessionId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('healSync_token') || ''}`
-                }
-            });
-            
-            if (response.ok) {
-                const messages = await response.json();
-                console.log(`✅ Fetched ${messages.length} messages for session ${chatSessionId}`);
-                return Array.isArray(messages) ? messages : [];
-            } else {
-                console.warn(`⚠️ Failed to fetch messages: ${response.status}`);
-                return [];
-            }
-        } catch (error) {
-            console.error('❌ Error fetching messages:', error);
-            return [];
-        }
-    }
-    
-    // 4. Get user sessions: GET /api/chat/sessions?userId=3
-    async getUserChatSessions(userId) {
-        try {
-            console.log(`📋 Fetching chat sessions for user ${userId}`);
-            
-            const response = await fetch(`${this.apiBase}/sessions?userId=${userId}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('healSync_token') || ''}`
-                }
-            });
-            
-            if (response.ok) {
-                const sessions = await response.json();
-                console.log(`✅ Fetched ${sessions.length} chat sessions for user ${userId}`);
-                return Array.isArray(sessions) ? sessions : [];
-            } else {
-                console.warn(`⚠️ Failed to fetch sessions: ${response.status}`);
-                return [];
-            }
-        } catch (error) {
-            console.error('❌ Error fetching chat sessions:', error);
-            return [];
-        }
-    }
-    
-    // 5. Mark message as read: POST /api/chat/messages/{id}/read
-    async markMessageAsRead(messageId) {
-        try {
-            console.log(`✅ Marking message ${messageId} as read`);
-            
-            const response = await fetch(`${this.apiBase}/messages/${messageId}/read`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('healSync_token') || ''}`
-                }
-            });
-            
-            if (response.ok) {
-                console.log(`✅ Message ${messageId} marked as read`);
-                return true;
-            } else {
-                console.warn(`⚠️ Failed to mark message as read: ${response.status}`);
-                return false;
-            }
-        } catch (error) {
-            console.error('❌ Error marking message as read:', error);
-            return false;
-        }
-    }
 
-    // Legacy method name support
-    async markUnreadMessagesAsRead(messages) {
-        if (!messages || !Array.isArray(messages)) return;
-        
-        const unreadMessages = messages.filter(msg => 
-            !msg.read && 
-            msg.senderId !== this.currentUser.id
-        );
-        
-        for (const message of unreadMessages) {
-            await this.markMessageAsRead(message.id);
+            console.log('✅ Message sent successfully:', messageData);
+            return messageData;
+            
+        } catch (error) {
+            console.error('❌ Failed to send message:', error);
+            this.showConnectionStatus('Failed to send message', 'error');
+            return false;
         }
     }
 
@@ -725,8 +565,8 @@ class HealSyncChat {
     }
 
     // Enhanced UI Methods
-    async openChat(appointmentId, doctorId, patientId, doctorName = null) {
-        console.log(`🚀 Opening chat for appointment ${appointmentId} with doctor: ${doctorName || 'Unknown'}`);
+    async openChat(appointmentId, doctorId, patientId) {
+        console.log(`🚀 Opening chat for appointment ${appointmentId}`);
         
         if (!this.currentUser) {
             console.error('❌ User not logged in');
@@ -750,11 +590,6 @@ class HealSyncChat {
                     this.showError('Failed to create chat session');
                     return;
                 }
-            }
-
-            // ✅ Enhance session with doctor name if provided
-            if (doctorName) {
-                session.doctorName = doctorName;
             }
 
             this.currentChatSession = session;
@@ -801,31 +636,22 @@ class HealSyncChat {
     }
 
     updateChatHeader(session) {
-        // ✅ Use correct selectors matching the HTML IDs
-        const doctorInfo = document.getElementById('chat-doctor-name');
-        const doctorStatus = document.getElementById('chat-doctor-specialty');
-        const statusIndicator = document.getElementById('chat-status');
+        const doctorInfo = document.querySelector('.chat-doctor-details h4');
+        const doctorStatus = document.querySelector('.chat-doctor-details p');
+        const chatTitle = document.querySelector('.chat-header h3');
         
         if (this.currentUser.type === 'patient') {
             // Patient viewing doctor info
             const doctorName = session.doctorName || 'Dr. Demo';
-            console.log(`📋 Updating chat header with doctor: ${doctorName}`);
-            
             if (doctorInfo) doctorInfo.textContent = doctorName;
-            if (doctorStatus) doctorStatus.textContent = session.doctorSpecialty || 'Available';
-            if (statusIndicator) {
-                statusIndicator.textContent = session.status === 'offline' ? 'Offline' : 'Online';
-                statusIndicator.className = session.status === 'offline' ? 'chat-status offline' : 'chat-status online';
-            }
+            if (doctorStatus) doctorStatus.textContent = session.status === 'offline' ? 'Offline Mode' : 'Available';
+            if (chatTitle) chatTitle.textContent = `Chat with ${doctorName}`;
         } else {
             // Doctor viewing patient info
             const patientName = session.patientName || 'Patient';
             if (doctorInfo) doctorInfo.textContent = patientName;
             if (doctorStatus) doctorStatus.textContent = 'Patient';
-            if (statusIndicator) {
-                statusIndicator.textContent = 'Online';
-                statusIndicator.className = 'chat-status online';
-            }
+            if (chatTitle) chatTitle.textContent = `Chat with ${patientName}`;
         }
     }
 
@@ -876,11 +702,9 @@ class HealSyncChat {
         const messagesContainer = document.querySelector('.chat-messages');
         if (!messagesContainer) return;
 
-        // ✅ Fix: Convert ID to string before calling startsWith
-        const sessionId = String(this.currentChatSession?.id || '');
         const isOffline = !this.isOnline || 
-                         sessionId.startsWith('mock_') || 
-                         sessionId.startsWith('fallback_');
+                         (this.currentChatSession?.id.startsWith('mock_')) || 
+                         (this.currentChatSession?.id.startsWith('fallback_'));
 
         const welcomeHTML = `
             <div class="chat-welcome-message" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
@@ -989,22 +813,6 @@ class HealSyncChat {
         this.stopMessagePolling();
     }
 
-    minimizeChat() {
-        const drawer = document.getElementById('chat-drawer');
-        
-        if (drawer) {
-            // Add a minimized state class
-            drawer.classList.toggle('minimized');
-            
-            // If minimized, show a small floating button instead
-            if (drawer.classList.contains('minimized')) {
-                console.log('💬 Chat minimized');
-            } else {
-                console.log('💬 Chat restored');
-            }
-        }
-    }
-
     scrollToBottom() {
         const messagesContainer = document.querySelector('.chat-messages');
         if (messagesContainer) {
@@ -1085,24 +893,16 @@ class HealSyncChat {
     startMessagePolling() {
         this.stopMessagePolling();
         
-        let pollInterval = 5000; // Start with 5 seconds (less aggressive)
+        let pollInterval = 3000; // Start with 3 seconds
         let consecutiveErrors = 0;
-        let lastMessageCount = 0;
         
         const poll = async () => {
             try {
                 if (this.currentChatSession && !document.hidden) {
                     const messages = await this.getChatHistory(this.currentChatSession.id);
-                    
-                    // ✅ Only update UI if message count changed
-                    if (messages.length !== lastMessageCount) {
-                        console.log(`📨 New messages detected: ${messages.length} (was ${lastMessageCount})`);
-                        this.displayMessages(messages);
-                        lastMessageCount = messages.length;
-                    }
-                    
+                    this.displayMessages(messages);
                     consecutiveErrors = 0;
-                    pollInterval = 5000; // Reset to normal interval (5 seconds)
+                    pollInterval = 3000; // Reset to normal interval
                 }
             } catch (error) {
                 consecutiveErrors++;
