@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="/CSS/healsync-theme.css">
     <link rel="stylesheet" href="/CSS/index.css">
     <link rel="stylesheet" href="/CSS/chat.css">
-    <link rel="stylesheet" href="/CSS/health-indicator.css">
 </head>
 <body>
 
@@ -27,6 +26,7 @@
             </a>
 
             <div class="desktop-menu">
+                <a href="/HTML/appointments-patient.html">My Appointments</a>
                 <a href="/HTML/tracker.html">Health Tracker</a>
                 <a href="#about">About</a>
             </div>
@@ -41,6 +41,7 @@
             </button>
         </nav>
         <nav class="mobile-nav" id="mobile-menu">
+            <a href="/HTML/appointments-patient.html" class="mobile-nav-link">My Appointments</a>
             <a href="/HTML/tracker.html" class="mobile-nav-link">Health Tracker</a>
             <a href="#about" class="mobile-nav-link">About</a>
             <a href="/HTML/login.html" class="mobile-nav-link">Login</a>
@@ -121,30 +122,24 @@
     </main>
 
     <div id="footer-placeholder"></div>
-    
-    <!-- API Health Indicator -->
-    <div id="api-health-indicator" class="health-indicator">
-        <div class="health-dot"></div>
-        <span>Checking API...</span>
-    </div>
-    
-        <!-- AI Chat Assistant Elements -->
-        <div id="chat-widget" class="chat-widget">
-            <div class="chat-header">
-                <h3>AI Assistant</h3>
-                <button id="close-chat-btn" class="close-chat-btn">&times;</button>
-            </div>
-            <div id="chat-body" class="chat-body">
-                <div class="chat-message ai">Hello! How can I help you today?</div>
-            </div>
-            <form id="chat-form" class="chat-form">
-                <input type="text" id="chat-input" placeholder="Ask a question or use the mic..." autocomplete="off">
-                <button type="button" id="mic-btn" class="mic-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 18.75a6 6 0 006-6v-1.5a6 6 0 00-12 0v1.5a6 6 0 006 6zM12 2.25a.75.75 0 01.75.75v6a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM10.5 19.5a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM8.075 16.075a.75.75 0 011.06 0l1.115 1.115a.75.75 0 01-1.06 1.06L8.075 17.135a.75.75 0 010-1.06zM14.815 17.135a.75.75 0 011.06-1.06l1.115 1.115a.75.75 0 01-1.06 1.06l-1.115-1.115z"/></svg>
-                </button>
-                <button type="submit" id="chat-submit-btn">Send</button>
-            </form>
+
+    <!-- AI Chat Assistant Elements -->
+    <div id="chat-widget" class="chat-widget">
+        <div class="chat-header">
+            <h3>AI Assistant</h3>
+            <button id="close-chat-btn" class="close-chat-btn">&times;</button>
         </div>
+        <div id="chat-body" class="chat-body">
+            <div class="chat-message ai">Hello! How can I help you today?</div>
+        </div>
+        <form id="chat-form" class="chat-form">
+            <input type="text" id="chat-input" placeholder="Ask a question or use the mic..." autocomplete="off">
+            <button type="button" id="mic-btn" class="mic-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 18.75a6 6 0 006-6v-1.5a6 6 0 00-12 0v1.5a6 6 0 006 6zM12 2.25a.75.75 0 01.75.75v6a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM10.5 19.5a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zM8.075 16.075a.75.75 0 011.06 0l1.115 1.115a.75.75 0 01-1.06 1.06L8.075 17.135a.75.75 0 010-1.06zM14.815 17.135a.75.75 0 011.06-1.06l1.115 1.115a.75.75 0 01-1.06 1.06l-1.115-1.115z"/></svg>
+            </button>
+            <button type="submit" id="chat-submit-btn">Send</button>
+        </form>
+    </div>
 
     <button id="chat-toggle-btn" class="chat-toggle-btn" aria-label="Open AI Assistant">
         <!-- Updated bot icon -->
@@ -155,7 +150,6 @@
 
     <!-- Scripts -->
     <script src="/JS/navigation.js"></script>
-    <script src="/JS/system-validator.js"></script>
     <script src="/JS/footer.js"></script>
     <script src="/JS/index.js"></script>
 </body>

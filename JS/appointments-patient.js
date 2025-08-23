@@ -23,9 +23,6 @@ function initializeApp() {
 }
 
 function setupEventListeners() {
-    // Book appointment form
-    document.getElementById('book-appointment-form').addEventListener('submit', handleBookAppointment);
-    
     // Reschedule modal form
     document.getElementById('reschedule-form').addEventListener('submit', handleRescheduleSubmit);
     
@@ -46,8 +43,10 @@ function setMinDate() {
     tomorrow.setDate(tomorrow.getDate() + 1);
     
     const minDate = tomorrow.toISOString().split('T')[0];
-    document.getElementById('appointment-date').min = minDate;
-    document.getElementById('new-date').min = minDate;
+    const newDateInput = document.getElementById('new-date');
+    if (newDateInput) {
+        newDateInput.min = minDate;
+    }
 }
 
 function handleUrlParameters() {
@@ -71,67 +70,6 @@ function handleUrlParameters() {
             const cleanUrl = window.location.pathname;
             window.history.replaceState({}, document.title, cleanUrl);
         }
-    }
-}
-
-async function handleBookAppointment(event) {
-    event.preventDefault();
-    
-    const patientData = getPatientSession();
-    if (!patientData) {
-        showSnackbar('Please log in to book an appointment', 'error');
-        return;
-    }
-    
-    const specialty = document.getElementById('specialty').value;
-    const date = document.getElementById('appointment-date').value;
-    const time = document.getElementById('appointment-time').value;
-    const duration = parseInt(document.getElementById('duration').value);
-    const notes = document.getElementById('appointment-notes').value;
-    
-    if (!specialty || !date || !time) {
-        showSnackbar('Please fill in all required fields', 'error');
-        return;
-    }
-    
-    // Create start and end datetime
-    const startDateTime = new Date(`${date}T${time}:00`);
-    const endDateTime = new Date(startDateTime.getTime() + duration * 60000);
-
-    showLoading();
-    
-    try {
-        // Use correct API endpoint with query parameters (note: API uses 'speaciality' not 'specialty')
-        const queryParams = new URLSearchParams({
-            speaciality: specialty,  // API expects 'speaciality' (with typo)
-            startDateTime: startDateTime.toISOString(),
-            endDateTime: endDateTime.toISOString(),
-            patientId: patientData.patientId || patientData.id
-        });
-
-        const response = await fetch(`${baseUrl}/book/appointment?${queryParams}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        const result = await response.json();
-        
-        if (response.ok) {
-            showSnackbar('Appointment booked successfully!', 'success');
-            document.getElementById('book-appointment-form').reset();
-            setMinDate();
-            loadAppointments();
-            updateAppointmentStats();
-        } else {
-            throw new Error(result.message || 'Failed to book appointment');
-        }
-    } catch (error) {
-        console.error('Error booking appointment:', error);
-        showSnackbar(error.message || 'Failed to book appointment. Please try again.', 'error');
-    } finally {
-        hideLoading();
     }
 }
 
@@ -190,6 +128,7 @@ function createAppointmentCard(appointment) {
     
     const canCancel = isUpcoming && (appointment.status === 'booked' || appointment.status === 'confirmed');
     const canReschedule = isUpcoming && (appointment.status === 'booked' || appointment.status === 'confirmed');
+    const canChat = (appointment.status === 'booked' || appointment.status === 'confirmed') && appointment.doctorName;
     
     return `
         <div class="appointment-card ${statusClass}">
@@ -228,6 +167,14 @@ function createAppointmentCard(appointment) {
             </div>
             
             <div class="appointment-actions">
+                ${canChat ? `
+                <button class="appointment-chat-btn" 
+                        onclick="openChatWithDoctor(${JSON.stringify(appointment).replace(/"/g, '&quot;')}, {id: ${appointment.doctorId || 1}, name: '${appointment.doctorName}', specialty: '${appointment.specialty}'})"
+                        data-appointment-id="${appointment.id}">
+                    <i class="fas fa-comments"></i>
+                    Chat with Doctor
+                </button>
+                ` : ''}
                 ${canReschedule ? `
                 <button class="btn btn-secondary btn-sm" onclick="openRescheduleModal(${appointment.id})">
                     <i class="fas fa-calendar-alt"></i>
