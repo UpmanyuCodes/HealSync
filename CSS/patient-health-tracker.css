@@ -1,5 +1,5 @@
 /* =================================================================
-   PATIENT HEALTH TRACKER FORM STYLES
+   HEALTH TRACKER CALENDAR VIEW STYLES
    ================================================================= */
 
 @import url('/CSS/healsync-theme.css');
@@ -27,83 +27,19 @@ body {
     box-shadow: var(--shadow-lg);
 }
 
-.sidebar-header {
-    padding: 2rem 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: var(--primary-500);
-}
-
+.sidebar-header { padding: 2rem 1.5rem; border-bottom: 1px solid var(--border-color); }
+.logo { display: flex; align-items: center; gap: 12px; color: var(--primary-500); }
 .logo i { font-size: 2rem; }
 .logo h2 { font-size: 1.5rem; font-weight: 700; }
-
-.sidebar-nav {
-    flex: 1;
-    padding: 1.5rem 0;
-}
-
+.sidebar-nav { flex: 1; padding: 1.5rem 0; }
 .sidebar-nav ul { list-style: none; padding: 0; margin: 0; }
-
-.sidebar-nav .nav-link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 1rem 1.5rem;
-    color: var(--secondary-500);
-    text-decoration: none;
-    transition: all 0.2s ease;
-    font-weight: 500;
-    border-left: 3px solid transparent;
-}
-
-.sidebar-nav .nav-link:hover {
-    background: var(--primary-50);
-    color: var(--primary-600);
-}
-
-.sidebar-nav .nav-link.active {
-    background: var(--primary-100);
-    color: var(--primary-700);
-    border-left-color: var(--primary-500);
-}
-
-.sidebar-nav .nav-link i {
-    font-size: 1.1rem;
-    width: 20px;
-    text-align: center;
-}
-
-.sidebar-footer {
-    padding: 1.5rem;
-    border-top: 1px solid var(--border-color);
-}
-
-.logout-btn {
-    width: 100%;
-    padding: 1rem;
-    background: transparent;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    color: var(--secondary-500);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.logout-btn:hover {
-    background: var(--error-50);
-    border-color: var(--error-500);
-    color: var(--error-600);
-}
+.sidebar-nav .nav-link { display: flex; align-items: center; gap: 12px; padding: 1rem 1.5rem; color: var(--secondary-500); text-decoration: none; transition: all 0.2s ease; font-weight: 500; border-left: 3px solid transparent; }
+.sidebar-nav .nav-link:hover { background: var(--primary-50); color: var(--primary-600); }
+.sidebar-nav .nav-link.active { background: var(--primary-100); color: var(--primary-700); border-left-color: var(--primary-500); }
+.sidebar-nav .nav-link i { font-size: 1.1rem; width: 20px; text-align: center; }
+.sidebar-footer { padding: 1.5rem; border-top: 1px solid var(--border-color); }
+.logout-btn { width: 100%; padding: 1rem; background: transparent; border: 1px solid var(--border-color); border-radius: var(--border-radius); color: var(--secondary-500); cursor: pointer; transition: all 0.2s ease; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.logout-btn:hover { background: var(--error-50); border-color: var(--error-500); color: var(--error-600); }
 
 /* Main Content */
 .main-content {
@@ -112,186 +48,169 @@ body {
     padding: 2rem;
 }
 
-.main-header {
-    margin-bottom: 2rem;
+.main-header { margin-bottom: 2rem; }
+.main-header h1 { font-size: 2rem; font-weight: 700; color: var(--secondary-900); display: flex; align-items: center; gap: 1rem; }
+.main-header h1 i { color: var(--primary-500); }
+.header-subtitle { color: var(--secondary-500); margin-top: 0.5rem; }
+
+/* Tracker Container */
+.tracker-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    align-items: flex-start;
 }
 
-.main-header h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--secondary-900);
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.main-header h1 i {
-    color: var(--primary-500);
-}
-
-.header-subtitle {
-    color: var(--secondary-500);
-    margin-top: 0.5rem;
-}
-
-/* Form Container */
-.form-container {
-    max-width: 800px;
-    margin: 0 auto;
+.calendar-card, .details-card {
     background: #fff;
-    padding: 2.5rem;
+    padding: 2rem;
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-md);
     border: 1px solid var(--border-color);
 }
 
-.health-form .form-section {
-    margin-bottom: 2.5rem;
+/* Calendar */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
 }
 
-.health-form .section-title {
+.calendar-header h2 {
     font-size: 1.5rem;
     font-weight: 600;
     color: var(--secondary-800);
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--border-light);
 }
 
-/* Mood Selector */
-.mood-selector {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.mood-option {
-    cursor: pointer;
-}
-
-.mood-option input[type="radio"] {
-    display: none;
-}
-
-.mood-icon {
-    font-size: 3rem;
-    color: var(--secondary-300);
-    transition: all 0.2s ease-in-out;
-    padding: 1rem;
+.month-nav-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
     border-radius: 50%;
-    width: 80px;
-    height: 80px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--secondary-500);
+}
+
+.month-nav-btn:hover {
+    background: var(--primary-50);
+    color: var(--primary-600);
+    border-color: var(--primary-200);
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: 600;
+    color: var(--secondary-500);
+    margin-bottom: 1rem;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+}
+
+.calendar-day {
+    padding: 0.5rem;
+    text-align: center;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    aspect-ratio: 1 / 1;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
-.mood-option input[type="radio"]:checked + .mood-icon {
-    background-color: var(--primary-100);
-    color: var(--primary-600);
-    transform: scale(1.1);
-    box-shadow: 0 0 0 4px var(--primary-200);
+.calendar-day.other-month {
+    color: var(--secondary-300);
+    pointer-events: none;
 }
 
-.mood-option:hover .mood-icon {
-    color: var(--primary-500);
+.calendar-day:not(.other-month):hover {
+    background: var(--primary-50);
 }
 
-/* Vitals Grid */
-.vitals-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
+.calendar-day.selected {
+    background: var(--primary-500);
+    color: #fff;
+    font-weight: 600;
 }
 
-.form-group {
+.calendar-day .day-number {
+    font-size: 1rem;
+}
+
+.mood-indicator {
+    font-size: 1.5rem;
+    margin-top: 0.25rem;
+}
+
+/* Details Card */
+.details-card {
+    position: sticky;
+    top: 2rem;
+}
+
+.details-content h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.details-data .no-data-placeholder {
+    text-align: center;
+    color: var(--secondary-400);
+    padding: 2rem 0;
+}
+
+.details-data .no-data-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.details-item {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-light);
 }
 
-.form-group label {
+.details-item:last-child {
+    border-bottom: none;
+}
+
+.details-label {
     font-weight: 500;
     color: var(--secondary-600);
-    margin-bottom: 0.5rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
-.form-group input,
-.form-group textarea {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    font-size: 1rem;
-    color: var(--secondary-800);
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.form-group input:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: var(--primary-500);
-    box-shadow: 0 0 0 3px var(--primary-100);
-}
-
-.form-group textarea {
-    resize: vertical;
-    min-height: 100px;
-}
-
-/* Form Actions */
-.form-actions {
-    margin-top: 2.5rem;
-    text-align: center;
-}
-
-.btn-submit {
-    padding: 1rem 2.5rem;
-    background-color: var(--primary-500);
-    color: #fff;
-    border: none;
-    border-radius: var(--border-radius);
-    font-size: 1.1rem;
+.details-value {
     font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.btn-submit:hover {
-    background-color: var(--primary-600);
+    color: var(--secondary-800);
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+    .tracker-container {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 768px) {
-    .main-content {
-        margin-left: 0;
-        padding: 1rem;
-    }
-
-    .sidebar {
-        position: fixed;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        z-index: 1000;
-    }
-    
-    .sidebar.open {
-        transform: translateX(0);
-    }
-
-    .form-container {
-        padding: 1.5rem;
-    }
-
-    .mood-icon {
-        font-size: 2.5rem;
-        width: 60px;
-        height: 60px;
-    }
+    .main-content { margin-left: 0; padding: 1rem; }
+    .sidebar { position: fixed; transform: translateX(-100%); transition: transform 0.3s ease; z-index: 1000; }
+    .sidebar.open { transform: translateX(0); }
 }

@@ -43,7 +43,11 @@ class PatientAPIService {
             // Password Reset
             forgotPassword: '/v1/healsync/password/forgot',
             verifyOTP: '/v1/healsync/password/verify',
-            resetPassword: '/v1/healsync/password/reset'
+            resetPassword: '/v1/healsync/password/reset',
+            
+            // Health Tracker
+            trackEmotion: '/v1/healsync/emotion/track',
+            getEmotionData: '/v1/healsync/emotion/patient'
         };
         
         this.defaultHeaders = {
@@ -261,28 +265,23 @@ class PatientAPIService {
         });
     }
     
-    // Utility method to format dates for API calls
-    formatDateTimeForAPI(date) {
-        if (!(date instanceof Date)) {
-            date = new Date(date);
-        }
-        return date.toISOString().slice(0, 19); // Remove milliseconds and timezone
+    // Track Emotion Data
+    async getEmotionData(patientId) {
+        return this.makeRequest(this.endpoints.getEmotionData + `/${patientId}`);
     }
-    
-    // Utility method to parse API response dates
-    parseDateTimeFromAPI(dateString) {
-        return new Date(dateString);
+
+    async trackEmotion(data) {
+        const endpoint = this.endpoints.trackEmotion;
+        const options = {
+            method: 'POST',
+            body: JSON.stringify(data)
+        };
+        return this.makeRequest(endpoint, options);
     }
-    
-    // Health check method
-    async healthCheck() {
-        try {
-            // Try a simple GET request to see if the API is responsive
-            const response = await this.makeRequest('/health', { method: 'GET' });
-            return { success: true, message: 'API is responsive' };
-        } catch (error) {
-            return { success: false, message: 'API is not responding', error };
-        }
+
+    async getEmotionDataByPatientId(patientId) {
+        const endpoint = `${this.endpoints.getEmotionData}/${patientId}`;
+        return this.makeRequest(endpoint);
     }
 }
 

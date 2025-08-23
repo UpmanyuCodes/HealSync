@@ -326,22 +326,50 @@ function generateAppointmentActions(appointment) {
 // Load health summary data
 async function loadHealthSummary() {
     try {
-        // For now, display static data
-        // This can be enhanced with actual health tracking API
-        displayHealthSummary();
+        if (!currentUser || !currentUser.patientId) {
+            console.warn('No patient ID available for loading health summary.');
+            displayHealthSummary(null); // Display default state
+            return;
+        }
+
+        const patientId = currentUser.patientId || currentUser.id;
+        const endpoint = `/v1/healsync/emotion/patient/${patientId}`;
+        
+        // Use the API service to get the emotion history
+        const emotionHistory = await patientAPI.makeRequest(endpoint, { method: 'GET' });
+
+        if (emotionHistory.success === false) {
+            // It's okay if no data is found (404), just show default
+            if (emotionHistory.error.includes('404')) {
+                console.log('No health tracker data found for this patient.');
+                displayHealthSummary(null);
+                return;
+            }
+            throw new Error(emotionHistory.userMessage || 'Failed to fetch health data');
+        }
+        
+        // Assuming the API returns an array of entries, get the latest one
+        const latestEntry = Array.isArray(emotionHistory) && emotionHistory.length > 0 
+            ? emotionHistory.sort((a, b) => new Date(b.entryDate) - new Date(a.entryDate))[0]
+            : null;
+
+        displayHealthSummary(latestEntry);
+
     } catch (error) {
         console.error('Error loading health summary:', error);
+        displayHealthSummary(null); // Display default state on error
     }
 }
 
 // Display health summary
-function displayHealthSummary() {
+function displayHealthSummary(data) {
     // This is placeholder data - can be enhanced with real health tracking
     const vitalsData = [
+        { label: 'Mood', value: data?.emotion || 'Not tracked', icon: 'smile' },
         { label: 'Blood Pressure', value: '120/80 mmHg', icon: 'heartbeat' },
         { label: 'Heart Rate', value: '72 bpm', icon: 'heart' },
         { label: 'Weight', value: '70 kg', icon: 'weight' },
-        { label: 'Last Updated', value: '2 days ago', icon: 'clock' }
+        { label: 'Last Updated', value: data?.entryDate ? new Date(data.entryDate).toLocaleDateString() : 'N/A', icon: 'clock' }
     ];
 
     const vitalsList = document.getElementById('vitalsList');

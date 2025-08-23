@@ -1,4 +1,32 @@
-/* Patient Profile Dashboard Styles */
+/* :root {
+    --primary-color: var(--primary-500);
+    --primary-dark: var(--primary-700);
+    --primary-light: var(--primary-100);
+    --secondary-color: var(--secondary-500);
+    --secondary-light: var(--secondary-100);
+    --warning-color: var(--warning-500);
+    --warning-light: var(--warning-50);
+    --danger-color: var(--error-500);
+    --danger-light: var(--error-50);
+    --success-color: var(--success-500);
+    --success-light: var(--success-50);
+    --text-primary: var(--secondary-800);
+    --text-secondary: var(--secondary-500);
+    --text-light: var(--secondary-400);
+    --bg-primary: var(--white);
+    --bg-secondary: var(--secondary-50);
+    --bg-tertiary: var(--secondary-100);
+    --border-color: var(--secondary-200);
+    --border-light: var(--secondary-100);
+    --shadow-sm: var(--shadow-sm);
+    --shadow-md: var(--shadow-md);
+    --shadow-lg: var(--shadow-lg);
+    --shadow-xl: var(--shadow-xl);
+    --border-radius: var(--radius-lg);
+    --border-radius-lg: var(--radius-xl);
+    --transition: all 0.2s ease-in-out;
+    --sidebar-width: 280px;
+}board Styles */
 /* Modern, clean design with healthcare theme */
 
 :root {
