@@ -49,10 +49,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Event Listeners ---
     if (chatToggleBtn) {
-        chatToggleBtn.addEventListener('click', () => chatWidget.classList.toggle('visible'));
+        chatToggleBtn.addEventListener('click', () => chatWidget.classList.toggle('active'));
     }
     if (closeChatBtn) {
-        closeChatBtn.addEventListener('click', () => chatWidget.classList.remove('visible'));
+        closeChatBtn.addEventListener('click', () => chatWidget.classList.remove('active'));
     }
 
     if (micBtn) {
@@ -133,15 +133,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function getAiResponse(prompt) {
-        const apiKey = "YOUR_GEMINI_KEY";
+        const apiKey = "YOUR_GEMINI_API_KEY";
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
         // Shorter, more focused prompt for faster responses
-        const enhancedPrompt = `You are HealSync AI Assistant for a healthcare platform. Be concise and helpful.
-
-For symptoms: Suggest common conditions but always say "Consult a doctor for proper diagnosis."
-For navigation: Guide users to Patient Dashboard, Doctor Dashboard, or relevant features.
-For emergencies: Recommend immediate medical care.
+        const enhancedPrompt = `You are HealSync AI Assistant. Be concise and helpful.
 
 User: ${prompt}`;
 
