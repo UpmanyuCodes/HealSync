@@ -15,7 +15,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px;
-    border-left: 4px solid #3B82F6;
+    border-left: 4px solid #14B8A6; /* Updated to teal-500 */
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
@@ -88,12 +88,12 @@
 }
 
 .snackbar-info {
-    border-left-color: #3B82F6;
-    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+    border-left-color: #14B8A6; /* Updated to teal-500 */
+    background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%); /* Updated to teal */
 }
 
 .snackbar-info .snackbar-message {
-    color: #1D4ED8;
+    color: #0F766E; /* Updated to teal-700 */
 }
 
 /* Loading Spinner */
@@ -101,7 +101,7 @@
     width: 24px;
     height: 24px;
     border: 3px solid #E5E7EB;
-    border-top: 3px solid #3B82F6;
+    border-top: 3px solid #14B8A6; /* Updated to teal-500 */
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto;
@@ -200,13 +200,13 @@
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+    background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%); /* Updated to teal */
     color: white;
-    border: 1px solid #2563EB;
+    border: 1px solid #0D9488; /* Updated to teal */
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+    background: linear-gradient(135deg, #0D9488 0%, #0F766E 100%); /* Updated to teal */
 }
 
 /* Message styling enhancements */
@@ -234,9 +234,9 @@
 }
 
 .message-info {
-    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
-    color: #1D4ED8;
-    border-left-color: #3B82F6;
+    background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%); /* Updated to teal */
+    color: #0F766E; /* Updated to teal-700 */
+    border-left-color: #14B8A6; /* Updated to teal-500 */
 }
 
 /* Responsive design */

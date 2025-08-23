@@ -137,7 +137,70 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+
     // --- Footer Location API ---
+
+    async function getAiResponse(prompt) {
+        const apiKey = "YOUR_GEMINI_KEY";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+        // Shorter, more focused prompt for faster responses
+        const enhancedPrompt = `You are HealSync AI Assistant. Be concise and helpful.
+
+User: ${prompt}`;
+
+        const payload = {
+            contents: [{
+                parts: [{
+                    text: enhancedPrompt
+                }]
+            }],
+            generationConfig: {
+                maxOutputTokens: 150,  // Limit response length for speed
+                temperature: 0.7,      // Balanced creativity/consistency
+                topP: 0.8,
+                topK: 40
+            }
+        };
+
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+            
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload),
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+                console.error('API Response Error:', response.status, response.statusText);
+                return "Sorry, I'm having trouble connecting. Please try again later.";
+            }
+            
+            const result = await response.json();
+            
+            if (result.candidates && result.candidates[0]?.content?.parts[0]) {
+                return result.candidates[0].content.parts[0].text;
+            } else {
+                return "I'm sorry, I couldn't generate a response. Please try again.";
+            }
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                return "Response timed out. Please try a shorter question.";
+            }
+            console.error("AI API Error:", error);
+            return "Sorry, an error occurred while processing your request.";
+        }
+    }
+
+    // Footer Location Intelligence API
+
     const footerLocationIndex = {
         'home': '/HTML/index.html',
         'login': '/HTML/login.html',

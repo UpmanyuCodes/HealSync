@@ -489,8 +489,25 @@ class DoctorDashboard {
                 <input type="text" name="medicines[${this.medicineCounter}][dosage]" class="form-input" placeholder="e.g., 500mg, 2 tablets" required>
             </div>
             <div class="form-group">
-                <label class="form-label">Timing Instructions</label>
-                <input type="text" name="medicines[${this.medicineCounter}][timing]" class="form-input" placeholder="e.g., Twice daily with meals" required>
+                <label class="form-label">Timing</label>
+                <div class="timing-checkboxes">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="medicines[${this.medicineCounter}][timing][morning]" value="morning">
+                        <span class="checkbox-text">Morning</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="medicines[${this.medicineCounter}][timing][afternoon]" value="afternoon">
+                        <span class="checkbox-text">Afternoon</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="medicines[${this.medicineCounter}][timing][night]" value="night">
+                        <span class="checkbox-text">Night</span>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Additional Instructions</label>
+                <input type="text" name="medicines[${this.medicineCounter}][instructions]" class="form-input" placeholder="e.g., With meals, Before food">
             </div>
             <div>
                 <button type="button" class="remove-medicine-btn" onclick="doctorDashboard.removeMedicineRow(${this.medicineCounter})">
@@ -549,24 +566,47 @@ class DoctorDashboard {
             medicineRows.forEach((row, index) => {
                 const medicineSelect = row.querySelector('select[name*="medicineId"]');
                 const dosageInput = row.querySelector('input[name*="dosage"]');
-                const timingInput = row.querySelector('input[name*="timing"]') || row.querySelector('input[name*="frequency"]');
+                const instructionsInput = row.querySelector('input[name*="instructions"]');
+
+                // Collect timing checkboxes
+                const morningCheckbox = row.querySelector('input[name*="morning"]');
+                const afternoonCheckbox = row.querySelector('input[name*="afternoon"]');
+                const nightCheckbox = row.querySelector('input[name*="night"]');
 
                 console.log(`🔍 Medicine ${index + 1} - DOM Elements:`, {
                     medicineSelect: medicineSelect,
                     dosageInput: dosageInput,
-                    timingInput: timingInput,
+                    instructionsInput: instructionsInput,
+                    morningCheckbox: morningCheckbox,
+                    afternoonCheckbox: afternoonCheckbox,
+                    nightCheckbox: nightCheckbox,
                     rowHTML: row.innerHTML.substring(0, 200) + '...'
                 });
 
                 const medicineId = medicineSelect?.value;
                 const dosage = dosageInput?.value;
-                const timing = timingInput?.value;
+                const instructions = instructionsInput?.value || '';
+
+                // Build timing array from checkboxes
+                const timings = [];
+                if (morningCheckbox?.checked) timings.push('Morning');
+                if (afternoonCheckbox?.checked) timings.push('Afternoon');
+                if (nightCheckbox?.checked) timings.push('Night');
+                
+                const timing = timings.length > 0 ? timings.join(', ') : '';
 
                 console.log(`🔍 Medicine ${index + 1} - Values:`, {
                     medicineId,
                     medicineIdType: typeof medicineId,
                     dosage,
                     timing,
+                    timings,
+                    instructions,
+                    checkboxStates: {
+                        morning: morningCheckbox?.checked,
+                        afternoon: afternoonCheckbox?.checked,
+                        night: nightCheckbox?.checked
+                    },
                     selectOptions: medicineSelect ? Array.from(medicineSelect.options).map(opt => ({value: opt.value, text: opt.text, selected: opt.selected})) : 'No select found'
                 });
 
@@ -578,12 +618,19 @@ class DoctorDashboard {
                         isValid: !isNaN(parsedMedicineId)
                     });
                     
-                    treatmentData.medicines.push({
+                    const medicineData = {
                         medicineId: parsedMedicineId,
                         dosage: dosage.trim(),
                         frequency: timing.trim(), // Use frequency as expected by API
                         timing: timing.trim() // Keep timing for backward compatibility
-                    });
+                    };
+
+                    // Add instructions if provided
+                    if (instructions.trim()) {
+                        medicineData.instructions = instructions.trim();
+                    }
+
+                    treatmentData.medicines.push(medicineData);
                 } else {
                     console.warn(`⚠️ Medicine ${index + 1} missing data:`, {
                         hasMedicineId: !!medicineId,
@@ -648,7 +695,7 @@ class DoctorDashboard {
                 throw new Error(`Medicine ${i + 1}: Please enter the dosage`);
             }
             if (!med.frequency && !med.timing) {
-                throw new Error(`Medicine ${i + 1}: Please enter the timing/frequency`);
+                throw new Error(`Medicine ${i + 1}: Please select at least one timing (Morning, Afternoon, or Night)`);
             }
         }
 
