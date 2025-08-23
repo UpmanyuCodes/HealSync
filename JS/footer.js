@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function getAiResponse(prompt) {
-        const apiKey = "AIzaSyALzsiT5A6YWZnknT7XAIe2SzMQXHNbwrM";
+        const apiKey = "YOUR_GEMINI_KEY";
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
         // Shorter, more focused prompt for faster responses
