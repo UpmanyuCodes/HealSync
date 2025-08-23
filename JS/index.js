@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Clear all user session data
     const keys = ['healSync_patientSession', 'healSync_patient_data', 'healSync_userData', 'healSync_userType', 'healSync_patientId', 'healSync_userName'];
     keys.forEach(key => localStorage.removeItem(key));
-    
+   
     // Reload page to show logged-out state
     window.location.reload();
   };
