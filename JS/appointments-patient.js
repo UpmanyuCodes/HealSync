@@ -479,6 +479,20 @@ async function createAppointmentCard(appointment) {
             </div>
             
             <div class="appointment-actions">
+<<<<<<< HEAD
+=======
+                ${canChat ? `
+                <button class="appointment-chat-btn"
+                        data-appointment='${encodeURIComponent(JSON.stringify(appointment))}'
+                        data-doctor-id="${appointment.doctorId || 1}"
+                        data-doctor-name="${appointment.doctorName || ''}"
+                        data-doctor-specialty="${appointment.specialty || ''}"
+                        data-appointment-id="${appointment.id}">
+                    <i class="fas fa-comments"></i>
+                    Chat with Doctor
+                </button>
+                ` : ''}
+>>>>>>> c19bbb93003c9c8894ad76277d55a1af5a71b3fd
                 ${canReschedule ? `
                     <button class="action-btn reschedule-btn" onclick="openRescheduleModal(${appointmentId})">
                         <i class="fas fa-calendar-day"></i>
