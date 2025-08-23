@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatToggleBtn?.addEventListener('click', () => chatWidget?.classList.toggle('active'));
     closeChatBtn?.addEventListener('click', () => chatWidget?.classList.remove('active'));
 
+
     micBtn?.addEventListener('click', () => {
         if (!recognition) {
             alert("Sorry, your browser doesn't support voice recognition.");
@@ -186,6 +187,72 @@ User: ${input}`;
             addMessage("Error, please try again.", 'ai');
         }
     });
+
+=======
+
+    micBtn?.addEventListener('click', () => {
+        if (!recognition) {
+            alert("Sorry, your browser doesn't support voice recognition.");
+            return;
+        }
+        if (micBtn.classList.contains('is-listening')) {
+            recognition.stop();
+            micBtn.classList.remove('is-listening');
+        } else {
+            recognition.start();
+            micBtn.classList.add('is-listening');
+        }
+    });
+
+    // --- Gemini API Call ---
+    async function callGeminiAPI(input) {
+        const apiKey = "YOUR_GEMINI_KEY"; 
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+        const payload = {
+            contents: [{ parts: [{ text: `You are HealSync AI Assistant. Be concise.\n\nUser: ${input}` }] }],
+            generationConfig: { maxOutputTokens: 150, temperature: 0.7 }
+        };
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) throw new Error("API error");
+
+            const result = await response.json();
+            return result.candidates?.[0]?.content?.parts?.[0]?.text || "No response.";
+        } catch (error) {
+            console.error("AI API Error:", error);
+            return "Sorry, something went wrong. Please try again.";
+        }
+    }
+
+    // --- Chat Form Submit ---
+    chatForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const userInput = chatInput?.value.trim();
+        if (!userInput) return;
+
+        addMessage(userInput, 'user');
+        chatInput.value = '';
+
+        const loadingIndicator = addMessage('', 'loading');
+
+        try {
+            const aiResponse = await callGeminiAPI(userInput);
+            loadingIndicator.remove();
+            addMessage(aiResponse, 'ai');
+            speak(aiResponse); // 🔊 Speak the response
+        } catch (error) {
+            loadingIndicator.remove();
+            addMessage("Error, please try again.", 'ai');
+        }
+    });
+
 
     // --- Helper Functions ---
     function addMessage(text, type) {
