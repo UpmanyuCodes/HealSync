@@ -723,92 +723,198 @@
             };
 
             // Load appointments function
-            window.loadDoctorAppointments = function() {
-                console.log('🔄 Loading doctor appointments...');
+            window.loadDoctorAppointments = async function() {
+                console.log('🔄 Loading doctor appointments from API...');
                 if (typeof window.refreshAppointments === 'function') {
-                    window.refreshAppointments();
+                    await window.refreshAppointments();
                 } else if (typeof window.loadAppointments === 'function') {
-                    window.loadAppointments();
+                    await window.loadAppointments();
                 } else {
-                    // Fallback: create demo appointments
-                    createDemoAppointments();
+                    console.warn('⚠️ loadAppointments function not found. Cannot fetch data.');
+                    showSnackbar('Could not load appointment data.', 'error');
                 }
             };
 
-            function createDemoAppointments() {
-                console.log('🎭 Creating demo appointments...');
-                const container = document.getElementById('appointments-container');
-                if (!container) return;
+            // Chat API Integration
+            const CHAT_API_BASE_URL = 'https://healsync-backend-d788.onrender.com/api/chat';
 
-                const demoAppointments = [
-                    {
-                        id: 1,
-                        patientName: 'John Doe',
-                        date: new Date().toISOString().split('T')[0],
-                        time: '09:00',
-                        status: 'confirmed',
-                        type: 'Consultation'
-                    },
-                    {
-                        id: 2,
-                        patientName: 'Jane Smith',
-                        date: new Date().toISOString().split('T')[0],
-                        time: '10:30',
-                        status: 'pending',
-                        type: 'Follow-up'
-                    },
-                    {
-                        id: 3,
-                        patientName: 'Mike Johnson',
-                        date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
-                        time: '14:00',
-                        status: 'booked',
-                        type: 'Check-up'
+            async function getOrCreateChatSession(doctorId, patientId, appointmentId) {
+                console.log('🔄 Creating/getting chat session...', { doctorId, patientId, appointmentId });
+                console.log(`📡 API Call: POST ${CHAT_API_BASE_URL}/session`);
+                const requestBody = {
+                    doctorId: parseInt(doctorId),
+                    patientId: parseInt(patientId),
+                    appointmentId: parseInt(appointmentId)
+                };
+                console.log('📦 Request Body:', requestBody);
+
+                try {
+                    const response = await fetch(`${CHAT_API_BASE_URL}/session`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(requestBody)
+                    });
+
+                    console.log('📨 Response Status:', response.status);
+                    if (response.ok) {
+                        const chatSession = await response.json();
+                        console.log('✅ Chat session created/retrieved:', chatSession);
+                        showSnackbar('Chat session ready!', 'success');
+                        return chatSession;
+                    } else {
+                        const errorText = await response.text();
+                        throw new Error(`Failed to create chat session: ${response.status} - ${errorText}`);
                     }
-                ];
-
-                container.innerHTML = demoAppointments.map(apt => `
-                    <div class="appointment-card appointment-${apt.status}">
-                        <div class="appointment-header">
-                            <div class="patient-info">
-                                <h4>${apt.patientName}</h4>
-                                <p>${apt.type}</p>
-                            </div>
-                            <div class="appointment-status status-${apt.status}">
-                                ${apt.status.charAt(0).toUpperCase() + apt.status.slice(1)}
-                            </div>
-                        </div>
-                        <div class="appointment-details">
-                            <div class="appointment-time">
-                                <i class="fas fa-calendar"></i>
-                                ${apt.date}
-                            </div>
-                            <div class="appointment-time">
-                                <i class="fas fa-clock"></i>
-                                ${apt.time}
-                            </div>
-                        </div>
-                        <div class="appointment-actions">
-                            <button class="appointment-chat-btn" 
-                                    data-appointment-id="${apt.id}"
-                                    data-doctor-id="demo_doctor"
-                                    data-patient-id="demo_patient_${apt.id}">
-                                <i class="fas fa-comments"></i>
-                                Chat
-                            </button>
-                            <button class="btn btn-sm btn-primary" onclick="confirmAppointment(${apt.id})">
-                                <i class="fas fa-check"></i>
-                                ${apt.status === 'pending' ? 'Confirm' : 'Details'}
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-
-                // Update stats
-                document.getElementById('today-count').textContent = '2';
-                document.getElementById('pending-count').textContent = '1';
-                document.getElementById('completed-count').textContent = '0';
+                } catch (error) {
+                    console.error('❌ Error in getOrCreateChatSession:', error);
+                    showSnackbar(error.message, 'error');
+                    return null;
+                }
             }
+
+            async function loadChatHistory(chatSessionId) {
+                console.log(`📡 Loading chat history for session ${chatSessionId}...`);
+                try {
+                    const response = await fetch(`${CHAT_API_BASE_URL}/messages?chatSessionId=${chatSessionId}`);
+                    if (response.ok) {
+                        const messages = await response.json();
+                        console.log('✅ Chat history loaded:', messages.length, 'messages');
+                        return messages;
+                    } else {
+                        throw new Error(`Failed to load chat history: ${response.status}`);
+                    }
+                } catch (error) {
+                    console.error('❌ Error loading chat history:', error);
+                    showSnackbar('Failed to load chat history.', 'error');
+                    return [];
+                }
+            }
+
+            async function sendChatMessage(chatSessionId, senderId, receiverId, message) {
+                console.log('📤 Sending message...');
+                try {
+                    const response = await fetch(`${CHAT_API_BASE_URL}/messages`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chatSessionId: chatSessionId,
+                            senderId: parseInt(senderId),
+                            receiverId: parseInt(receiverId),
+                            message: message
+                        })
+                    });
+
+                    if (response.ok) {
+                        const messageData = await response.json();
+                        console.log('✅ Message sent:', messageData);
+                        return messageData;
+                    } else {
+                        throw new Error(`Failed to send message: ${response.status}`);
+                    }
+                } catch (error) {
+                    console.error('❌ Error sending message:', error);
+                    showSnackbar('Failed to send message.', 'error');
+                    return null;
+                }
+            }
+            
+            async function markMessageAsRead(messageId) {
+                console.log(`📤 Marking message ${messageId} as read...`);
+                try {
+                    const response = await fetch(`${CHAT_API_BASE_URL}/messages/${messageId}/read`, {
+                        method: 'PUT'
+                    });
+                    if(response.ok) {
+                        console.log(`✅ Message ${messageId} marked as read.`);
+                        return true;
+                    } else {
+                        throw new Error(`Failed to mark message as read: ${response.status}`);
+                    }
+                } catch(error) {
+                    console.error('❌ Error marking message as read:', error);
+                    return false;
+                }
+            }
+
+            async function getUserChatSessions(userId) {
+                console.log(`📡 Getting chat sessions for user ${userId}...`);
+                try {
+                    const response = await fetch(`${CHAT_API_BASE_URL}/sessions?userId=${userId}`);
+                    if(response.ok) {
+                        const sessions = await response.json();
+                        console.log('✅ User sessions retrieved:', sessions);
+                        return sessions;
+                    } else {
+                        throw new Error(`Failed to get user sessions: ${response.status}`);
+                    }
+                } catch(error) {
+                    console.error('❌ Error getting user sessions:', error);
+                    showSnackbar('Failed to retrieve chat sessions.', 'error');
+                    return [];
+                }
+            }
+
+            // Expose a test function to the window object for easy debugging
+            window.testChatAPIs = async function() {
+                console.log("🚀 STARTING CHAT API TEST SUITE 🚀");
+
+                const doctorId = 2; // Demo Doctor ID
+                const patientId = 1; // Demo Patient ID
+                const appointmentId = 3; // Demo Appointment ID
+
+                // 1. Test Session Creation
+                console.log("\n--- 1. Testing Create Chat Session ---");
+                const session = await getOrCreateChatSession(doctorId, patientId, appointmentId);
+                if (!session || !session.id) {
+                    console.error("❌ TEST FAILED: Could not create or get chat session.");
+                    return;
+                }
+                console.log("✅ PASS: Session creation successful.");
+
+                // 2. Test Sending a Message
+                console.log("\n--- 2. Testing Send Message ---");
+                const testMessage = `Test message from doctor ${doctorId} at ${new Date().toLocaleTimeString()}`;
+                const sentMessage = await sendChatMessage(session.id, doctorId, patientId, testMessage);
+                if (!sentMessage || sentMessage.message !== testMessage) {
+                    console.error("❌ TEST FAILED: Could not send message.");
+                    return;
+                }
+                console.log("✅ PASS: Message sent successfully.");
+
+                // 3. Test Getting Chat History
+                console.log("\n--- 3. Testing Get Chat History ---");
+                const history = await loadChatHistory(session.id);
+                if (!history || history.length === 0) {
+                    console.error("❌ TEST FAILED: Could not retrieve chat history.");
+                    return;
+                }
+                console.log(`✅ PASS: Chat history retrieved with ${history.length} messages.`);
+
+                // 4. Test Marking Message as Read
+                const messageToRead = history.find(m => m.senderId !== doctorId && !m.read);
+                if (messageToRead) {
+                    console.log("\n--- 4. Testing Mark Message as Read ---");
+                    const readSuccess = await markMessageAsRead(messageToRead.id);
+                    if (!readSuccess) {
+                        console.error("❌ TEST FAILED: Could not mark message as read.");
+                        return;
+                    }
+                    console.log("✅ PASS: Message marked as read successfully.");
+                } else {
+                    console.log("\n--- 4. SKIPPED: No unread messages to mark as read. ---");
+                }
+
+                // 5. Test Getting User Sessions
+                console.log("\n--- 5. Testing Get User's Chat Sessions ---");
+                const userSessions = await getUserChatSessions(doctorId);
+                if (!userSessions || !userSessions.some(s => s.id === session.id)) {
+                     console.error("❌ TEST FAILED: Could not retrieve user's chat sessions.");
+                    return;
+                }
+                console.log(`✅ PASS: Retrieved ${userSessions.length} sessions for the user.`);
+
+                console.log("\n🎉 ALL CHAT API TESTS PASSED SUCCESSFULLY! 🎉");
+            };
 
             function loadAnalyticsData() {
                 const analyticsContent = document.getElementById('analytics-content');
